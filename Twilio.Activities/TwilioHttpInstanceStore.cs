@@ -64,6 +64,11 @@ namespace Twilio.Activities
 
         }
 
+        /// <summary>
+        /// Maximum byte size of cookies.
+        /// </summary>
+        const int COOKIE_SIZE = 2048;
+
         HttpContext httpContext;
         PersistenceStorageMode storageMode;
         Guid ownerInstanceId;
@@ -117,22 +122,35 @@ namespace Twilio.Activities
         /// <param name="doc"></param>
         void SaveToCookie(Guid instanceId, XDocument doc)
         {
+            // expire all existing related cookies
+            for (int i = 0; i < 8; i++)
+            {
+                var cki = httpContext.Request.Cookies[string.Format("WF_{0}_p{1}", instanceId, i)];
+                if (cki != null)
+                {
+                    cki.Expires = DateTime.Now.AddYears(-1);
+                    httpContext.Response.SetCookie(cki);
+                }
+            }
+
             using (var stm = new MemoryStream())
-            using (var gzp = new GZipStream(stm, CompressionMode.Compress, true))
             {
                 // write XML document to compressed stream
-                var wrt = XmlDictionaryWriter.CreateBinaryWriter(gzp);
-                doc.WriteTo(wrt);
-                wrt.Flush();
-                wrt.Close();
+                using (var gzp = new GZipStream(stm, CompressionMode.Compress, true))
+                using (var wrt = XmlDictionaryWriter.CreateTextWriter(gzp))
+                    doc.Root.WriteTo(wrt);
 
-                // check for length
-                if (stm.Length > 3000)
-                    throw new InstancePersistenceException("Workflow instance is too large to persist as a cookie.");
+                // dump bytes
+                var dat = stm.ToArray();
 
-                // create and set cookie
-                var cki = new HttpCookie(string.Format("WF_{0}", instanceId), Convert.ToBase64String(stm.ToArray()));
-                httpContext.Response.SetCookie(cki);
+                // set cookies for data chunks
+                for (int i = 0; i * COOKIE_SIZE < dat.Length; i++)
+                {
+                    var cki = new HttpCookie(string.Format("WF_{0}_p{1}", instanceId, i));
+                    cki.Value = Convert.ToBase64String(dat, i * COOKIE_SIZE, Math.Min(COOKIE_SIZE, dat.Length - (i * COOKIE_SIZE)));
+                    cki.Expires = DateTime.Now.AddYears(1);
+                    httpContext.Response.SetCookie(cki);
+                }
             }
         }
 
@@ -143,23 +161,35 @@ namespace Twilio.Activities
         /// <returns></returns>
         XDocument LoadFromCookie(Guid instanceId)
         {
-            // load serialized value from either response (we've already submitted it) or request
-            var key = string.Format("WF_{0}", instanceId);
-            var cki = httpContext.Request.Cookies[key];
-            if (cki == null || cki.Value == null)
-                throw new InstancePersistenceException("Could not load workflow instance from cookie.");
-
-            // decode and read
-            using (var stm = new MemoryStream( Convert.FromBase64String(cki.Value)))
-            using (var gzp = new GZipStream(stm, CompressionMode.Decompress, true))
+            using (var dat = new MemoryStream())
             {
-                // read binary xml from compressed stream
-                var rdr = XmlDictionaryReader.CreateBinaryReader(gzp, XmlDictionaryReaderQuotas.Max);
-                rdr.MoveToContent();
+                // load all available cookie data
+                for (int i = 0; i < 8; i++)
+                {
+                    var cki = httpContext.Request.Cookies[string.Format("WF_{0}_p{1}", instanceId, i)];
+                    if (cki == null || cki.Value == null)
+                        break;
 
-                // read in elements and wrap with new document
-                var doc = new XDocument(XElement.ReadFrom(rdr));
-                return doc;
+                    // append contents of cookie to data
+                    var buf = Convert.FromBase64String(cki.Value);
+                    dat.Write(buf, 0, buf.Length);
+                }
+
+                // check whether we have some data
+                dat.Position = 0;
+                if (dat.Length < 8)
+                    throw new InstancePersistenceException("Not enough data loaded from cookies.");
+
+                // decode and read
+                using (var gzp = new GZipStream(dat, CompressionMode.Decompress, true))
+                using (var rdr = XmlDictionaryReader.CreateTextReader(gzp, XmlDictionaryReaderQuotas.Max))
+                {
+                    rdr.MoveToContent();
+
+                    // read in elements and wrap with new document
+                    var doc = new XDocument(XElement.ReadFrom(rdr));
+                    return doc;
+                }
             }
         }
 
