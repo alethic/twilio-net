@@ -5,7 +5,7 @@ using System.Xml.Linq;
 namespace Twilio.Activities
 {
 
-    public sealed class Dial : TwilioActivity<DialResult>
+    public sealed class Dial : TwilioActivity
     {
 
         internal static readonly string BookmarkName = "Twilio.Dial";
@@ -21,6 +21,26 @@ namespace Twilio.Activities
         public InArgument<bool?> Record { get; set; }
 
         public InArgument<string> Number { get; set; }
+
+        /// <summary>
+        /// The outcome of the dial attempt.
+        /// </summary>
+        public OutArgument<CallStatus> Status { get; set; }
+
+        /// <summary>
+        /// The call sid of the new call leg. This parameter is not sent after dialing a conference.
+        /// </summary>
+        public OutArgument<string> Sid { get; set; }
+
+        /// <summary>
+        /// The duration of the dialed call. This parameter is not sent after dialing a conference.
+        /// </summary>
+        public OutArgument<TimeSpan> Duration { get; set; }
+
+        /// <summary>
+        /// The URL of the recorded audio.
+        /// </summary>
+        public OutArgument<Uri> RecordingUrl { get; set; }
 
         protected override bool CanInduceIdle
         {
@@ -66,7 +86,11 @@ namespace Twilio.Activities
         /// <param name="o"></param>
         void OnDialResult(NativeActivityContext context, Bookmark bookmark, object o)
         {
-            Result.Set(context, (DialResult)o);
+            var r = (DialResult)o;
+            Status.Set(context, r.Status);
+            Sid.Set(context, r.Sid);
+            Duration.Set(context, r.Duration);
+            RecordingUrl.Set(context, r.RecordingUrl);
         }
 
     }

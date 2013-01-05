@@ -7,7 +7,7 @@ namespace Twilio.Activities
 {
 
     [Designer(typeof(RecordDesigner))]
-    public sealed class Record : TwilioActivity<string>
+    public sealed class Record : TwilioActivity
     {
 
         internal static readonly string BookmarkName = "Twilio.Record";
@@ -21,6 +21,21 @@ namespace Twilio.Activities
         public InArgument<bool?> Transcribe { get; set; }
 
         public InArgument<bool?> PlayBeep { get; set; }
+
+        /// <summary>
+        /// The URL of the recorded audio.
+        /// </summary>
+        public OutArgument<Uri> RecordingUrl { get; set; }
+
+        /// <summary>
+        /// The duration of the recorded audio.
+        /// </summary>
+        public OutArgument<TimeSpan> Duration { get; set; }
+
+        /// <summary>
+        /// The key (if any) pressed to end the recording or 'hangup' if the caller hung up.
+        /// </summary>
+        public OutArgument<string> Digits { get; set; }
 
         protected override bool CanInduceIdle
         {
@@ -62,7 +77,10 @@ namespace Twilio.Activities
         /// <param name="o"></param>
         void OnRecordFinished(NativeActivityContext context, Bookmark bookmark, object o)
         {
-            Result.Set(context, ((RecordResult)o));
+            var r = (RecordResult)o;
+            RecordingUrl.Set(context, r.RecordingUrl);
+            Duration.Set(context, r.Duration);
+            Digits.Set(context, r.Digits);
         }
 
     }

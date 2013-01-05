@@ -155,21 +155,18 @@ namespace Twilio.Activities
             // configure initial self uri
             SelfUrl = AppendQueryToUri(new Uri(BaseUri, Path.GetFileName(Request.Path)), "InstanceId", WfApplication.Id.ToString());
 
-            // obtain result, if any
-            var result = GetResult();
-
             // if we've been passed a gather result, resume
-            var gatherResult = result as GatherResult;
+            var gatherResult = GetGatherResult();
             if (gatherResult != null)
                 WfApplication.BeginResumeBookmark(Gather.BookmarkName, gatherResult, i => WfApplication.EndResumeBookmark(i), null);
 
             // if we've been passed a record result, resume
-            var recordResult = result as RecordResult;
+            var recordResult = GetRecordResult();
             if (recordResult != null)
                 WfApplication.BeginResumeBookmark(Record.BookmarkName, recordResult, i => WfApplication.EndResumeBookmark(i), null);
 
             // if we've been passed a dial result, resume
-            var dialResult = result as DialResult;
+            var dialResult = GetDialResult();
             if (dialResult != null)
                 WfApplication.BeginResumeBookmark(Dial.BookmarkName, dialResult, i => WfApplication.EndResumeBookmark(i), null);
 
@@ -224,32 +221,15 @@ namespace Twilio.Activities
         }
 
         /// <summary>
-        /// Gets the result of whatever operation was posted, if available.
-        /// </summary>
-        /// <returns></returns>
-        Result GetResult()
-        {
-            return
-                (Result)GetDialResult() ??
-                (Result)GetRecordResult() ??
-                (Result)GetGatherResult();
-        }
-
-        /// <summary>
         /// Gets the result of a Gather operation, if available.
         /// </summary>
         /// <returns></returns>
-        GatherResult GetGatherResult()
+        string GetGatherResult()
         {
             if (Request["Bookmark"] != Gather.BookmarkName)
                 return null;
 
-            var digits = Request["Digits"];
-
-            return new GatherResult()
-            {
-                Digits = digits,
-            };
+            return Request["Digits"];
         }
 
         /// <summary>

@@ -7,7 +7,7 @@ namespace Twilio.Activities
 {
 
     [Designer(typeof(GatherDesigner))]
-    public sealed class Gather : TwilioActivity<GatherResult>
+    public sealed class Gather : TwilioActivity<string>
     {
 
         internal static readonly string BookmarkName = "Twilio.Gather";
@@ -83,7 +83,7 @@ namespace Twilio.Activities
         /// <param name="o"></param>
         void OnGatherFinished(NativeActivityContext context, Bookmark bookmark, object o)
         {
-            Result.Set(context, ((GatherResult)o));
+            Result.Set(context, ((string)o));
         }
 
     }

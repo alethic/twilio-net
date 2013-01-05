@@ -71,7 +71,6 @@
     <Compile Include="GatherDesigner.xaml.cs">
       <DependentUpon>GatherDesigner.xaml</DependentUpon>
     </Compile>
-    <Compile Include="GatherResult.cs" />
     <Compile Include="PauseDesigner.xaml.cs">
       <DependentUpon>PauseDesigner.xaml</DependentUpon>
     </Compile>
