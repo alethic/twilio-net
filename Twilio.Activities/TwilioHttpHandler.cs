@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Activities;
-using System.Activities.Hosting;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -14,7 +12,9 @@ namespace Twilio.Activities
 {
 
     /// <summary>
-    /// Summary description for WorkflowHandler
+    /// Extend and expose this HTTP handler to direct the Twilio application towards. Implement InitializeActivity to
+    /// generate and return the <see cref="Activity"/> that is executed by the workflow engine. Session state is
+    /// currently required to store the ongoing workflows.
     /// </summary>
     public abstract class TwilioHttpHandler : IHttpHandler, IRequiresSessionState, ITwilioContext
     {
@@ -136,6 +136,7 @@ namespace Twilio.Activities
             // obtain our activity instance
             Activity = InitializeActivity();
 
+            // initializes workflow application and appropriate call backs
             WfApplication = new WorkflowApplication(Activity);
             WfApplication.Extensions.Add<ITwilioContext>(() => this);
             WfApplication.SynchronizationContext = SynchronizationContext = new RunnableSynchronizationContext();

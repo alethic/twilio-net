@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Xml.Linq;
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Twilio.Activities.Tests
