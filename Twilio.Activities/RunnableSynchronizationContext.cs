@@ -5,6 +5,10 @@ using System.Threading;
 namespace Twilio.Activities
 {
 
+    /// <summary>
+    /// Simple <see cref="SynchronizationContext"/> implementation that simply buffers callbacks to be executed when
+    /// Run is invoked manually.
+    /// </summary>
     class RunnableSynchronizationContext : SynchronizationContext
     {
 
