@@ -238,7 +238,7 @@ namespace Twilio.Activities
             if (Request["Bookmark"] != Gather.BookmarkName)
                 return null;
 
-            return Request["Digits"];
+            return Request["Digits"] ?? "";
         }
 
         /// <summary>

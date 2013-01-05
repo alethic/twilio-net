@@ -117,14 +117,18 @@ namespace Twilio.Activities
         /// <param name="doc"></param>
         void SaveToCookie(Guid instanceId, XDocument doc)
         {
-            // encode and write
             using (var stm = new MemoryStream())
             using (var gzp = new GZipStream(stm, CompressionMode.Compress, true))
             {
+                // write XML document to compressed stream
                 var wrt = XmlDictionaryWriter.CreateBinaryWriter(gzp);
                 doc.WriteTo(wrt);
                 wrt.Flush();
                 wrt.Close();
+
+                // check for length
+                if (stm.Length > 3000)
+                    throw new InstancePersistenceException("Workflow instance is too large to persist as a cookie.");
 
                 // create and set cookie
                 var cki = new HttpCookie(string.Format("WF_{0}", instanceId), Convert.ToBase64String(stm.ToArray()));
