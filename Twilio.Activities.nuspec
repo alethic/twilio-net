@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+    <metadata>
+        <id>Twilio.Activities</id>
+        <version>0.0.1</version>
+        <title>Twilio.Activities</title>
+        <authors>Jerome Haltom</authors>
+        <owners>Jerome Haltom</owners>
+        <licenseUrl>http://www.microsoft.com/en-us/openness/licenses.aspx#MRL</licenseUrl>
+        <projectUrl>https://github.com/wasabii/twilio-net</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Contains a set of Windows Workflow Foundation activities that can be integrated into a workflow to produce TwiML output.</description>
+        <releaseNotes />
+        <copyright>Copyright © 2013 Jerome Haltom</copyright>
+        <tags>twilio ivr workflow</tags>
+    </metadata>
+    <files>
+        <file src="Twilio.Activities\bin\Release\Twilio.Activities.dll" target="lib\net40" />
+    </files>
+</package>
