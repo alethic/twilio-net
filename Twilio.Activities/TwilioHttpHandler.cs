@@ -92,6 +92,15 @@ namespace Twilio.Activities
         protected abstract Activity InitializeActivity();
 
         /// <summary>
+        /// Gets the desired <see cref="PersistenceStorageMode"/> for persisting workflows between requests. Override
+        /// this property to alter the mode. By default ASP.Net session state is used for persisting workflows.
+        /// </summary>
+        protected virtual PersistenceStorageMode PersistenceStorageMode
+        {
+            get { return PersistenceStorageMode.Session; }
+        }
+
+        /// <summary>
         /// Gets the <see cref="Uri"/> to post back to and resume the workflow.
         /// </summary>
         public Uri SelfUrl { get; private set; }
@@ -140,7 +149,7 @@ namespace Twilio.Activities
             WfApplication = new WorkflowApplication(Activity);
             WfApplication.Extensions.Add<ITwilioContext>(() => this);
             WfApplication.SynchronizationContext = SynchronizationContext = new RunnableSynchronizationContext();
-            WfApplication.InstanceStore = new SessionInstanceStore(Context);
+            WfApplication.InstanceStore = new TwilioHttpInstanceStore(Context, PersistenceStorageMode);
             WfApplication.Aborted = OnAborted;
             WfApplication.Completed = OnCompleted;
             WfApplication.Idle = OnIdle;
