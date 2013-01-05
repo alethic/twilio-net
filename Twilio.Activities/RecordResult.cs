@@ -8,7 +8,7 @@ namespace Twilio.Activities
     /// Result of a Record operation.
     /// </summary>
     [DataContract]
-    public class RecordResult : Result
+    class RecordResult : Result
     {
 
         /// <summary>

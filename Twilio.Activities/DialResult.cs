@@ -5,7 +5,7 @@ namespace Twilio.Activities
 {
 
     [DataContract]
-    public class DialResult : Result
+    class DialResult : Result
     {
 
         /// <summary>
