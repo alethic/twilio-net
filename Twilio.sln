@@ -8,7 +8,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{3AC533
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Twilio.Activities", "..\..\..\..\Development\Twilio\Twilio.Activities\Twilio.Activities.csproj", "{98EC024C-6439-44B1-8B1E-29E457B2201F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Twilio.Activities", "Twilio.Activities\Twilio.Activities.csproj", "{98EC024C-6439-44B1-8B1E-29E457B2201F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
