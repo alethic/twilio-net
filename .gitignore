@@ -1,6 +1,11 @@
 /*.suo
+/TestResults
 /Twilio.Activities/bin
 /Twilio.Activities/obj
 /Twilio.Activities.Tests/bin
 /Twilio.Activities.Tests/obj
-/TestResults
+/Twilio.Activities.Examples/bin
+/Twilio.Activities.Examples/obj
+/Twilio.Activities.Examples.Site/*.user
+/Twilio.Activities.Examples.Site/bin
+/Twilio.Activities.Examples.Site/obj

@@ -100,6 +100,10 @@ namespace Twilio.Activities
             var duration = r["DialCallDuration"];
             var recordingUrl = r["RecordingUrl"];
 
+            // dial must have fallen through
+            if (status == null)
+                return;
+
             Status.Set(context,  ParseCallStatus(status));
             Sid.Set(context, sid);
             Duration.Set(context,duration != null ? TimeSpan.FromSeconds(int.Parse(duration)) : TimeSpan.Zero);

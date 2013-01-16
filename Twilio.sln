@@ -12,6 +12,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Twilio.Activities", "Twilio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Twilio.Activities.Tests", "Twilio.Activities.Tests\Twilio.Activities.Tests.csproj", "{3890B313-B468-4CF2-8F26-BE4DB6DD86D1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Twilio.Activities.Examples.Site", "Twilio.Activities.Examples.Site\Twilio.Activities.Examples.Site.csproj", "{2C128C79-0FBA-4D2C-B392-735639CF82B9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Twilio.Activities.Examples", "Twilio.Activities.Examples\Twilio.Activities.Examples.csproj", "{7BC8ED38-6E00-4ACB-99CC-64979499C346}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,6 +30,14 @@ Global
 		{3890B313-B468-4CF2-8F26-BE4DB6DD86D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3890B313-B468-4CF2-8F26-BE4DB6DD86D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3890B313-B468-4CF2-8F26-BE4DB6DD86D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C128C79-0FBA-4D2C-B392-735639CF82B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C128C79-0FBA-4D2C-B392-735639CF82B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C128C79-0FBA-4D2C-B392-735639CF82B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C128C79-0FBA-4D2C-B392-735639CF82B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7BC8ED38-6E00-4ACB-99CC-64979499C346}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7BC8ED38-6E00-4ACB-99CC-64979499C346}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7BC8ED38-6E00-4ACB-99CC-64979499C346}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7BC8ED38-6E00-4ACB-99CC-64979499C346}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
