@@ -42,20 +42,20 @@
           <ta:DialSip.Uris>
             <scg:List x:TypeArguments="ActivityFunc(ta:DialSipBodyUri)" Capacity="4">
               <ActivityFunc x:TypeArguments="ta:DialSipBodyUri">
-                <ta:DialSipUri Password="{x:Null}" UserName="{x:Null}" Uri="joe@joe.com" sap2010:WorkflowViewState.IdRef="DialSipUri_6" />
+                <ta:DialSipUri Password="{x:Null}" UserName="{x:Null}" Uri="jkjh" sap2010:WorkflowViewState.IdRef="DialSipUri_7" />
               </ActivityFunc>
             </scg:List>
           </ta:DialSip.Uris>
-          <sap2010:WorkflowViewState.IdRef>DialSip_6</sap2010:WorkflowViewState.IdRef>
+          <sap2010:WorkflowViewState.IdRef>DialSip_7</sap2010:WorkflowViewState.IdRef>
         </ta:DialSip>
       </ActivityFunc>
     </ta:Dial.Body>
-    <sads:DebugSymbol.Symbol>d1NDOlxVc2Vyc1x3YXNhYmlcRGV2ZWxvcG1lbnRcdHdpbGlvLW5ldFxUd2lsaW8uQWN0aXZpdGllcy5UZXN0c1xTYW1wbGVBY3Rpdml0eTEueGFtbAQmAzYNAgEBKQkyFgIBAi0RLYsBAgEDLUwtWQIBBA==</sads:DebugSymbol.Symbol>
+    <sads:DebugSymbol.Symbol>d1NDOlxVc2Vyc1x3YXNhYmlcRGV2ZWxvcG1lbnRcdHdpbGlvLW5ldFxUd2lsaW8uQWN0aXZpdGllcy5UZXN0c1xTYW1wbGVBY3Rpdml0eTEueGFtbAQmAzYNAgEBKQkyFgIBAi0RLYQBAgEDLUwtUgIBBA==</sads:DebugSymbol.Symbol>
   </ta:Dial>
   <sap2010:WorkflowViewState.ViewStateManager>
     <sap2010:ViewStateManager>
-      <sap2010:ViewStateData Id="DialSipUri_6" sap:VirtualizedContainerService.HintSize="200,26" />
-      <sap2010:ViewStateData Id="DialSip_6" sap:VirtualizedContainerService.HintSize="207,26" />
+      <sap2010:ViewStateData Id="DialSipUri_7" sap:VirtualizedContainerService.HintSize="200,26" />
+      <sap2010:ViewStateData Id="DialSip_7" sap:VirtualizedContainerService.HintSize="207,26" />
       <sap2010:ViewStateData Id="Dial_1" sap:VirtualizedContainerService.HintSize="221,87" />
       <sap2010:ViewStateData Id="Twilio.Activities.Tests.SampleActivity1_1" sap:VirtualizedContainerService.HintSize="261,167" />
     </sap2010:ViewStateManager>

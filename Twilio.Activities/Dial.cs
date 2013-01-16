@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Activities;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Xml.Linq;
 
@@ -9,8 +10,6 @@ namespace Twilio.Activities
     [Designer(typeof(DialDesigner))]
     public sealed class Dial : TwilioActivity
     {
-
-        internal static readonly string BookmarkName = "Twilio.Dial";
 
         public InArgument<TimeSpan?> Timeout { get; set; }
 
@@ -22,7 +21,7 @@ namespace Twilio.Activities
 
         public InArgument<bool?> Record { get; set; }
 
-        public ActivityFunc<DialBody> Body { get; set; }
+        public ActivityFunc<DialNoun> Noun { get; set; }
 
         /// <summary>
         /// The outcome of the dial attempt.
@@ -52,10 +51,10 @@ namespace Twilio.Activities
         protected override void Execute(NativeActivityContext context)
         {
             // obtain description
-            context.ScheduleFunc(Body, OnDescriptionCallback);
+            context.ScheduleFunc(Noun, OnDescriptionCallback);
         }
 
-        void OnDescriptionCallback(NativeActivityContext context, ActivityInstance completedInstance, DialBody body)
+        void OnDescriptionCallback(NativeActivityContext context, ActivityInstance completedInstance, DialNoun noun)
         {
             var twilio = context.GetExtension<ITwilioContext>();
             var timeout = Timeout.Get(context);
@@ -64,9 +63,12 @@ namespace Twilio.Activities
             var callerId = CallerId.Get(context);
             var record = Record.Get(context);
 
+            // name to resume
+            var bookmarkName = Guid.NewGuid().ToString();
+
             // dial element
             var element = new XElement("Dial",
-                new XAttribute("action", twilio.BookmarkSelfUri(BookmarkName)),
+                new XAttribute("action", twilio.BookmarkSelfUri(bookmarkName)),
                 timeout != null ? new XAttribute("timeout", ((TimeSpan)timeout).TotalSeconds) : null,
                 hangupOnStar != null ? new XAttribute("hangupOnStar", (bool)hangupOnStar ? "true" : "false") : null,
                 timeLimit != null ? new XAttribute("timeLimit", ((TimeSpan)timeLimit).TotalSeconds) : null,
@@ -74,14 +76,14 @@ namespace Twilio.Activities
                 record != null ? new XAttribute("record", (bool)record ? "true" : "false") : null);
 
             // write dial body
-            body.WriteTo(element);
+            noun.WriteTo(element);
 
             // write dial element and catch redirect
             twilio.Element.Add(element);
-            twilio.Element.Add(new XElement("Redirect", twilio.BookmarkSelfUri(BookmarkName)));
+            twilio.Element.Add(new XElement("Redirect", twilio.BookmarkSelfUri(bookmarkName)));
 
             // wait for post back
-            context.CreateBookmark(BookmarkName, OnDialResult);
+            context.CreateBookmark(bookmarkName, OnDialResult);
         }
 
         /// <summary>
@@ -92,11 +94,40 @@ namespace Twilio.Activities
         /// <param name="o"></param>
         void OnDialResult(NativeActivityContext context, Bookmark bookmark, object o)
         {
-            var r = (DialResult)o;
-            Status.Set(context, r.Status);
-            Sid.Set(context, r.Sid);
-            Duration.Set(context, r.Duration);
-            RecordingUrl.Set(context, r.RecordingUrl);
+            var r = (Dictionary<string,string>)o;
+            var status = r["DialCallStatus"];
+            var sid = r["DialCallSid"];
+            var duration = r["DialCallDuration"];
+            var recordingUrl = r["RecordingUrl"];
+
+            Status.Set(context,  ParseCallStatus(status));
+            Sid.Set(context, sid);
+            Duration.Set(context,duration != null ? TimeSpan.FromSeconds(int.Parse(duration)) : TimeSpan.Zero);
+            RecordingUrl.Set(context, recordingUrl != null ? new Uri(recordingUrl) : null);
+        }
+
+        /// <summary>
+        /// Parses a call status string into the proper type.
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        CallStatus ParseCallStatus(string s)
+        {
+            switch (s)
+            {
+                case "completed":
+                    return CallStatus.Completed;
+                case "busy":
+                    return CallStatus.Busy;
+                case "no-answer":
+                    return CallStatus.NoAnswer;
+                case "failed":
+                    return CallStatus.Failed;
+                case "canceled":
+                    return CallStatus.Canceled;
+                default:
+                    throw new FormatException();
+            }
         }
 
     }

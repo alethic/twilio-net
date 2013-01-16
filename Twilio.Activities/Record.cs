@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Activities;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Xml.Linq;
 
@@ -9,8 +10,6 @@ namespace Twilio.Activities
     [Designer(typeof(RecordDesigner))]
     public sealed class Record : TwilioActivity
     {
-
-        internal static readonly string BookmarkName = "Twilio.Record";
 
         public InArgument<TimeSpan?> Timeout { get; set; }
 
@@ -51,22 +50,24 @@ namespace Twilio.Activities
             var transcribe = Transcribe.Get(context);
             var playBeep = PlayBeep.Get(context);
 
+            // name to resume
+            var bookmarkName = Guid.NewGuid().ToString();
+
             // append record element
-            twilio.Element.Add(new XElement("Record",
-                new XAttribute("action", twilio.BookmarkSelfUri(BookmarkName)),
+            var element = new XElement("Record",
+                new XAttribute("action", twilio.BookmarkSelfUri(bookmarkName)),
                 timeout != null ? new XAttribute("timeout", ((TimeSpan)timeout).TotalSeconds) : null,
                 finishOnKey != null ? new XAttribute("finishOnKey", finishOnKey) : null,
                 maxLength != null ? new XAttribute("maxLength", ((TimeSpan)maxLength).TotalSeconds) : null,
                 transcribe != null ? new XAttribute("transcribe", (bool)transcribe ? "true" : "false") : null,
-                playBeep != null ? new XAttribute("playBeep", (bool)playBeep ? "true" : "false") : null));
+                playBeep != null ? new XAttribute("playBeep", (bool)playBeep ? "true" : "false") : null);
 
-            Wait(context);
-        }
+            // write dial element and catch redirect
+            twilio.Element.Add(element);
+            twilio.Element.Add(new XElement("Redirect", twilio.BookmarkSelfUri(bookmarkName)));
 
-        void Wait(NativeActivityContext context)
-        {
-            // wait for incoming recording
-            context.CreateBookmark(BookmarkName, OnRecordFinished);
+            // wait for post back
+            context.CreateBookmark(bookmarkName, OnRecordFinished);
         }
 
         /// <summary>
@@ -77,10 +78,14 @@ namespace Twilio.Activities
         /// <param name="o"></param>
         void OnRecordFinished(NativeActivityContext context, Bookmark bookmark, object o)
         {
-            var r = (RecordResult)o;
-            RecordingUrl.Set(context, r.RecordingUrl);
-            Duration.Set(context, r.Duration);
-            Digits.Set(context, r.Digits);
+            var r = (Dictionary<string, string>)o;
+            var recordingUrl = r["RecordingUrl"];
+            var recordingDuration = r["RecordingDuration"];
+            var digits = r["Digits"];
+
+            RecordingUrl.Set(context, new Uri(recordingUrl));
+            Duration.Set(context, recordingDuration != null ? TimeSpan.FromSeconds(int.Parse(recordingDuration)) : TimeSpan.Zero);
+            Digits.Set(context, digits);
         }
 
     }

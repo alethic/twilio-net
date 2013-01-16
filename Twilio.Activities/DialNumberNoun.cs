@@ -3,7 +3,7 @@
 namespace Twilio.Activities
 {
 
-    public class DialNumberBody : DialBody
+    public class DialNumberNoun : DialNoun
     {
 
         public string Number { get; set; }

@@ -6,21 +6,21 @@ namespace Twilio.Activities
 {
 
     [Designer(typeof(DialSipDesigner))]
-    public class DialSip : DialBodyActivity
+    public class DialSip : DialNounActivity
     {
 
         public DialSip()
         {
-            Uris = new List<ActivityFunc<DialSipBodyUri>>();
-            Enumerator = new Variable<IEnumerator<ActivityFunc<DialSipBodyUri>>>();
-            UriList = new Variable<List<DialSipBodyUri>>();
+            Uris = new List<ActivityFunc<DialSipUriNoun>>();
+            Enumerator = new Variable<IEnumerator<ActivityFunc<DialSipUriNoun>>>();
+            UriList = new Variable<List<DialSipUriNoun>>();
         }
 
-        public ICollection<ActivityFunc<DialSipBodyUri>> Uris { get; set; }
+        public ICollection<ActivityFunc<DialSipUriNoun>> Uris { get; set; }
 
-        Variable<IEnumerator<ActivityFunc<DialSipBodyUri>>> Enumerator { get; set; }
+        Variable<IEnumerator<ActivityFunc<DialSipUriNoun>>> Enumerator { get; set; }
 
-        Variable<List<DialSipBodyUri>> UriList { get; set; }
+        Variable<List<DialSipUriNoun>> UriList { get; set; }
 
         protected override void CacheMetadata(NativeActivityMetadata metadata)
         {
@@ -32,7 +32,7 @@ namespace Twilio.Activities
         protected override void Execute(NativeActivityContext context)
         {
             // initialize lsit
-            UriList.Set(context, new List<DialSipBodyUri>());
+            UriList.Set(context, new List<DialSipUriNoun>());
 
             // begin evaluating funcs
             Enumerator.Set(context, Uris.GetEnumerator());
@@ -53,14 +53,14 @@ namespace Twilio.Activities
                 context.ScheduleFunc(i.Current, UriCallback);
             else
             {
-                Result.Set(context, new DialSipBody()
+                Result.Set(context, new DialSipNoun()
                 {
                     Uris = UriList.Get(context),
                 });
             }
         }
 
-        void UriCallback(NativeActivityContext context, ActivityInstance activityInstance, DialSipBodyUri uri)
+        void UriCallback(NativeActivityContext context, ActivityInstance activityInstance, DialSipUriNoun uri)
         {
             // append resulting uri
             UriList.Get(context).Add(uri);

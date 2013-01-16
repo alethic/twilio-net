@@ -5,7 +5,7 @@ namespace Twilio.Activities
 {
 
     [Designer(typeof(DialSipUriDesigner))]
-    public class DialSipUri : NativeActivity<DialSipBodyUri>
+    public class DialSipUri : NativeActivity<DialSipUriNoun>
     {
 
         public InArgument<string> Uri { get; set; }
@@ -16,7 +16,7 @@ namespace Twilio.Activities
 
         protected override void Execute(NativeActivityContext context)
         {
-            Result.Set(context, new DialSipBodyUri()
+            Result.Set(context, new DialSipUriNoun()
             {
                 Uri = Uri.Get(context),
                 UserName = UserName.Get(context),

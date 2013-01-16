@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Activities;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -164,20 +165,13 @@ namespace Twilio.Activities
             // configure initial self uri
             SelfUrl = AppendQueryToUri(new Uri(BaseUri, Path.GetFileName(Request.Path)), "InstanceId", WfApplication.Id.ToString());
 
-            // if we've been passed a gather result, resume
-            var gatherResult = GetGatherResult();
-            if (gatherResult != null)
-                WfApplication.BeginResumeBookmark(Gather.BookmarkName, gatherResult, i => WfApplication.EndResumeBookmark(i), null);
-
-            // if we've been passed a record result, resume
-            var recordResult = GetRecordResult();
-            if (recordResult != null)
-                WfApplication.BeginResumeBookmark(Record.BookmarkName, recordResult, i => WfApplication.EndResumeBookmark(i), null);
-
-            // if we've been passed a dial result, resume
-            var dialResult = GetDialResult();
-            if (dialResult != null)
-                WfApplication.BeginResumeBookmark(Dial.BookmarkName, dialResult, i => WfApplication.EndResumeBookmark(i), null);
+            // postback to resume a bookmark
+            if (Request["Bookmark"] != null)
+            {
+                var result = GetBookmarkResult();
+                if (result != null)
+                    WfApplication.BeginResumeBookmark(Request["Bookmark"], result, i => WfApplication.EndResumeBookmark(i), null);
+            }
 
             // begin running the application
             WfApplication.BeginRun(i => WfApplication.EndRun(i), null);
@@ -229,60 +223,14 @@ namespace Twilio.Activities
             SynchronizationContext.Complete();
         }
 
-        /// <summary>
-        /// Gets the result of a Gather operation, if available.
-        /// </summary>
-        /// <returns></returns>
-        string GetGatherResult()
+        Dictionary<string, string> GetBookmarkResult()
         {
-            if (Request["Bookmark"] != Gather.BookmarkName)
-                return null;
+            // extract all query arguments if bookmark specified
+            if (Request["Bookmark"] != null)
+                return Request.QueryString.AllKeys
+                    .ToDictionary(i => i, i => Request.QueryString[i]);
 
-            return Request["Digits"] ?? "";
-        }
-
-        /// <summary>
-        /// Gets the result of a Record operation, if available.
-        /// </summary>
-        /// <returns></returns>
-        RecordResult GetRecordResult()
-        {
-            if (Request["Bookmark"] != Record.BookmarkName)
-                return null;
-
-            var recordingUrl = Request["RecordingUrl"];
-            var recordingDuration = Request["RecordingDuration"];
-            var digits = Request["Digits"];
-
-            return new RecordResult()
-            {
-                RecordingUrl = new Uri(recordingUrl),
-                Duration = recordingDuration != null ? TimeSpan.FromSeconds(int.Parse(recordingDuration)) : TimeSpan.Zero,
-                Digits = digits,
-            };
-        }
-
-        /// <summary>
-        /// Gets the result of a Dial operation, if available.
-        /// </summary>
-        /// <returns></returns>
-        DialResult GetDialResult()
-        {
-            if (Request["Bookmark"] != Dial.BookmarkName)
-                return null;
-
-            var status = Request["DialCallStatus"];
-            var sid = Request["DialCallSid"];
-            var duration = Request["DialCallDuration"];
-            var recordingUrl = Request["RecordingUrl"];
-
-            return new DialResult()
-            {
-                Status = ParseCallStatus(status),
-                Sid = sid,
-                Duration = duration != null ? TimeSpan.FromSeconds(int.Parse(duration)) : TimeSpan.Zero,
-                RecordingUrl = recordingUrl != null ? new Uri(recordingUrl) : null,
-            };
+            return null;
         }
 
         /// <summary>

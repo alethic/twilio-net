@@ -15,7 +15,7 @@ namespace Twilio.Activities.Tests
         {
             var c = CreateContext(new Dial()
             {
-                Body = new ActivityFunc<DialBody>()
+                Noun = new ActivityFunc<DialNoun>()
                 {
                     Handler = new DialNumber()
                     {
@@ -37,13 +37,13 @@ namespace Twilio.Activities.Tests
         {
             var c = CreateContext(new Dial()
             {
-                Body = new ActivityFunc<DialBody>()
+                Noun = new ActivityFunc<DialNoun>()
                 {
                     Handler = new DialSip()
                     {
-                        Uris = new List<ActivityFunc<DialSipBodyUri>>()
+                        Uris = new List<ActivityFunc<DialSipUriNoun>>()
                         {
-                            new ActivityFunc<DialSipBodyUri>()
+                            new ActivityFunc<DialSipUriNoun>()
                             {
                                 Handler = new DialSipUri()
                                 {
@@ -51,7 +51,7 @@ namespace Twilio.Activities.Tests
                                     UserName = "test1",
                                 },
                             },
-                            new ActivityFunc<DialSipBodyUri>()
+                            new ActivityFunc<DialSipUriNoun>()
                             {
                                 Handler = new DialSipUri()
                                 {
@@ -63,6 +63,19 @@ namespace Twilio.Activities.Tests
                     },
                 },
             });
+
+            // cannot work without bookmarks
+            //    Assert.Fail();
+
+            c.Invoker.Invoke();
+
+            Assert.AreEqual("<Response><Dial>+15555555555</Dial></Response>", c.Response.ToString(SaveOptions.DisableFormatting));
+        }
+
+        [TestMethod]
+        public void DialSipTest2()
+        {
+            var c = CreateContext(new SampleActivity1());
 
             // cannot work without bookmarks
             //    Assert.Fail();

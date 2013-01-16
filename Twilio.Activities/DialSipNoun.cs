@@ -4,10 +4,10 @@ using System.Xml.Linq;
 namespace Twilio.Activities
 {
 
-    public class DialSipBody : DialBody
+    public class DialSipNoun : DialNoun
     {
 
-        public IEnumerable<DialSipBodyUri> Uris { get; set; }
+        public IEnumerable<DialSipUriNoun> Uris { get; set; }
 
         public override void WriteTo(XElement element)
         {

@@ -82,7 +82,6 @@
     <Compile Include="DialDesigner.xaml.cs">
       <DependentUpon>DialDesigner.xaml</DependentUpon>
     </Compile>
-    <Compile Include="DialResult.cs" />
     <Compile Include="Dial.cs" />
     <Compile Include="CallStatus.cs" />
     <Compile Include="GatherDesigner.xaml.cs">

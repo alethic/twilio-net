@@ -19,7 +19,7 @@ namespace Twilio.Activities
             switch ((string)cb.SelectedItem)
             {
                 case "Number":
-                    ModelItem.Properties["Body"].SetValue(new ActivityFunc<DialBody>()
+                    ModelItem.Properties["Body"].SetValue(new ActivityFunc<DialNoun>()
                     {
                         Handler = new DialNumber()
                         {
@@ -28,13 +28,13 @@ namespace Twilio.Activities
                     });
                     break;
                 case "Sip":
-                    ModelItem.Properties["Body"].SetValue(new ActivityFunc<DialBody>()
+                    ModelItem.Properties["Body"].SetValue(new ActivityFunc<DialNoun>()
                     {
                         Handler = new DialSip()
                         {
                             Uris =
                             {
-                                new ActivityFunc<DialSipBodyUri>()
+                                new ActivityFunc<DialSipUriNoun>()
                                 {
                                     Handler =  new DialSipUri()
                                     {
@@ -52,7 +52,7 @@ namespace Twilio.Activities
         {
             var cb = (ComboBox)sender;
             var body = ModelItem.Properties["Body"].Value;
-            if (body.ItemType == typeof(ActivityFunc<DialBody>))
+            if (body.ItemType == typeof(ActivityFunc<DialNoun>))
                 if (body.Properties["Handler"].Value.ItemType == typeof(DialNumber))
                     cb.SelectedItem = "Number";
                 else if (body.Properties["Handler"].Value.ItemType == typeof(DialSip))

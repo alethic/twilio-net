@@ -1,7 +1,7 @@
 ﻿namespace Twilio.Activities
 {
 
-    public class DialSipBodyUri
+    public class DialSipUriNoun
     {
 
         public string Uri { get; set; }

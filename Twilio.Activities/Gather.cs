@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Activities;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Xml.Linq;
 
@@ -9,8 +10,6 @@ namespace Twilio.Activities
     [Designer(typeof(GatherDesigner))]
     public sealed class Gather : TwilioActivity
     {
-
-        internal static readonly string BookmarkName = "Twilio.Gather";
 
         public InArgument<TimeSpan?> Timeout { get; set; }
 
@@ -28,6 +27,7 @@ namespace Twilio.Activities
         }
 
         XElement element;
+        string bookmarkName;
 
         protected override void Execute(NativeActivityContext context)
         {
@@ -36,12 +36,19 @@ namespace Twilio.Activities
             var finishOnKey = FinishOnKey.Get(context);
             var numDigits = NumDigits.Get(context);
 
+            // name to resume
+            bookmarkName = Guid.NewGuid().ToString();
+
             // append gather element
-            twilio.Element.Add(element = new XElement("Gather",
-                new XAttribute("action", twilio.BookmarkSelfUri(BookmarkName)),
+            element = new XElement("Gather",
+                new XAttribute("action", twilio.BookmarkSelfUri(bookmarkName)),
                 timeout != null ? new XAttribute("timeout", ((TimeSpan)timeout).TotalSeconds) : null,
                 finishOnKey != null ? new XAttribute("finishOnKey", finishOnKey) : null,
-                numDigits != null ? new XAttribute("numDigits", numDigits) : null));
+                numDigits != null ? new XAttribute("numDigits", numDigits) : null);
+
+            // write dial element and catch redirect
+            twilio.Element.Add(element);
+            twilio.Element.Add(new XElement("Redirect", twilio.BookmarkSelfUri(bookmarkName)));
 
             if (Body != null)
             {
@@ -74,7 +81,7 @@ namespace Twilio.Activities
         void Wait(NativeActivityContext context)
         {
             // wait for incoming digits
-            context.CreateBookmark(BookmarkName, OnGatherFinished);
+            context.CreateBookmark(bookmarkName, OnGatherFinished);
         }
 
         /// <summary>
@@ -85,7 +92,10 @@ namespace Twilio.Activities
         /// <param name="o"></param>
         void OnGatherFinished(NativeActivityContext context, Bookmark bookmark, object o)
         {
-            Digits.Set(context, ((string)o));
+            var r = (Dictionary<string, string>)o;
+            var digits = r["Digits"] ?? "";
+
+            Digits.Set(context, digits);
         }
 
     }
