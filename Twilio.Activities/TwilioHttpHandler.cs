@@ -99,7 +99,7 @@ namespace Twilio.Activities
         /// </summary>
         protected virtual PersistenceStorageMode PersistenceStorageMode
         {
-            get { return PersistenceStorageMode.Session; }
+            get { return PersistenceStorageMode.Cookies; }
         }
 
         /// <summary>
