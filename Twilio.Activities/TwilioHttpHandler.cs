@@ -198,10 +198,8 @@ namespace Twilio.Activities
 
         void OnIdle(WorkflowApplicationIdleEventArgs args)
         {
-            // we need to resume this bookmark on our next post
-            var bookmark = args.Bookmarks.FirstOrDefault(i => i.BookmarkName.StartsWith("Twilio."));
-            if (bookmark != null)
-                SelfUrl = AppendQueryToUri(SelfUrl, "Bookmark", bookmark.BookmarkName);
+            // redirect to ourselves, in case no idle activity has already done it
+            TwilioResponse.Add(new XElement("Redirect", SelfUrl));
         }
 
         UnhandledExceptionAction OnUnhandledException(WorkflowApplicationUnhandledExceptionEventArgs args)
@@ -216,9 +214,6 @@ namespace Twilio.Activities
 
         void OnUnloaded(WorkflowApplicationEventArgs args)
         {
-            // redirect back to self
-            TwilioResponse.Add(new XElement("Redirect", SelfUrl));
-
             // end event loop
             SynchronizationContext.Complete();
         }
