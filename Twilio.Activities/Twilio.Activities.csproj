@@ -54,6 +54,22 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DialBodyActivity.cs" />
+    <Compile Include="DialNumber.cs" />
+    <Compile Include="DialNumberBody.cs" />
+    <Compile Include="DialNumberDesigner.xaml.cs">
+      <DependentUpon>DialNumberDesigner.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DialSipBodyUri.cs" />
+    <Compile Include="DialBody.cs" />
+    <Compile Include="DialSipDesigner.xaml.cs">
+      <DependentUpon>DialSipDesigner.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DialSipUri.cs" />
+    <Compile Include="DialSipUriDesigner.xaml.cs">
+      <DependentUpon>DialSipUriDesigner.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Enqueue.cs" />
     <Compile Include="PersistenceStorageMode.cs" />
     <Compile Include="RecordResult.cs" />
     <Compile Include="Record.cs" />
@@ -81,6 +97,8 @@
     <Compile Include="SayDesigner.xaml.cs">
       <DependentUpon>SayDesigner.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DialSip.cs" />
+    <Compile Include="DialSipBody.cs" />
     <Compile Include="TwilioHttpInstanceStore.cs" />
     <Compile Include="Gather.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -93,6 +111,18 @@
     <Compile Include="Voice.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="DialNumberDesigner.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="DialSipDesigner.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="DialSipUriDesigner.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="RecordDesigner.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

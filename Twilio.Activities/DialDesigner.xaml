@@ -8,23 +8,24 @@
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
     ExpandState="True">
     <sap:ActivityDesigner.Resources>
-        <sapc:ArgumentToExpressionConverter
-            x:Key="ArgumentToExpressionConverter" />
         <DataTemplate
             x:Key="Collapsed">
-            <TextBlock>
-                <TextBlock.Text>
-                    <MultiBinding
-                        StringFormat="Dial {0}">
-                        <Binding
-                            Path="ModelItem.Number" />
-                    </MultiBinding>
-                </TextBlock.Text>
-            </TextBlock>
+            
         </DataTemplate>
         <DataTemplate
             x:Key="Expanded">
-            <StackPanel>
+            <StackPanel
+                Orientation="Vertical">
+                <ComboBox
+                    x:Name="BodyTypeComboBox"
+                    Margin="0,0,0,4"
+                    SelectionChanged="BodyTypeComboBox_SelectionChanged"
+                    DataContextChanged="BodyTypeComboBox_DataContextChanged">
+                    <sys:String>Number</sys:String>
+                    <sys:String>Sip</sys:String>
+                </ComboBox>
+                <sap:WorkflowItemPresenter 
+                    Item="{Binding ModelItem.Body.Handler}" />
             </StackPanel>
         </DataTemplate>
         <Style
@@ -32,7 +33,7 @@
             TargetType="{x:Type ContentPresenter}">
             <Setter
                 Property="ContentTemplate"
-                Value="{DynamicResource Collapsed}" />
+                Value="{DynamicResource Expanded}" />
             <Style.Triggers>
                 <DataTrigger
                     Binding="{Binding ShowExpanded}"

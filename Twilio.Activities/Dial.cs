@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Activities;
+using System.ComponentModel;
 using System.Xml.Linq;
 
 namespace Twilio.Activities
 {
 
+    [Designer(typeof(DialDesigner))]
     public sealed class Dial : TwilioActivity
     {
 
@@ -20,7 +22,7 @@ namespace Twilio.Activities
 
         public InArgument<bool?> Record { get; set; }
 
-        public InArgument<string> Number { get; set; }
+        public ActivityFunc<DialBody> Body { get; set; }
 
         /// <summary>
         /// The outcome of the dial attempt.
@@ -47,9 +49,13 @@ namespace Twilio.Activities
             get { return true; }
         }
 
-        XElement element;
-
         protected override void Execute(NativeActivityContext context)
+        {
+            // obtain description
+            context.ScheduleFunc(Body, OnDescriptionCallback);
+        }
+
+        void OnDescriptionCallback(NativeActivityContext context, ActivityInstance completedInstance, DialBody body)
         {
             var twilio = context.GetExtension<ITwilioContext>();
             var timeout = Timeout.Get(context);
@@ -57,24 +63,24 @@ namespace Twilio.Activities
             var timeLimit = TimeLimit.Get(context);
             var callerId = CallerId.Get(context);
             var record = Record.Get(context);
-            var number = Number.Get(context);
 
-            // append gather element
-            twilio.Element.Add(element = new XElement("Dial",
+            // dial element
+            var element = new XElement("Dial",
                 new XAttribute("action", twilio.BookmarkSelfUri(BookmarkName)),
                 timeout != null ? new XAttribute("timeout", ((TimeSpan)timeout).TotalSeconds) : null,
                 hangupOnStar != null ? new XAttribute("hangupOnStar", (bool)hangupOnStar ? "true" : "false") : null,
                 timeLimit != null ? new XAttribute("timeLimit", ((TimeSpan)timeLimit).TotalSeconds) : null,
                 callerId != null ? new XAttribute("callerId", callerId) : null,
-                record != null ? new XAttribute("record", (bool)record ? "true" : "false") : null,
-                number != null ? new XElement("Number", number) : null));
+                record != null ? new XAttribute("record", (bool)record ? "true" : "false") : null);
 
-            Wait(context);
-        }
+            // write dial body
+            body.WriteTo(element);
 
-        void Wait(NativeActivityContext context)
-        {
-            // wait for incoming digits
+            // write dial element and catch redirect
+            twilio.Element.Add(element);
+            twilio.Element.Add(new XElement("Redirect", twilio.BookmarkSelfUri(BookmarkName)));
+
+            // wait for post back
             context.CreateBookmark(BookmarkName, OnDialResult);
         }
 
