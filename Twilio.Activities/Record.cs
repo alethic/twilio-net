@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Activities;
-using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Xml.Linq;
 
@@ -78,7 +78,7 @@ namespace Twilio.Activities
         /// <param name="o"></param>
         void OnRecordFinished(NativeActivityContext context, Bookmark bookmark, object o)
         {
-            var r = (Dictionary<string, string>)o;
+            var r = (NameValueCollection)o;
             var recordingUrl = r["RecordingUrl"];
             var recordingDuration = r["RecordingDuration"];
             var digits = r["Digits"];

@@ -19,31 +19,47 @@ namespace Twilio.Activities
             switch ((string)cb.SelectedItem)
             {
                 case "Number":
-                    ModelItem.Properties["Body"].SetValue(new ActivityFunc<DialNoun>()
                     {
-                        Handler = new DialNumber()
-                        {
+                        var dialNounDelegateArg = new DelegateOutArgument<DialNoun>();
+                        var dialNounArg = new OutArgument<DialNoun>(dialNounDelegateArg);
 
-                        },
-                    });
+                        // create func
+                        var dialNounFunc = new ActivityFunc<DialNoun>();
+                        var dialNounFuncModelItem = ModelItem.Properties["Noun"].SetValue(dialNounFunc);
+                        dialNounFuncModelItem.Properties["Result"].SetValue(dialNounDelegateArg);
+
+                        // create dial activity
+                        var dialNumber = new DialNumber();
+                        var dialNumberModelItem = dialNounFuncModelItem.Properties["Handler"].SetValue(dialNumber);
+                        dialNumberModelItem.Properties["Result"].SetValue(dialNounArg);
+                    }
                     break;
                 case "Sip":
-                    ModelItem.Properties["Body"].SetValue(new ActivityFunc<DialNoun>()
                     {
-                        Handler = new DialSip()
-                        {
-                            Uris =
-                            {
-                                new ActivityFunc<DialSipUriNoun>()
-                                {
-                                    Handler =  new DialSipUri()
-                                    {
-                                    
-                                    },
-                                },
-                            },
-                        },
-                    });
+                        var dialNounDelegateArg = new DelegateOutArgument<DialNoun>();
+                        var dialNounArg = new OutArgument<DialNoun>(dialNounDelegateArg);
+
+                        // create func
+                        var dialNounFunc = new ActivityFunc<DialNoun>();
+                        var dialNounFuncModelItem = ModelItem.Properties["Noun"].SetValue(dialNounFunc);
+                        dialNounFuncModelItem.Properties["Result"].SetValue(dialNounDelegateArg);
+
+                        // create dial activity
+                        var dialSip = new DialSip();
+                        var dialSipModelItem = dialNounFuncModelItem.Properties["Handler"].SetValue(dialSip);
+                        dialSipModelItem.Properties["Result"].SetValue(dialNounArg);
+
+                        var dialSipUriNounDelegateArg = new DelegateOutArgument<DialSipUriNoun>();
+                        var dialSipUriNounArg = new OutArgument<DialSipUriNoun>(dialSipUriNounDelegateArg);
+
+                        var dialSipUriFunc = new ActivityFunc<DialSipUriNoun>();
+                        var dialSipUriFuncModelItem = dialSipModelItem.Properties["Uris"].Collection.Add(dialSipUriFunc);
+                        dialSipUriFuncModelItem.Properties["Result"].SetValue(dialSipUriNounDelegateArg);
+
+                        var dialSipUri = new DialSipUri();
+                        var dialSipUriModelItem = dialSipUriFuncModelItem.Properties["Handler"].SetValue(dialSipUri);
+                        dialSipUriModelItem.Properties["Result"].SetValue(dialSipUriNounArg);
+                    }
                     break;
             }
         }
@@ -51,7 +67,7 @@ namespace Twilio.Activities
         void BodyTypeComboBox_DataContextChanged(object sender, DependencyPropertyChangedEventArgs args)
         {
             var cb = (ComboBox)sender;
-            var body = ModelItem.Properties["Body"].Value;
+            var body = ModelItem.Properties["Noun"].Value;
             if (body.ItemType == typeof(ActivityFunc<DialNoun>))
                 if (body.Properties["Handler"].Value.ItemType == typeof(DialNumber))
                     cb.SelectedItem = "Number";

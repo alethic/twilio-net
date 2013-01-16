@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Activities;
-using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Xml.Linq;
 
@@ -94,7 +94,7 @@ namespace Twilio.Activities
         /// <param name="o"></param>
         void OnDialResult(NativeActivityContext context, Bookmark bookmark, object o)
         {
-            var r = (Dictionary<string,string>)o;
+            var r = (NameValueCollection)o;
             var status = r["DialCallStatus"];
             var sid = r["DialCallSid"];
             var duration = r["DialCallDuration"];

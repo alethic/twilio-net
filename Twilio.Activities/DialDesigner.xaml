@@ -25,7 +25,7 @@
                     <sys:String>Sip</sys:String>
                 </ComboBox>
                 <sap:WorkflowItemPresenter 
-                    Item="{Binding ModelItem.Body.Handler}" />
+                    Item="{Binding ModelItem.Noun.Handler}" />
             </StackPanel>
         </DataTemplate>
         <Style

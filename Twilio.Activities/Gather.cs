@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Activities;
-using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Xml.Linq;
 
@@ -34,6 +34,13 @@ namespace Twilio.Activities
         protected override bool CanInduceIdle
         {
             get { return true; }
+        }
+
+        protected override void CacheMetadata(NativeActivityMetadata metadata)
+        {
+            base.CacheMetadata(metadata);
+            metadata.AddImplementationVariable(Element);
+            metadata.AddImplementationVariable(BookmarkName);
         }
 
         protected override void Execute(NativeActivityContext context)
@@ -105,7 +112,7 @@ namespace Twilio.Activities
         /// <param name="o"></param>
         void OnGatherFinished(NativeActivityContext context, Bookmark bookmark, object o)
         {
-            var r = (Dictionary<string, string>)o;
+            var r = (NameValueCollection)o;
             var digits = r["Digits"] ?? "";
 
             Digits.Set(context, digits);

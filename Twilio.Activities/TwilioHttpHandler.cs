@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Activities;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -218,12 +219,11 @@ namespace Twilio.Activities
             SynchronizationContext.Complete();
         }
 
-        Dictionary<string, string> GetBookmarkResult()
+        NameValueCollection GetBookmarkResult()
         {
             // extract all query arguments if bookmark specified
             if (Request["Bookmark"] != null)
-                return Request.QueryString.AllKeys
-                    .ToDictionary(i => i, i => Request.QueryString[i]);
+                return Request.QueryString;
 
             return null;
         }
