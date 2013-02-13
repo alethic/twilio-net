@@ -2,19 +2,17 @@
 using System.Activities.DurableInstancing;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Runtime.DurableInstancing;
 using System.Runtime.Serialization;
 using System.Threading;
 using System.Web;
-using System.Xml;
 using System.Xml.Linq;
 
 namespace Twilio.Activities
 {
 
-    class TwilioHttpInstanceStore : InstanceStore
+    public abstract class TwilioHttpInstanceStore : InstanceStore
     {
 
         class CompletedAsyncResult<T> : IAsyncResult
@@ -65,26 +63,29 @@ namespace Twilio.Activities
         }
 
         /// <summary>
-        /// Maximum byte size of cookies.
+        /// Initializes a new instance.
         /// </summary>
-        const int COOKIE_SIZE = 2048;
-
-        HttpContext httpContext;
-        PersistenceStorageMode storageMode;
-        Guid ownerInstanceId;
-
-        public TwilioHttpInstanceStore(HttpContext httpContext, PersistenceStorageMode storageMode)
-            : this(httpContext, storageMode, Guid.NewGuid())
+        /// <param name="httpContext"></param>
+        internal TwilioHttpInstanceStore(HttpContext httpContext)
+            : this(httpContext, Guid.NewGuid())
         {
 
         }
 
-        public TwilioHttpInstanceStore(HttpContext httpContext, PersistenceStorageMode storageMode, Guid ownerInstanceId)
+        /// <summary>
+        /// Initializes a new instance.
+        /// </summary>
+        /// <param name="httpContext"></param>
+        /// <param name="ownerInstanceId"></param>
+        internal TwilioHttpInstanceStore(HttpContext httpContext, Guid ownerInstanceId)
         {
-            this.httpContext = httpContext;
-            this.storageMode = storageMode;
-            this.ownerInstanceId = ownerInstanceId;
+            HttpContext = httpContext;
+            OwnerInstanceId = ownerInstanceId;
         }
+
+        protected HttpContext HttpContext { get; private set; }
+
+        protected Guid OwnerInstanceId { get; private set; }
 
         protected override bool TryCommand(InstancePersistenceContext context, InstancePersistenceCommand command, TimeSpan timeout)
         {
@@ -94,7 +95,7 @@ namespace Twilio.Activities
         protected override IAsyncResult BeginTryCommand(InstancePersistenceContext context, InstancePersistenceCommand command, TimeSpan timeout, AsyncCallback callback, object state)
         {
             if (command is CreateWorkflowOwnerCommand)
-                context.BindInstanceOwner(ownerInstanceId, Guid.NewGuid());
+                context.BindInstanceOwner(OwnerInstanceId, Guid.NewGuid());
             else if (command is SaveWorkflowCommand)
             {
                 var saveCommand = (SaveWorkflowCommand)command;
@@ -116,146 +117,18 @@ namespace Twilio.Activities
         }
 
         /// <summary>
-        /// Saves the serialized state document to a cookie.
-        /// </summary>
-        /// <param name="instanceId"></param>
-        /// <param name="doc"></param>
-        void SaveToCookie(Guid instanceId, XDocument doc)
-        {
-            // expire all existing related cookies
-            for (int i = 0; i < 8; i++)
-            {
-                var cki = httpContext.Request.Cookies[string.Format("WF_{0}_p{1}", instanceId, i)];
-                if (cki != null)
-                {
-                    cki.Expires = DateTime.Now.AddYears(-1);
-                    httpContext.Response.SetCookie(cki);
-                }
-            }
-
-            using (var stm = new MemoryStream())
-            {
-                // write XML document to compressed stream
-                using (var gzp = new GZipStream(stm, CompressionMode.Compress, true))
-                using (var wrt = XmlDictionaryWriter.CreateTextWriter(gzp))
-                    doc.Root.WriteTo(wrt);
-
-                // dump bytes
-                var dat = stm.ToArray();
-
-                // set cookies for data chunks
-                for (int i = 0; i * COOKIE_SIZE < dat.Length; i++)
-                {
-                    var cki = new HttpCookie(string.Format("WF_{0}_p{1}", instanceId, i));
-                    cki.Value = Convert.ToBase64String(dat, i * COOKIE_SIZE, Math.Min(COOKIE_SIZE, dat.Length - (i * COOKIE_SIZE)));
-                    cki.Expires = DateTime.Now.AddMinutes(10);
-                    httpContext.Response.SetCookie(cki);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Loads the serialized state document from a cookie.
-        /// </summary>
-        /// <param name="instanceId"></param>
-        /// <returns></returns>
-        XDocument LoadFromCookie(Guid instanceId)
-        {
-            using (var dat = new MemoryStream())
-            {
-                // load all available cookie data
-                for (int i = 0; i < 8; i++)
-                {
-                    var cki = httpContext.Request.Cookies[string.Format("WF_{0}_p{1}", instanceId, i)];
-                    if (cki == null || cki.Value == null)
-                        break;
-
-                    // append contents of cookie to data
-                    var buf = Convert.FromBase64String(cki.Value);
-                    dat.Write(buf, 0, buf.Length);
-                }
-
-                // check whether we have some data
-                dat.Position = 0;
-                if (dat.Length < 8)
-                    throw new InstancePersistenceException("Not enough data loaded from cookies.");
-
-                // decode and read
-                using (var gzp = new GZipStream(dat, CompressionMode.Decompress, true))
-                using (var rdr = XmlDictionaryReader.CreateTextReader(gzp, XmlDictionaryReaderQuotas.Max))
-                {
-                    rdr.MoveToContent();
-
-                    // read in elements and wrap with new document
-                    var doc = new XDocument(XElement.ReadFrom(rdr));
-                    return doc;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Saves the serialized state document to the session.
-        /// </summary>
-        /// <param name="instanceId"></param>
-        /// <param name="doc"></param>
-        void SaveToSession(Guid instanceId, XDocument doc)
-        {
-            // store state in session
-            httpContext.Session[string.Format("WF_{0}", instanceId)] = doc;
-        }
-
-        /// <summary>
-        /// Loads the serialized state document from the session.
-        /// </summary>
-        /// <param name="instanceId"></param>
-        /// <returns></returns>
-        XDocument LoadFromSession(Guid instanceId)
-        {
-            // resolve cookie data for workflow instance
-            var doc = (XDocument)httpContext.Session[string.Format("WF_{0}", instanceId)];
-            if (doc == null)
-                throw new InstancePersistenceException("Could not load workflow instance from session.");
-
-            return doc;
-        }
-
-        /// <summary>
         /// Loads the serialized state document using the selected storage mode.
         /// </summary>
         /// <param name="instanceId"></param>
         /// <returns></returns>
-        XDocument LoadFromContext(Guid instanceId)
-        {
-            switch (storageMode)
-            {
-                case PersistenceStorageMode.Session:
-                    return LoadFromSession(instanceId);
-                case PersistenceStorageMode.Cookies:
-                    return LoadFromCookie(instanceId);
-                default:
-                    throw new InstancePersistenceException("Unknown storage mode.");
-            }
-        }
+        protected abstract XDocument LoadFromContext(Guid instanceId);
 
         /// <summary>
         /// Saves the serialized state document using the selected storage mode.
         /// </summary>
         /// <param name="instanceId"></param>
         /// <param name="doc"></param>
-        void SaveToContext(Guid instanceId, XDocument doc)
-        {
-            switch (storageMode)
-            {
-                case PersistenceStorageMode.Session:
-                    SaveToSession(instanceId, doc);
-                    break;
-                case PersistenceStorageMode.Cookies:
-                    SaveToCookie(instanceId, doc);
-                    break;
-                default:
-                    throw new InstancePersistenceException("Unknown storage mode.");
-            }
-        }
+        protected abstract void SaveToContext(Guid instanceId, XDocument doc);
 
         IDictionary<XName, InstanceValue> Load(Guid instanceId)
         {

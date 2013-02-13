@@ -2,9 +2,9 @@
 using System.Activities;
 using System.Collections.Specialized;
 using System.IO;
+using System.Runtime.DurableInstancing;
 using System.Threading;
 using System.Web;
-using System.Web.SessionState;
 using System.Xml;
 using System.Xml.Linq;
 
@@ -16,8 +16,16 @@ namespace Twilio.Activities
     /// generate and return the <see cref="Activity"/> that is executed by the workflow engine. Session state is
     /// currently required to store the ongoing workflows.
     /// </summary>
-    public abstract class TwilioHttpHandler : IHttpHandler, IRequiresSessionState, ITwilioContext
+    public abstract class TwilioHttpHandler : IHttpHandler, ITwilioContext
     {
+
+        /// <summary>
+        /// Initializes a new instance.
+        /// </summary>
+        public TwilioHttpHandler()
+        {
+            TwilioResponse = CurrentTwilioElement = new XElement("Response");
+        }
 
         public bool IsReusable
         {
@@ -79,25 +87,17 @@ namespace Twilio.Activities
         WorkflowApplication WfApplication { get; set; }
 
         /// <summary>
-        /// Initializes a new instance.
+        /// Override this method to initialize and return the activity to be executed.
         /// </summary>
-        public TwilioHttpHandler()
-        {
-            TwilioResponse = CurrentTwilioElement = new XElement("Response");
-        }
+        protected abstract Activity CreateActivity();
 
         /// <summary>
-        /// Implement this method to initialize and return the activity to be executed.
+        /// Override this method to create the instance store used to serialize workflow instances.
         /// </summary>
-        protected abstract Activity InitializeActivity();
-
-        /// <summary>
-        /// Gets the desired <see cref="PersistenceStorageMode"/> for persisting workflows between requests. Override
-        /// this property to alter the mode. By default ASP.Net session state is used for persisting workflows.
-        /// </summary>
-        protected virtual PersistenceStorageMode PersistenceStorageMode
+        /// <returns></returns>
+        protected virtual InstanceStore CreateInstanceStore()
         {
-            get { return PersistenceStorageMode.Cookies; }
+            return new TwilioHttpCookieInstanceStore(Context);
         }
 
         /// <summary>
@@ -143,13 +143,13 @@ namespace Twilio.Activities
             Context = context;
 
             // obtain our activity instance
-            Activity = InitializeActivity();
+            Activity = CreateActivity();
 
             // initializes workflow application and appropriate call backs
             WfApplication = new WorkflowApplication(Activity);
             WfApplication.Extensions.Add<ITwilioContext>(() => this);
             WfApplication.SynchronizationContext = SynchronizationContext = new RunnableSynchronizationContext();
-            WfApplication.InstanceStore = new TwilioHttpInstanceStore(Context, PersistenceStorageMode);
+            WfApplication.InstanceStore = CreateInstanceStore();
             WfApplication.Aborted = OnAborted;
             WfApplication.Completed = OnCompleted;
             WfApplication.Idle = OnIdle;

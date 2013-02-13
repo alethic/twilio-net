@@ -54,6 +54,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TwilioHttpSessionInstanceStore.cs" />
     <Compile Include="EnqueueDesigner.xaml.cs">
       <DependentUpon>EnqueueDesigner.xaml</DependentUpon>
     </Compile>
@@ -74,7 +75,6 @@
     </Compile>
     <Compile Include="Enqueue.cs" />
     <Compile Include="Leave.cs" />
-    <Compile Include="PersistenceStorageMode.cs" />
     <Compile Include="EnqueueResult.cs" />
     <Compile Include="EnqueueStatus.cs" />
     <Compile Include="Record.cs" />
@@ -112,6 +112,7 @@
     <Compile Include="TwilioActivity.cs" />
     <Compile Include="TwilioHttpHandler.cs">
     </Compile>
+    <Compile Include="TwilioHttpCookieInstanceStore.cs" />
     <Compile Include="Voice.cs" />
   </ItemGroup>
   <ItemGroup>
