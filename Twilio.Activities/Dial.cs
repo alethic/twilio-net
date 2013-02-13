@@ -3,6 +3,7 @@ using System.Activities;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Web;
 using System.Xml.Linq;
 
 namespace Twilio.Activities
@@ -85,8 +86,9 @@ namespace Twilio.Activities
             var callerId = CallerId.Get(context);
             var record = Record.Get(context);
 
-            // name to resume
+            // dial completion
             var bookmarkName = Guid.NewGuid().ToString();
+            context.CreateBookmark(bookmarkName, OnDialCompleted);
 
             // dial element
             var element = new XElement("Dial",
@@ -103,7 +105,6 @@ namespace Twilio.Activities
             twilio.Element = element;
 
             // wait for post back
-            context.CreateBookmark(bookmarkName, OnDialCompleted);
 
             // schedule nouns (content of Dial)
             foreach (var noun in Nouns)
@@ -145,13 +146,17 @@ namespace Twilio.Activities
             var duration = r["DialCallDuration"];
             var recordingUrl = r["RecordingUrl"];
 
+            // cancel all children
+            context.CancelChildren();
+            context.RemoveAllBookmarks();
+
             // dial must have fallen through
             if (status == null)
                 return;
 
-            Status.Set(context,  ParseCallStatus(status));
+            Status.Set(context, ParseCallStatus(status));
             Sid.Set(context, sid);
-            Duration.Set(context,duration != null ? TimeSpan.FromSeconds(int.Parse(duration)) : TimeSpan.Zero);
+            Duration.Set(context, duration != null ? TimeSpan.FromSeconds(int.Parse(duration)) : TimeSpan.Zero);
             RecordingUrl.Set(context, recordingUrl != null ? new Uri(recordingUrl) : null);
         }
 

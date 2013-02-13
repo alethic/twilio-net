@@ -9,14 +9,14 @@ namespace Twilio.Activities
     /// <summary>
     /// Serializes workflow state to the session.
     /// </summary>
-    public class TwilioHttpSessionInstanceStore : TwilioHttpInstanceStore
+    public class HttpSessionInstanceStore : HttpInstanceStore
     {
 
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
         /// <param name="httpContext"></param>
-        public TwilioHttpSessionInstanceStore(HttpContext httpContext)
+        public HttpSessionInstanceStore(HttpContext httpContext)
             : base(httpContext)
         {
 

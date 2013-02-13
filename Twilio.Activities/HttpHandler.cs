@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Activities;
 using System.Collections.Specialized;
-using System.IO;
+using System.Linq;
 using System.Runtime.DurableInstancing;
 using System.Threading;
 using System.Web;
@@ -16,13 +16,13 @@ namespace Twilio.Activities
     /// generate and return the <see cref="Activity"/> that is executed by the workflow engine. Session state is
     /// currently required to store the ongoing workflows.
     /// </summary>
-    public abstract class TwilioHttpHandler : IHttpHandler, ITwilioContext
+    public abstract class HttpHandler : IHttpHandler, ITwilioContext
     {
 
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        public TwilioHttpHandler()
+        public HttpHandler()
         {
             TwilioResponse = CurrentTwilioElement = new XElement("Response");
         }
@@ -30,14 +30,6 @@ namespace Twilio.Activities
         public bool IsReusable
         {
             get { return false; }
-        }
-
-        /// <summary>
-        /// Gets the base uri of the current request.
-        /// </summary>
-        public Uri BaseUri
-        {
-            get { return new Uri(Request.Url.Scheme + "://" + Request.Url.Authority + Response.ApplyAppPathModifier(Request.Path.TrimEnd('/'))); }
         }
 
         /// <summary>
@@ -97,13 +89,25 @@ namespace Twilio.Activities
         /// <returns></returns>
         protected virtual InstanceStore CreateInstanceStore()
         {
-            return new TwilioHttpCookieInstanceStore(Context);
+            return new HttpCookieInstanceStore(Context);
+        }
+
+        /// <summary>
+        /// Gets the <see cref="Uri"/> relative to the current request. That is, the current request's parent directory.
+        /// </summary>
+        public Uri RelativeUri
+        {
+            get { return new Uri(Request.Url.AbsoluteUri.Remove(Request.Url.AbsoluteUri.Length - Request.Url.Segments.Last().Length)); }
         }
 
         /// <summary>
         /// Gets the <see cref="Uri"/> to post back to and resume the workflow.
         /// </summary>
-        public Uri SelfUrl { get; private set; }
+        public Uri SelfUrl
+        {
+            // include session and instance
+            get { return AppendQueryArgToUri(SessionIDManager.ApplySessionIDQueryArg(Request.Url), "InstanceId", WfApplication.Id.ToString()); }
+        }
 
         /// <summary>
         /// Appends the given name and value to the query string.
@@ -112,16 +116,20 @@ namespace Twilio.Activities
         /// <param name="name"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        Uri AppendQueryToUri(Uri uri, string name, string value)
+        Uri AppendQueryArgToUri(Uri uri, string name, string value)
         {
-            var b = new UriBuilder(uri);
-            if (b.Query != null &&
-                b.Query.Length > 1)
-                b.Query = b.Query.Substring(1) + "&" + name + "=" + value;
-            else
-                b.Query = name + "=" + value;
+            if (uri == null)
+                throw new ArgumentNullException("uri");
+            if (name == null)
+                throw new ArgumentNullException("name");
 
-            return b.Uri;
+            // parse query string and update session id
+            var q = HttpUtility.ParseQueryString(uri.Query);
+            q[name] = value;
+
+            // rebuild uri with new query string
+            return new Uri(uri, "?" + string.Join("&", q.AllKeys
+                .Select(i => HttpUtility.UrlEncode(i) + "=" + HttpUtility.UrlEncode(q[i]))));
         }
 
         /// <summary>
@@ -131,7 +139,7 @@ namespace Twilio.Activities
         /// <returns></returns>
         public Uri BookmarkSelfUrl(string bookmarkName)
         {
-            return AppendQueryToUri(SelfUrl, "Bookmark", bookmarkName);
+            return RelativeUri.MakeRelativeUri(AppendQueryArgToUri(SelfUrl, "Bookmark", bookmarkName));
         }
 
         /// <summary>
@@ -161,13 +169,10 @@ namespace Twilio.Activities
             if (Request["InstanceId"] != null)
                 WfApplication.Load(Guid.Parse(Request["InstanceId"]));
 
-            // configure initial self uri
-            SelfUrl = AppendQueryToUri(new Uri(BaseUri, Path.GetFileName(Request.Path)), "InstanceId", WfApplication.Id.ToString());
-
             // postback to resume a bookmark
             if (Request["Bookmark"] != null)
             {
-                var result = GetBookmarkResult();
+                var result = GetBookmarkData();
                 if (result != null)
                     WfApplication.BeginResumeBookmark(Request["Bookmark"], result, i => WfApplication.EndResumeBookmark(i), null);
             }
@@ -221,11 +226,21 @@ namespace Twilio.Activities
             SynchronizationContext.Complete();
         }
 
-        NameValueCollection GetBookmarkResult()
+        /// <summary>
+        /// Extracts the data to be passed to a bookmark.
+        /// </summary>
+        /// <returns></returns>
+        NameValueCollection GetBookmarkData()
         {
             // extract all query arguments if bookmark specified
             if (Request["Bookmark"] != null)
-                return Request.Params;
+            {
+                // combine query string and form variables
+                var q = new NameValueCollection(Request.QueryString);
+                foreach (var i in Request.Form.AllKeys)
+                    q[i] = Request.Form[i];
+                return q;
+            }
 
             return null;
         }

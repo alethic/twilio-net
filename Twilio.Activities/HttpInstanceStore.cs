@@ -12,7 +12,7 @@ using System.Xml.Linq;
 namespace Twilio.Activities
 {
 
-    public abstract class TwilioHttpInstanceStore : InstanceStore
+    public abstract class HttpInstanceStore : InstanceStore
     {
 
         class CompletedAsyncResult<T> : IAsyncResult
@@ -66,7 +66,7 @@ namespace Twilio.Activities
         /// Initializes a new instance.
         /// </summary>
         /// <param name="httpContext"></param>
-        internal TwilioHttpInstanceStore(HttpContext httpContext)
+        internal HttpInstanceStore(HttpContext httpContext)
             : this(httpContext, Guid.NewGuid())
         {
 
@@ -77,7 +77,7 @@ namespace Twilio.Activities
         /// </summary>
         /// <param name="httpContext"></param>
         /// <param name="ownerInstanceId"></param>
-        internal TwilioHttpInstanceStore(HttpContext httpContext, Guid ownerInstanceId)
+        internal HttpInstanceStore(HttpContext httpContext, Guid ownerInstanceId)
         {
             HttpContext = httpContext;
             OwnerInstanceId = ownerInstanceId;

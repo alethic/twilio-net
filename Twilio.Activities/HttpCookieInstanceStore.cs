@@ -12,7 +12,7 @@ namespace Twilio.Activities
     /// <summary>
     /// Serializes workflow state to cookies.
     /// </summary>
-    public class TwilioHttpCookieInstanceStore : TwilioHttpInstanceStore
+    public class HttpCookieInstanceStore : HttpInstanceStore
     {
 
         /// <summary>
@@ -24,7 +24,7 @@ namespace Twilio.Activities
         /// Initializes a new instance.
         /// </summary>
         /// <param name="httpContext"></param>
-        public TwilioHttpCookieInstanceStore(HttpContext httpContext)
+        public HttpCookieInstanceStore(HttpContext httpContext)
             : base(httpContext)
         {
 
