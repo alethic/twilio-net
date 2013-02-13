@@ -10,13 +10,16 @@
         <sapc:ArgumentToExpressionConverter
             x:Key="ArgumentToExpressionConverter" />
     </sap:ActivityDesigner.Resources>
-    <sap:ActivityDesigner.Template>
-        <ControlTemplate>
-            <sapv:ExpressionTextBox
-                HintText="Number"
-                Expression="{Binding ModelItem.Number, Mode=TwoWay, Converter={StaticResource ArgumentToExpressionConverter}, ConverterParameter=In}"
-                ExpressionType="sys:String"
-                OwnerActivity="{Binding ModelItem}" />
-        </ControlTemplate>
-    </sap:ActivityDesigner.Template>
+    <StackPanel
+        Orientation="Vertical">
+        <sapv:ExpressionTextBox
+            Margin="0,0,0,4"
+            HintText="Number"
+            Expression="{Binding ModelItem.Number, Mode=TwoWay, Converter={StaticResource ArgumentToExpressionConverter}, ConverterParameter=In}"
+            ExpressionType="sys:String"
+            OwnerActivity="{Binding ModelItem}" />
+        <sap:WorkflowItemPresenter
+            Item="{Binding ModelItem.Called}"
+            HintText="Place activities to execute for called party here"/>
+    </StackPanel>
 </sap:ActivityDesigner>

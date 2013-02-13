@@ -6,27 +6,24 @@
     xmlns:sapv="clr-namespace:System.Activities.Presentation.View;assembly=System.Activities.Presentation"
     xmlns:sapc="clr-namespace:System.Activities.Presentation.Converters;assembly=System.Activities.Presentation"
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
-    ExpandState="True">
+    xmlns:local="clr-namespace:Twilio.Activities">
     <sap:ActivityDesigner.Resources>
         <DataTemplate
             x:Key="Collapsed">
-            
+
         </DataTemplate>
         <DataTemplate
             x:Key="Expanded">
-            <StackPanel
-                Orientation="Vertical">
-                <ComboBox
-                    x:Name="BodyTypeComboBox"
-                    Margin="0,0,0,4"
-                    SelectionChanged="BodyTypeComboBox_SelectionChanged"
-                    DataContextChanged="BodyTypeComboBox_DataContextChanged">
-                    <sys:String>Number</sys:String>
-                    <sys:String>Sip</sys:String>
-                </ComboBox>
-                <sap:WorkflowItemPresenter 
-                    Item="{Binding ModelItem.Noun.Handler}" />
-            </StackPanel>
+            <sap:WorkflowItemsPresenter
+                Items="{Binding ModelItem.Nouns}"
+                HintText="Place dial nouns here">
+                <sap:WorkflowItemsPresenter.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel
+                            Orientation="Vertical" />
+                    </ItemsPanelTemplate>
+                </sap:WorkflowItemsPresenter.ItemsPanel>
+            </sap:WorkflowItemsPresenter>
         </DataTemplate>
         <Style
             x:Key="ExpandOrCollapsedStyle"

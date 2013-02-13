@@ -1,12 +1,16 @@
-﻿using System.Xml.Linq;
+﻿using System.Activities;
+using System.Xml.Linq;
 
 namespace Twilio.Activities
 {
 
-    public abstract class DialNoun
+    /// <summary>
+    /// Instruction on how to dial.
+    /// </summary>
+    public abstract class DialNoun : TwilioActivity
     {
 
-        public abstract void WriteTo(XElement dialElement);
+
 
     }
 

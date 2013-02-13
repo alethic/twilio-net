@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Activities;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Xml.Linq;
@@ -11,17 +12,38 @@ namespace Twilio.Activities
     public sealed class Dial : TwilioActivity
     {
 
+        /// <summary>
+        /// Initializes a new instance.
+        /// </summary>
+        public Dial()
+        {
+            Nouns = new Collection<DialNoun>();
+        }
+
+        /// <summary>
+        /// Timeout before dial is canceled.
+        /// </summary>
         public InArgument<TimeSpan?> Timeout { get; set; }
 
+        /// <summary>
+        /// Whether if the calling party pressess '*', the they are disconnected and control is returned.
+        /// </summary>
         public InArgument<bool?> HangupOnStar { get; set; }
 
+        /// <summary>
+        /// Maximum amount of time that can pass before the caller is disconnected.
+        /// </summary>
         public InArgument<TimeSpan?> TimeLimit { get; set; }
 
+        /// <summary>
+        /// Caller ID to dial as.
+        /// </summary>
         public InArgument<string> CallerId { get; set; }
 
+        /// <summary>
+        /// Whether the call should be recorded.
+        /// </summary>
         public InArgument<bool?> Record { get; set; }
-
-        public ActivityFunc<DialNoun> Noun { get; set; }
 
         /// <summary>
         /// The outcome of the dial attempt.
@@ -43,18 +65,18 @@ namespace Twilio.Activities
         /// </summary>
         public OutArgument<Uri> RecordingUrl { get; set; }
 
+        /// <summary>
+        /// Instructions on how to dial.
+        /// </summary>
+        [Browsable(false)]
+        public Collection<DialNoun> Nouns { get; set; }
+
         protected override bool CanInduceIdle
         {
             get { return true; }
         }
 
         protected override void Execute(NativeActivityContext context)
-        {
-            // obtain description
-            context.ScheduleFunc(Noun, OnDescriptionCallback);
-        }
-
-        void OnDescriptionCallback(NativeActivityContext context, ActivityInstance completedInstance, DialNoun noun)
         {
             var twilio = context.GetExtension<ITwilioContext>();
             var timeout = Timeout.Get(context);
@@ -75,15 +97,38 @@ namespace Twilio.Activities
                 callerId != null ? new XAttribute("callerId", callerId) : null,
                 record != null ? new XAttribute("record", (bool)record ? "true" : "false") : null);
 
-            // write dial body
-            noun.WriteTo(element);
-
-            // write dial element and catch redirect
+            // write dial element and configure context so children write into it
             twilio.Element.Add(element);
             twilio.Element.Add(new XElement("Redirect", twilio.BookmarkSelfUri(bookmarkName)));
+            twilio.Element = element;
 
             // wait for post back
-            context.CreateBookmark(bookmarkName, OnDialResult);
+            context.CreateBookmark(bookmarkName, OnDialCompleted);
+
+            // schedule nouns (content of Dial)
+            foreach (var noun in Nouns)
+                context.ScheduleActivity(noun, OnNounCompleted, OnNounFaulted);
+        }
+
+        /// <summary>
+        /// Invoked when one of the nouns is completed.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="completedInstance"></param>
+        void OnNounCompleted(NativeActivityContext context, ActivityInstance completedInstance)
+        {
+
+        }
+
+        /// <summary>
+        /// Invoked when one of the nouns faults.
+        /// </summary>
+        /// <param name="faultContext"></param>
+        /// <param name="propagatedException"></param>
+        /// <param name="propagatedFrom"></param>
+        void OnNounFaulted(NativeActivityFaultContext faultContext, Exception propagatedException, ActivityInstance propagatedFrom)
+        {
+
         }
 
         /// <summary>
@@ -92,7 +137,7 @@ namespace Twilio.Activities
         /// <param name="context"></param>
         /// <param name="bookmark"></param>
         /// <param name="o"></param>
-        void OnDialResult(NativeActivityContext context, Bookmark bookmark, object o)
+        void OnDialCompleted(NativeActivityContext context, Bookmark bookmark, object o)
         {
             var r = (NameValueCollection)o;
             var status = r["DialCallStatus"];

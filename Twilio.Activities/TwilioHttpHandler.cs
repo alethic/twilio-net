@@ -37,7 +37,7 @@ namespace Twilio.Activities
         /// </summary>
         public Uri BaseUri
         {
-            get { return new Uri(Request.Url.Scheme + "://" + Request.Url.Authority + Request.Path.TrimEnd('/')); }
+            get { return new Uri(Request.Url.Scheme + "://" + Request.Url.Authority + Response.ApplyAppPathModifier(Request.Path.TrimEnd('/'))); }
         }
 
         /// <summary>

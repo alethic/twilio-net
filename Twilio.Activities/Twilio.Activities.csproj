@@ -58,21 +58,11 @@
     <Compile Include="EnqueueDesigner.xaml.cs">
       <DependentUpon>EnqueueDesigner.xaml</DependentUpon>
     </Compile>
-    <Compile Include="DialNounActivity.cs" />
     <Compile Include="DialNumber.cs" />
-    <Compile Include="DialNumberNoun.cs" />
     <Compile Include="DialNumberDesigner.xaml.cs">
       <DependentUpon>DialNumberDesigner.xaml</DependentUpon>
     </Compile>
-    <Compile Include="DialSipUriNoun.cs" />
     <Compile Include="DialNoun.cs" />
-    <Compile Include="DialSipDesigner.xaml.cs">
-      <DependentUpon>DialSipDesigner.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="DialSipUri.cs" />
-    <Compile Include="DialSipUriDesigner.xaml.cs">
-      <DependentUpon>DialSipUriDesigner.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Enqueue.cs" />
     <Compile Include="Leave.cs" />
     <Compile Include="EnqueueResult.cs" />
@@ -101,8 +91,6 @@
     <Compile Include="SayDesigner.xaml.cs">
       <DependentUpon>SayDesigner.xaml</DependentUpon>
     </Compile>
-    <Compile Include="DialSip.cs" />
-    <Compile Include="DialSipNoun.cs" />
     <Compile Include="TwilioHttpInstanceStore.cs" />
     <Compile Include="Gather.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -121,14 +109,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="DialNumberDesigner.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="DialSipDesigner.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="DialSipUriDesigner.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

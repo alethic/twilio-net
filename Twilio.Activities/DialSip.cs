@@ -6,7 +6,7 @@ namespace Twilio.Activities
 {
 
     [Designer(typeof(DialSipDesigner))]
-    public class DialSip : DialNounActivity
+    public class DialSip : DialNoun
     {
 
         public DialSip()
