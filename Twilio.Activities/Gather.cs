@@ -8,13 +8,12 @@ namespace Twilio.Activities
 {
 
     [Designer(typeof(GatherDesigner))]
-    public sealed class Gather : TwilioActivity
+    public sealed class Gather : TwilioActivity<string>
     {
 
         public Gather()
         {
-            Element = new Variable<XElement>();
-            BookmarkName = new Variable<string>();
+
         }
 
         public InArgument<TimeSpan?> Timeout { get; set; }
@@ -27,20 +26,9 @@ namespace Twilio.Activities
 
         public Activity Body { get; set; }
 
-        Variable<XElement> Element { get; set; }
-
-        Variable<string> BookmarkName { get; set; }
-
         protected override bool CanInduceIdle
         {
             get { return true; }
-        }
-
-        protected override void CacheMetadata(NativeActivityMetadata metadata)
-        {
-            base.CacheMetadata(metadata);
-            metadata.AddImplementationVariable(Element);
-            metadata.AddImplementationVariable(BookmarkName);
         }
 
         protected override void Execute(NativeActivityContext context)
@@ -50,9 +38,9 @@ namespace Twilio.Activities
             var finishOnKey = FinishOnKey.Get(context);
             var numDigits = NumDigits.Get(context);
 
-            // name to resume
+            // name to resume when gather is finished
             var bookmarkName = Guid.NewGuid().ToString();
-            BookmarkName.Set(context, bookmarkName);
+            context.CreateBookmark(bookmarkName, OnGatherCompleted);
 
             // append gather element
             var element = new XElement("Gather",
@@ -60,9 +48,8 @@ namespace Twilio.Activities
                 timeout != null ? new XAttribute("timeout", ((TimeSpan)timeout).TotalSeconds) : null,
                 finishOnKey != null ? new XAttribute("finishOnKey", finishOnKey) : null,
                 numDigits != null ? new XAttribute("numDigits", numDigits) : null);
-            Element.Set(context, element);
 
-            // write dial element and catch redirect
+            // write gather element
             twilio.Element.Add(element);
             twilio.Element.Add(new XElement("Redirect", twilio.BookmarkSelfUri(bookmarkName)));
 
@@ -72,36 +59,20 @@ namespace Twilio.Activities
                 twilio.Element = element;
                 context.ScheduleActivity(Body, OnBodyCompletion, OnBodyFault);
             }
-            else
-                Wait(context);
         }
 
         void OnBodyCompletion(NativeActivityContext context, ActivityInstance instance)
         {
+            // reset element
             var twilio = context.GetExtension<ITwilioContext>();
-            var element = Element.Get(context);
-
-            // switch back to parent element
-            twilio.Element = element.Parent;
-
-            Wait(context);
+            twilio.Element = twilio.Element.Parent;
         }
 
         void OnBodyFault(NativeActivityFaultContext context, Exception e, ActivityInstance instance)
         {
+            // reset element
             var twilio = context.GetExtension<ITwilioContext>();
-            var element = Element.Get(context);
-
-            // switch back to parent element
-            twilio.Element = element.Parent;
-        }
-
-        void Wait(NativeActivityContext context)
-        {
-            var bookmarkName = BookmarkName.Get(context);
-
-            // wait for incoming digits
-            context.CreateBookmark(bookmarkName, OnGatherFinished);
+            twilio.Element = twilio.Element.Parent;
         }
 
         /// <summary>
@@ -110,12 +81,15 @@ namespace Twilio.Activities
         /// <param name="context"></param>
         /// <param name="bookmark"></param>
         /// <param name="o"></param>
-        void OnGatherFinished(NativeActivityContext context, Bookmark bookmark, object o)
+        void OnGatherCompleted(NativeActivityContext context, Bookmark bookmark, object o)
         {
             var r = (NameValueCollection)o;
             var digits = r["Digits"] ?? "";
 
+            Result.Set(context, digits);
             Digits.Set(context, digits);
+
+            context.CancelChildren();
         }
 
     }

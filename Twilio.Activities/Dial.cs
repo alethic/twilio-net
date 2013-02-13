@@ -10,7 +10,7 @@ namespace Twilio.Activities
 {
 
     [Designer(typeof(DialDesigner))]
-    public sealed class Dial : TwilioActivity
+    public sealed class Dial : TwilioActivity<DialCallStatus>
     {
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace Twilio.Activities
         /// <summary>
         /// The outcome of the dial attempt.
         /// </summary>
-        public OutArgument<CallStatus> Status { get; set; }
+        public OutArgument<DialCallStatus> Status { get; set; }
 
         /// <summary>
         /// The call sid of the new call leg. This parameter is not sent after dialing a conference.
@@ -145,7 +145,8 @@ namespace Twilio.Activities
             var recordingUrl = r["RecordingUrl"];
 
             // set output arguments
-            Status.Set(context, status != null ? ParseCallStatus(status) : CallStatus.Canceled);
+            Result.Set(context, status != null ? ParseCallStatus(status) : DialCallStatus.Unknown);
+            Status.Set(context, status != null ? ParseCallStatus(status) : DialCallStatus.Unknown);
             Sid.Set(context, sid);
             Duration.Set(context, duration != null ? TimeSpan.FromSeconds(int.Parse(duration)) : TimeSpan.Zero);
             RecordingUrl.Set(context, recordingUrl != null ? new Uri(recordingUrl) : null);
@@ -159,20 +160,20 @@ namespace Twilio.Activities
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        CallStatus ParseCallStatus(string s)
+        DialCallStatus ParseCallStatus(string s)
         {
             switch (s)
             {
                 case "completed":
-                    return CallStatus.Completed;
+                    return DialCallStatus.Completed;
                 case "busy":
-                    return CallStatus.Busy;
+                    return DialCallStatus.Busy;
                 case "no-answer":
-                    return CallStatus.NoAnswer;
+                    return DialCallStatus.NoAnswer;
                 case "failed":
-                    return CallStatus.Failed;
+                    return DialCallStatus.Failed;
                 case "canceled":
-                    return CallStatus.Canceled;
+                    return DialCallStatus.Canceled;
                 default:
                     throw new FormatException();
             }

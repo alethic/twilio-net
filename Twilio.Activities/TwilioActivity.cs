@@ -1,4 +1,5 @@
 ﻿using System.Activities;
+using System.Collections.ObjectModel;
 using System.Xml.Linq;
 
 namespace Twilio.Activities
@@ -6,6 +7,16 @@ namespace Twilio.Activities
 
     public abstract class TwilioActivity : NativeActivity
     {
+
+        /// <summary>
+        /// Initializes a new instance.
+        /// </summary>
+        public TwilioActivity()
+        {
+            Variables = new Collection<Variable>();
+        }
+
+        public Collection<Variable> Variables { get; set; }
 
         protected XElement GetElement(ActivityContext context)
         {
@@ -27,6 +38,16 @@ namespace Twilio.Activities
 
     public abstract class TwilioActivity<TResult> : NativeActivity<TResult>
     {
+
+        /// <summary>
+        /// Initializes a new instance.
+        /// </summary>
+        public TwilioActivity()
+        {
+            Variables = new Collection<Variable>();
+        }
+
+        public Collection<Variable> Variables { get; set; }
 
         protected XElement GetElement(ActivityContext context)
         {

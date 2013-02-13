@@ -78,12 +78,14 @@ namespace Twilio.Activities
 
         void OnCalledCompleted(NativeActivityContext context, ActivityInstance completedInstance)
         {
-
+            var twilio = context.GetExtension<ITwilioContext>();
+            twilio.Element.Add(new XElement("Pause", 0));
         }
 
         void OnCalledFaulted(NativeActivityFaultContext faultContext, Exception propagatedException, ActivityInstance propagatedFrom)
         {
-
+            var twilio = faultContext.GetExtension<ITwilioContext>();
+            twilio.Element.Add(new XElement("Pause", 0));
         }
 
     }

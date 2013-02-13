@@ -8,7 +8,7 @@ namespace Twilio.Activities
 {
 
     [Designer(typeof(RecordDesigner))]
-    public sealed class Record : TwilioActivity
+    public sealed class Record : TwilioActivity<Uri>
     {
 
         public InArgument<TimeSpan?> Timeout { get; set; }
@@ -83,7 +83,8 @@ namespace Twilio.Activities
             var recordingDuration = r["RecordingDuration"];
             var digits = r["Digits"];
 
-            RecordingUrl.Set(context, new Uri(recordingUrl));
+            Result.Set(context, recordingUrl != null ? new Uri(recordingUrl) : null);
+            RecordingUrl.Set(context, recordingUrl != null ? new Uri(recordingUrl) : null);
             Duration.Set(context, recordingDuration != null ? TimeSpan.FromSeconds(int.Parse(recordingDuration)) : TimeSpan.Zero);
             Digits.Set(context, digits);
         }

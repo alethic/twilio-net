@@ -1,8 +1,16 @@
 ﻿namespace Twilio.Activities
 {
 
-    public enum CallStatus
+    /// <summary>
+    /// Resulting status from a dial operation.
+    /// </summary>
+    public enum DialCallStatus
     {
+
+        /// <summary>
+        /// The call status is unknown.
+        /// </summary>
+        Unknown,
 
         /// <summary>
         /// The called party answered the call and was connected to the caller.

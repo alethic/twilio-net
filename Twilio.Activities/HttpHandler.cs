@@ -101,7 +101,7 @@ namespace Twilio.Activities
         public Uri SelfUrl
         {
             // include session and instance
-            get { return AppendQueryArgToUri(SessionIDManager.ApplySessionIDQueryArg(Request.Url), "InstanceId", WfApplication.Id.ToString()); }
+            get { return AppendQueryArgToUri(SessionIDManager.ApplySessionIDQueryArg(RequestUri), "InstanceId", WfApplication.Id.ToString()); }
         }
 
         /// <summary>
@@ -274,20 +274,20 @@ namespace Twilio.Activities
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        CallStatus ParseCallStatus(string s)
+        DialCallStatus ParseCallStatus(string s)
         {
             switch (s)
             {
                 case "completed":
-                    return CallStatus.Completed;
+                    return DialCallStatus.Completed;
                 case "busy":
-                    return CallStatus.Busy;
+                    return DialCallStatus.Busy;
                 case "no-answer":
-                    return CallStatus.NoAnswer;
+                    return DialCallStatus.NoAnswer;
                 case "failed":
-                    return CallStatus.Failed;
+                    return DialCallStatus.Failed;
                 case "canceled":
-                    return CallStatus.Canceled;
+                    return DialCallStatus.Canceled;
                 default:
                     throw new FormatException();
             }
