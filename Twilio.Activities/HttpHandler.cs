@@ -3,6 +3,7 @@ using System.Activities;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Runtime.DurableInstancing;
+using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Web;
 using System.Xml;
@@ -54,6 +55,16 @@ namespace Twilio.Activities
         }
 
         /// <summary>
+        /// Gets the <see cref="Activity"/> to be used to serve Twilio calls.
+        /// </summary>
+        public Activity Activity { get; private set; }
+
+        /// <summary>
+        /// Context into which events occuring during the execution of the workflow go.
+        /// </summary>
+        RunnableSynchronizationContext SynchronizationContext { get; set; }
+
+        /// <summary>
         /// Gets the root <see cref="XElement"/> of the generated TwiML.
         /// </summary>
         public XElement TwilioResponse { get; private set; }
@@ -64,14 +75,34 @@ namespace Twilio.Activities
         public XElement CurrentTwilioElement { get; private set; }
 
         /// <summary>
-        /// Gets the <see cref="Activity"/> to be used to serve Twilio calls.
+        /// Unhandled exception caused by execution.
         /// </summary>
-        public Activity Activity { get; private set; }
+        public ExceptionDispatchInfo UnhandledExceptionInfo { get; private set; }
 
         /// <summary>
-        /// Context into which events occuring during the execution of the workflow go.
+        /// Gets the raw request <see cref="Uri"/>.
         /// </summary>
-        RunnableSynchronizationContext SynchronizationContext { get; set; }
+        public Uri RequestUri
+        {
+            get { return new Uri(Request.Url.GetLeftPart(UriPartial.Path)); }
+        }
+
+        /// <summary>
+        /// Gets the <see cref="Uri"/> relative to the current request. That is, the current request's parent directory.
+        /// </summary>
+        public Uri RelativeUri
+        {
+            get { return new Uri(RequestUri.AbsoluteUri.Remove(RequestUri.AbsoluteUri.Length - RequestUri.Segments.Last().Length)); }
+        }
+
+        /// <summary>
+        /// Gets the <see cref="Uri"/> to post back to and resume the workflow.
+        /// </summary>
+        public Uri SelfUrl
+        {
+            // include session and instance
+            get { return AppendQueryArgToUri(SessionIDManager.ApplySessionIDQueryArg(Request.Url), "InstanceId", WfApplication.Id.ToString()); }
+        }
 
         /// <summary>
         /// Gets a reference to the loaded Workflow Application.
@@ -90,23 +121,6 @@ namespace Twilio.Activities
         protected virtual InstanceStore CreateInstanceStore()
         {
             return new HttpCookieInstanceStore(Context);
-        }
-
-        /// <summary>
-        /// Gets the <see cref="Uri"/> relative to the current request. That is, the current request's parent directory.
-        /// </summary>
-        public Uri RelativeUri
-        {
-            get { return new Uri(Request.Url.AbsoluteUri.Remove(Request.Url.AbsoluteUri.Length - Request.Url.Segments.Last().Length)); }
-        }
-
-        /// <summary>
-        /// Gets the <see cref="Uri"/> to post back to and resume the workflow.
-        /// </summary>
-        public Uri SelfUrl
-        {
-            // include session and instance
-            get { return AppendQueryArgToUri(SessionIDManager.ApplySessionIDQueryArg(Request.Url), "InstanceId", WfApplication.Id.ToString()); }
         }
 
         /// <summary>
@@ -183,6 +197,10 @@ namespace Twilio.Activities
             // process any outstanding events until completion
             SynchronizationContext.Run();
 
+            // throw exception
+            if (UnhandledExceptionInfo != null)
+                UnhandledExceptionInfo.Throw();
+
             // write finished twilio output
             context.Response.ContentType = "text/xml";
             using (var wrt = XmlWriter.Create(Response.Output))
@@ -191,7 +209,8 @@ namespace Twilio.Activities
 
         void OnAborted(WorkflowApplicationAbortedEventArgs args)
         {
-            throw args.Reason ?? new Exception();
+            if (args.Reason != null)
+                UnhandledExceptionInfo = ExceptionDispatchInfo.Capture(args.Reason);
         }
 
         void OnCompleted(WorkflowApplicationCompletedEventArgs args)
@@ -212,6 +231,11 @@ namespace Twilio.Activities
 
         UnhandledExceptionAction OnUnhandledException(WorkflowApplicationUnhandledExceptionEventArgs args)
         {
+            // save unhandled exception to be thrown
+            if (args.UnhandledException != null)
+                UnhandledExceptionInfo = ExceptionDispatchInfo.Capture(args.UnhandledException);
+
+            // abort workflow
             return UnhandledExceptionAction.Abort;
         }
 

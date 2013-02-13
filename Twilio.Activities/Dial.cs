@@ -104,8 +104,6 @@ namespace Twilio.Activities
             twilio.Element.Add(new XElement("Redirect", twilio.BookmarkSelfUri(bookmarkName)));
             twilio.Element = element;
 
-            // wait for post back
-
             // schedule nouns (content of Dial)
             foreach (var noun in Nouns)
                 context.ScheduleActivity(noun, OnNounCompleted, OnNounFaulted);
@@ -146,18 +144,14 @@ namespace Twilio.Activities
             var duration = r["DialCallDuration"];
             var recordingUrl = r["RecordingUrl"];
 
-            // cancel all children
-            context.CancelChildren();
-            context.RemoveAllBookmarks();
-
-            // dial must have fallen through
-            if (status == null)
-                return;
-
-            Status.Set(context, ParseCallStatus(status));
+            // set output arguments
+            Status.Set(context, status != null ? ParseCallStatus(status) : CallStatus.Canceled);
             Sid.Set(context, sid);
             Duration.Set(context, duration != null ? TimeSpan.FromSeconds(int.Parse(duration)) : TimeSpan.Zero);
             RecordingUrl.Set(context, recordingUrl != null ? new Uri(recordingUrl) : null);
+
+            // cancel all children
+            context.CancelChildren();
         }
 
         /// <summary>
