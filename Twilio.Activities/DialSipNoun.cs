@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Xml.Linq;
 
 namespace Twilio.Activities
@@ -11,11 +12,11 @@ namespace Twilio.Activities
 
         public override void WriteTo(XElement element)
         {
-            foreach (var uri in Uris)
-                element.Add(new XElement("Uri",
-                    uri.UserName != null ? new XAttribute("username", uri.UserName) : null,
-                    uri.Password != null ? new XAttribute("password", uri.Password) : null,
-                    uri.Uri));
+            element.Add(new XElement("Sip",
+                Uris.Select(i => new XElement("Uri",
+                    i.UserName != null ? new XAttribute("username", i.UserName) : null,
+                    i.Password != null ? new XAttribute("password", i.Password) : null,
+                    i.Uri))));
         }
 
     }

@@ -54,6 +54,9 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EnqueueDesigner.xaml.cs">
+      <DependentUpon>EnqueueDesigner.xaml</DependentUpon>
+    </Compile>
     <Compile Include="DialNounActivity.cs" />
     <Compile Include="DialNumber.cs" />
     <Compile Include="DialNumberNoun.cs" />
@@ -70,7 +73,10 @@
       <DependentUpon>DialSipUriDesigner.xaml</DependentUpon>
     </Compile>
     <Compile Include="Enqueue.cs" />
+    <Compile Include="Leave.cs" />
     <Compile Include="PersistenceStorageMode.cs" />
+    <Compile Include="EnqueueResult.cs" />
+    <Compile Include="EnqueueStatus.cs" />
     <Compile Include="Record.cs" />
     <Compile Include="RecordDesigner.xaml.cs">
       <DependentUpon>RecordDesigner.xaml</DependentUpon>
@@ -109,6 +115,10 @@
     <Compile Include="Voice.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="EnqueueDesigner.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="DialNumberDesigner.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -157,6 +167,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Icons\Play.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\Enqueue.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />

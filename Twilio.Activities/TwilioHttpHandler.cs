@@ -197,8 +197,12 @@ namespace Twilio.Activities
 
         void OnIdle(WorkflowApplicationIdleEventArgs args)
         {
-            // redirect to ourselves, in case no idle activity has already done it
-            TwilioResponse.Add(new XElement("Redirect", SelfUrl));
+            // if the response is empty, redirect back to ourselves periodically
+            if (!TwilioResponse.HasElements)
+            {
+                TwilioResponse.Add(new XElement("Pause", 2));
+                TwilioResponse.Add(new XElement("Redirect", SelfUrl));
+            }
         }
 
         UnhandledExceptionAction OnUnhandledException(WorkflowApplicationUnhandledExceptionEventArgs args)
@@ -221,7 +225,7 @@ namespace Twilio.Activities
         {
             // extract all query arguments if bookmark specified
             if (Request["Bookmark"] != null)
-                return Request.QueryString;
+                return Request.Params;
 
             return null;
         }

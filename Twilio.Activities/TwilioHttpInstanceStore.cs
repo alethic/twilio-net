@@ -148,7 +148,7 @@ namespace Twilio.Activities
                 {
                     var cki = new HttpCookie(string.Format("WF_{0}_p{1}", instanceId, i));
                     cki.Value = Convert.ToBase64String(dat, i * COOKIE_SIZE, Math.Min(COOKIE_SIZE, dat.Length - (i * COOKIE_SIZE)));
-                    cki.Expires = DateTime.Now.AddYears(1);
+                    cki.Expires = DateTime.Now.AddMinutes(10);
                     httpContext.Response.SetCookie(cki);
                 }
             }
