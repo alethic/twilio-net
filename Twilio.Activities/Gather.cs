@@ -2,6 +2,7 @@
 using System.Activities;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Runtime.ExceptionServices;
 using System.Xml.Linq;
 
 namespace Twilio.Activities
@@ -50,29 +51,20 @@ namespace Twilio.Activities
                 numDigits != null ? new XAttribute("numDigits", numDigits) : null);
 
             // write gather element
-            twilio.Element.Add(element);
-            twilio.Element.Add(new XElement("Redirect", twilio.BookmarkSelfUrl(bookmarkName)));
+            GetElement(context).Add(
+                element,
+                new XElement("Redirect", twilio.BookmarkSelfUrl(bookmarkName)));
 
             if (Body != null)
             {
-                // body will write into our Gather element
-                twilio.Element = element;
-                context.ScheduleActivity(Body, OnBodyCompletion, OnBodyFault);
+                SetElement(context, element);
+                context.ScheduleActivity(Body, OnBodyCompletion);
             }
         }
 
         void OnBodyCompletion(NativeActivityContext context, ActivityInstance instance)
         {
-            // reset element
-            var twilio = context.GetExtension<ITwilioContext>();
-            twilio.Element = twilio.Element.Parent;
-        }
 
-        void OnBodyFault(NativeActivityFaultContext context, Exception e, ActivityInstance instance)
-        {
-            // reset element
-            var twilio = context.GetExtension<ITwilioContext>();
-            twilio.Element = twilio.Element.Parent;
         }
 
         /// <summary>

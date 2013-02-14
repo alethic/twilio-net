@@ -48,21 +48,19 @@ namespace Twilio.Activities
             var number = Number.Get(context);
             var sendDigits = SendDigits.Get(context);
 
+            // add new Number element
+            var element = new XElement("Number",
+                !string.IsNullOrWhiteSpace(sendDigits) ? new XAttribute("sendDigits", sendDigits) : null,
+                number);
+            twilio.GetElement(context).Add(element);
+
+            // bookmark to execute Called activity
             if (Called != null)
             {
-                // url attribute will execute the Called activity
                 var calledBookmark = Guid.NewGuid().ToString();
                 context.CreateBookmark(calledBookmark, OnCalled);
-
-                twilio.Element.Add(new XElement("Number",
-                    new XAttribute("url", twilio.BookmarkSelfUrl(calledBookmark)),
-                    !string.IsNullOrWhiteSpace(sendDigits) ? new XAttribute("sendDigits", sendDigits) : null,
-                    number));
+                element.Add(new XAttribute("url", twilio.BookmarkSelfUrl(calledBookmark)));
             }
-            else
-                twilio.Element.Add(new XElement("Number",
-                    !string.IsNullOrWhiteSpace(sendDigits) ? new XAttribute("sendDigits", sendDigits) : null,
-                    number));
         }
 
         /// <summary>
@@ -79,14 +77,14 @@ namespace Twilio.Activities
         void OnCalledCompleted(NativeActivityContext context, ActivityInstance completedInstance)
         {
             var twilio = context.GetExtension<ITwilioContext>();
-            twilio.Element.Add(new XElement("Pause",
+            twilio.GetElement(context).Add(new XElement("Pause",
                 new XAttribute("length", 0)));
         }
 
         void OnCalledFaulted(NativeActivityFaultContext faultContext, Exception propagatedException, ActivityInstance propagatedFrom)
         {
             var twilio = faultContext.GetExtension<ITwilioContext>();
-            twilio.Element.Add(new XElement("Pause",
+            twilio.GetElement(faultContext).Add(new XElement("Pause",
                 new XAttribute("length", 0)));
         }
 

@@ -52,6 +52,7 @@ namespace Twilio.Activities
 
             // name to resume
             var bookmarkName = Guid.NewGuid().ToString();
+            context.CreateBookmark(bookmarkName, OnRecordFinished);
 
             // append record element
             var element = new XElement("Record",
@@ -63,11 +64,9 @@ namespace Twilio.Activities
                 playBeep != null ? new XAttribute("playBeep", (bool)playBeep ? "true" : "false") : null);
 
             // write dial element and catch redirect
-            twilio.Element.Add(element);
-            twilio.Element.Add(new XElement("Redirect", twilio.BookmarkSelfUrl(bookmarkName)));
-
-            // wait for post back
-            context.CreateBookmark(bookmarkName, OnRecordFinished);
+            GetElement(context).Add(
+                element,
+                new XElement("Redirect", twilio.BookmarkSelfUrl(bookmarkName)));
         }
 
         /// <summary>

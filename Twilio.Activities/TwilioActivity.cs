@@ -18,14 +18,16 @@ namespace Twilio.Activities
 
         public Collection<Variable> Variables { get; set; }
 
-        protected XElement GetElement(ActivityContext context)
+        protected XElement GetElement(NativeActivityContext context)
         {
-            return context.GetExtension<ITwilioContext>().Element;
+            return context.GetExtension<ITwilioContext>()
+                .GetElement(context);
         }
 
-        protected void SetElement(ActivityContext context, XElement element)
+        protected void SetElement(NativeActivityContext context, XElement element)
         {
-            context.GetExtension<ITwilioContext>().Element = element;
+            context.GetExtension<ITwilioContext>()
+                .SetElement(context, element);
         }
 
         protected override void CacheMetadata(NativeActivityMetadata metadata)
@@ -49,14 +51,16 @@ namespace Twilio.Activities
 
         public Collection<Variable> Variables { get; set; }
 
-        protected XElement GetElement(ActivityContext context)
+        protected XElement GetElement(NativeActivityContext context)
         {
-            return context.GetExtension<ITwilioContext>().Element;
+            return context.GetExtension<ITwilioContext>()
+                .GetElement(context);
         }
 
-        protected void SetElement(ActivityContext context, XElement element)
+        protected void SetElement(NativeActivityContext context, XElement element)
         {
-            context.GetExtension<ITwilioContext>().Element = element;
+            context.GetExtension<ITwilioContext>()
+                .SetElement(context, element);
         }
 
         protected override void CacheMetadata(NativeActivityMetadata metadata)

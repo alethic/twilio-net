@@ -15,9 +15,9 @@ namespace Twilio.Activities.Tests
         {
             var c = CreateContext(new Dial()
             {
-                Noun = new ActivityFunc<DialNoun>()
+                Nouns =
                 {
-                    Handler = new DialNumber()
+                    new DialNumber()
                     {
                         Number = "+15555555555",
                     },
@@ -37,7 +37,7 @@ namespace Twilio.Activities.Tests
         {
             var c = CreateContext(new Dial()
             {
-                Noun = new ActivityFunc<DialNoun>()
+                Nouns =
                 {
                     Handler = new DialSip()
                     {

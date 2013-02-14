@@ -1,72 +1,85 @@
-﻿using System.Activities;
-using System.Collections.Generic;
+﻿using System;
+using System.Activities;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Xml.Linq;
 
 namespace Twilio.Activities
 {
 
+    /// <summary>
+    /// Produces a dial body to dial a SIP address.
+    /// </summary>
     [Designer(typeof(DialSipDesigner))]
     public class DialSip : DialNoun
     {
 
+        /// <summary>
+        /// Initializes a new instance.
+        /// </summary>
         public DialSip()
         {
-            Uris = new List<ActivityFunc<DialSipUriNoun>>();
-            Enumerator = new Variable<IEnumerator<ActivityFunc<DialSipUriNoun>>>();
-            UriList = new Variable<List<DialSipUriNoun>>();
+            Uris = new Collection<DialSipUri>();
         }
 
-        public ICollection<ActivityFunc<DialSipUriNoun>> Uris { get; set; }
+        /// <summary>
+        /// SIP URIs to dial.
+        /// </summary>
+        [Browsable(false)]
+        public Collection<DialSipUri> Uris { get; set; }
 
-        Variable<IEnumerator<ActivityFunc<DialSipUriNoun>>> Enumerator { get; set; }
+        /// <summary>
+        /// Activities to be executed for the called party before the call is connected.
+        /// </summary>
+        [Browsable(false)]
+        public Activity Called { get; set; }
 
-        Variable<List<DialSipUriNoun>> UriList { get; set; }
-
-        protected override void CacheMetadata(NativeActivityMetadata metadata)
+        protected override bool CanInduceIdle
         {
-            base.CacheMetadata(metadata);
-            metadata.AddImplementationVariable(Enumerator);
-            metadata.AddImplementationVariable(UriList);
+            get { return true; }
         }
 
         protected override void Execute(NativeActivityContext context)
         {
-            // initialize lsit
-            UriList.Set(context, new List<DialSipUriNoun>());
+            var twilio = context.GetExtension<ITwilioContext>();
 
-            // begin evaluating funcs
-            Enumerator.Set(context, Uris.GetEnumerator());
+            // insert Sip element
+            var element = new XElement("Sip");
+            twilio.GetElement(context).Add(element);
 
-            // evaluate next func
-            MoveNext(context);
-        }
-
-        /// <summary>
-        /// Schedules the next func, or exits
-        /// </summary>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        void MoveNext(NativeActivityContext context)
-        {
-            var i = Enumerator.Get(context);
-            if (i.MoveNext())
-                context.ScheduleFunc(i.Current, UriCallback);
-            else
+            if (Called != null)
             {
-                Result.Set(context, new DialSipNoun()
-                {
-                    Uris = UriList.Get(context),
-                });
+                // url attribute will execute the Called activity
+                var calledBookmark = Guid.NewGuid().ToString();
+                context.CreateBookmark(calledBookmark, OnCalled);
+                element.Add(new XAttribute("url", twilio.BookmarkSelfUrl(calledBookmark)));
+            }
+
+            // schedule URI activities
+            if (Uris.Count > 0)
+            {
+                twilio.SetElement(context, element);
+                foreach (var uri in Uris)
+                    context.ScheduleActivity(uri);
             }
         }
 
-        void UriCallback(NativeActivityContext context, ActivityInstance activityInstance, DialSipUriNoun uri)
+        /// <summary>
+        /// Invoked when the called party uri is requested.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="bookmark"></param>
+        /// <param name="value"></param>
+        void OnCalled(NativeActivityContext context, Bookmark bookmark, object value)
         {
-            // append resulting uri
-            UriList.Get(context).Add(uri);
+            context.ScheduleActivity(Called, OnCalledCompleted);
+        }
 
-            // evaluate next func
-            MoveNext(context);
+        void OnCalledCompleted(NativeActivityContext context, ActivityInstance completedInstance)
+        {
+            GetElement(context).Add(
+                new XElement("Pause",
+                    new XAttribute("length", 0)));
         }
 
     }

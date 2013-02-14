@@ -28,7 +28,16 @@ namespace Twilio.Activities.Tests
             get { return selfUrl; }
         }
 
-        public Uri BookmarkSelfUri(string bookmarkName)
+        public Uri ResolveUrl(string url)
+        {
+            var uri = new Uri(url);
+            if (uri.IsAbsoluteUri)
+                return uri;
+            else
+                return new Uri(SelfUrl, url);
+        }
+
+        public Uri BookmarkSelfUrl(string bookmarkName)
         {
             return new Uri(SelfUrl, "?B=R");
         }

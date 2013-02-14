@@ -7,15 +7,12 @@ namespace Twilio.Activities
     /// <summary>
     /// Leaves a queue.
     /// </summary>
-    public class Leave : NativeActivity
+    public class Leave : TwilioActivity
     {
 
         protected override void Execute(NativeActivityContext context)
         {
-            var twilio = context.GetExtension<ITwilioContext>();
-
-            // add leave verb
-            twilio.Element.Add(new XElement("Leave"));
+            GetElement(context).Add(new XElement("Leave"));
         }
 
     }

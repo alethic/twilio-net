@@ -31,6 +31,11 @@ namespace Twilio.Activities
         static readonly string BookmarkQueryKey = "wf_Bookmark";
 
         /// <summary>
+        /// Namespace under which we'll put temporary attributes.
+        /// </summary>
+        static readonly XNamespace ns = "http://tempuri.org/";
+
+        /// <summary>
         /// Appends the given name and value to the query string.
         /// </summary>
         /// <param name="uri"></param>
@@ -349,15 +354,25 @@ namespace Twilio.Activities
             return BookmarkSelfUrl(bookmarkName);
         }
 
-        XElement ITwilioContext.Response
+        XElement ITwilioContext.GetElement(NativeActivityContext context)
         {
-            get { return TwilioResponse; }
+            // look up current element scope
+            var id = (Guid?)context.Properties.Find("Twilio.Activities_ScopeElementId");
+            if (id == null)
+                return TwilioResponse;
+
+            // resolve element at scope
+            return TwilioResponse.DescendantsAndSelf()
+                .FirstOrDefault(i => (Guid?)i.Attribute(ns + "id") == id);
         }
 
-        XElement ITwilioContext.Element
+        void ITwilioContext.SetElement(NativeActivityContext context, XElement element)
         {
-            get { return CurrentTwilioElement; }
-            set { CurrentTwilioElement = value; }
+            // obtain existing or new id
+            var id = (Guid?)element.Attribute(ns + "id") ?? Guid.NewGuid();
+
+            // set as current scope
+            context.Properties.Add("Twilio.Activities_ScopeElementId", id);
         }
 
     }

@@ -3,6 +3,7 @@ using System.Activities;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Runtime.ExceptionServices;
 using System.Web;
 using System.Xml.Linq;
 
@@ -99,14 +100,19 @@ namespace Twilio.Activities
                 callerId != null ? new XAttribute("callerId", callerId) : null,
                 record != null ? new XAttribute("record", (bool)record ? "true" : "false") : null);
 
-            // write dial element and configure context so children write into it
-            twilio.Element.Add(element);
-            twilio.Element.Add(new XElement("Redirect", twilio.BookmarkSelfUrl(bookmarkName)));
-            twilio.Element = element;
+            // write Dial element
+            twilio.GetElement(context).Add(
+                element,
+                new XElement("Redirect", twilio.BookmarkSelfUrl(bookmarkName)));
 
-            // schedule nouns (content of Dial)
-            foreach (var noun in Nouns)
-                context.ScheduleActivity(noun, OnNounCompleted, OnNounFaulted);
+            // execute nouns
+            if (Nouns.Count > 0)
+            {
+                // schedule nouns with reference to Dial element
+                twilio.SetElement(context, element);
+                foreach (var noun in Nouns)
+                    context.ScheduleActivity(noun, OnNounCompleted, OnNounFaulted);
+            }
         }
 
         /// <summary>
@@ -127,7 +133,7 @@ namespace Twilio.Activities
         /// <param name="propagatedFrom"></param>
         void OnNounFaulted(NativeActivityFaultContext faultContext, Exception propagatedException, ActivityInstance propagatedFrom)
         {
-
+            ExceptionDispatchInfo.Capture(propagatedException).Throw();
         }
 
         /// <summary>

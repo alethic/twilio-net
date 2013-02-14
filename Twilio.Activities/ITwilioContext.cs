@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Activities;
 using System.Xml.Linq;
 
 namespace Twilio.Activities
@@ -30,14 +31,18 @@ namespace Twilio.Activities
         Uri BookmarkSelfUrl(string bookmarkName);
 
         /// <summary>
-        /// Gets the root Twilio response element.
+        /// Gets the current element based on the given context.
         /// </summary>
-        XElement Response { get; }
+        /// <param name="context"></param>
+        /// <returns></returns>
+        XElement GetElement(NativeActivityContext context);
 
         /// <summary>
-        /// Gets the current element into which to insert new elements.
+        /// Sets the current element for the context.
         /// </summary>
-        XElement Element { get; set; }
+        /// <param name="context"></param>
+        /// <param name="element"></param>
+        void SetElement(NativeActivityContext context, XElement element);
 
     }
 

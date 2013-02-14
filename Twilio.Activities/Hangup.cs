@@ -13,7 +13,7 @@ namespace Twilio.Activities
         protected override void Execute(NativeActivityContext context)
         {
             var twilio = context.GetExtension<ITwilioContext>();
-            twilio.Element.Add(new XElement("Hangup"));
+            twilio.GetElement(context).Add(new XElement("Hangup"));
         }
 
     }

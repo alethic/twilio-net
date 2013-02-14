@@ -48,10 +48,11 @@ namespace Twilio.Activities
             // enqueue element with bookmarks to wait and action
             context.CreateBookmark(waitBookmarkName, OnWait);
             context.CreateBookmark(actionBookmarkName, OnAction);
-            twilio.Element.Add(new XElement("Enqueue",
-                new XAttribute("waitUrl", twilio.BookmarkSelfUrl(waitBookmarkName)),
-                new XAttribute("action", twilio.BookmarkSelfUrl(actionBookmarkName)),
-                queue));
+            GetElement(context).Add(
+                new XElement("Enqueue",
+                    new XAttribute("waitUrl", twilio.BookmarkSelfUrl(waitBookmarkName)),
+                    new XAttribute("action", twilio.BookmarkSelfUrl(actionBookmarkName)),
+                    queue));
         }
 
         /// <summary>
@@ -97,13 +98,11 @@ namespace Twilio.Activities
 
             // bookmark that represents entry back into wait
             var waitBookmarkName = Guid.NewGuid().ToString();
-
-            // direct us back to the wait url
             context.CreateBookmark(waitBookmarkName, OnWait);
-            if (!twilio.Element.HasElements)
-                twilio.Element.Add(new XElement("Pause", 1));
-            twilio.Element.Add(new XElement("Redirect",
-                twilio.BookmarkSelfUrl(waitBookmarkName)));
+            
+            GetElement(context).Add(
+                new XElement("Redirect",
+                    twilio.BookmarkSelfUrl(waitBookmarkName)));
         }
 
         void OnAction(NativeActivityContext context, Bookmark bookmark, object o)
