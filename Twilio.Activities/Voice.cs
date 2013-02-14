@@ -7,7 +7,14 @@
     public enum Voice
     {
 
+        /// <summary>
+        /// Use a male voice.
+        /// </summary>
         Man,
+        
+        /// <summary>
+        /// Use a female voice.
+        /// </summary>
         Woman,
 
     }
