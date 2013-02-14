@@ -1,0 +1,18 @@
+﻿<sap:ActivityDesigner
+    x:Class="Twilio.Activities.Design.DialSipUriDesigner"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:sap="clr-namespace:System.Activities.Presentation;assembly=System.Activities.Presentation"
+    xmlns:sapv="clr-namespace:System.Activities.Presentation.View;assembly=System.Activities.Presentation"
+    xmlns:sapc="clr-namespace:System.Activities.Presentation.Converters;assembly=System.Activities.Presentation"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+    <sap:ActivityDesigner.Resources>
+        <sapc:ArgumentToExpressionConverter
+            x:Key="ArgumentToExpressionConverter" />
+    </sap:ActivityDesigner.Resources>
+    <sapv:ExpressionTextBox
+        HintText="Uri"
+        Expression="{Binding ModelItem.Uri, Mode=TwoWay, Converter={StaticResource ArgumentToExpressionConverter}, ConverterParameter=In}"
+        ExpressionType="sys:String"
+        OwnerActivity="{Binding ModelItem}" />
+</sap:ActivityDesigner>
