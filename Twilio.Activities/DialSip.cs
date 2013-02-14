@@ -4,6 +4,8 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Xml.Linq;
 
+using Twilio.Activities.Design;
+
 namespace Twilio.Activities
 {
 
@@ -45,7 +47,7 @@ namespace Twilio.Activities
 
             // insert Sip element
             var element = new XElement("Sip");
-            twilio.GetElement(context).Add(element);
+            GetElement(context).Add(element);
 
             if (Called != null)
             {

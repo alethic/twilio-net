@@ -57,20 +57,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DialSip.cs" />
-    <Compile Include="DialSipDesigner.xaml.cs">
+    <Compile Include="Design\DialSipDesigner.xaml.cs">
       <DependentUpon>DialSipDesigner.xaml</DependentUpon>
     </Compile>
     <Compile Include="DialSipUri.cs" />
-    <Compile Include="DialSipUriDesigner.xaml.cs">
+    <Compile Include="Design\DialSipUriDesigner.xaml.cs">
       <DependentUpon>DialSipUriDesigner.xaml</DependentUpon>
     </Compile>
     <Compile Include="Hangup.cs" />
     <Compile Include="HttpSessionInstanceStore.cs" />
-    <Compile Include="EnqueueDesigner.xaml.cs">
+    <Compile Include="Design\EnqueueDesigner.xaml.cs">
       <DependentUpon>EnqueueDesigner.xaml</DependentUpon>
     </Compile>
     <Compile Include="DialNumber.cs" />
-    <Compile Include="DialNumberDesigner.xaml.cs">
+    <Compile Include="Design\DialNumberDesigner.xaml.cs">
       <DependentUpon>DialNumberDesigner.xaml</DependentUpon>
     </Compile>
     <Compile Include="DialNoun.cs" />
@@ -79,27 +79,26 @@
     <Compile Include="EnqueueResult.cs" />
     <Compile Include="EnqueueStatus.cs" />
     <Compile Include="Record.cs" />
-    <Compile Include="RecordDesigner.xaml.cs">
+    <Compile Include="Design\RecordDesigner.xaml.cs">
       <DependentUpon>RecordDesigner.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PlayDesigner.xaml.cs">
+    <Compile Include="Design\PlayDesigner.xaml.cs">
       <DependentUpon>PlayDesigner.xaml</DependentUpon>
     </Compile>
-    <Compile Include="DialDesigner.xaml.cs">
+    <Compile Include="Design\DialDesigner.xaml.cs">
       <DependentUpon>DialDesigner.xaml</DependentUpon>
     </Compile>
     <Compile Include="Dial.cs" />
     <Compile Include="DialCallStatus.cs" />
-    <Compile Include="GatherDesigner.xaml.cs">
+    <Compile Include="Design\GatherDesigner.xaml.cs">
       <DependentUpon>GatherDesigner.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PauseDesigner.xaml.cs">
+    <Compile Include="Design\PauseDesigner.xaml.cs">
       <DependentUpon>PauseDesigner.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pause.cs" />
     <Compile Include="Play.cs" />
-    <Compile Include="Result.cs" />
-    <Compile Include="SayDesigner.xaml.cs">
+    <Compile Include="Design\SayDesigner.xaml.cs">
       <DependentUpon>SayDesigner.xaml</DependentUpon>
     </Compile>
     <Compile Include="HttpInstanceStore.cs" />
@@ -112,46 +111,53 @@
     <Compile Include="HttpHandler.cs">
     </Compile>
     <Compile Include="HttpCookieInstanceStore.cs" />
+    <Compile Include="Design\WorkflowItemsPresenterConnector.xaml.cs">
+      <DependentUpon>WorkflowItemsPresenterConnector.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Voice.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="DialSipDesigner.xaml">
+    <Page Include="Design\DialSipDesigner.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="DialSipUriDesigner.xaml">
+    <Page Include="Design\DialSipUriDesigner.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="EnqueueDesigner.xaml">
+    <Page Include="Design\EnqueueDesigner.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="DialNumberDesigner.xaml">
+    <Page Include="Design\DialNumberDesigner.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="RecordDesigner.xaml">
+    <Page Include="Design\RecordDesigner.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="PlayDesigner.xaml">
+    <Page Include="Design\PlayDesigner.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="DialDesigner.xaml">
+    <Page Include="Design\DialDesigner.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="GatherDesigner.xaml">
+    <Page Include="Design\GatherDesigner.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="PauseDesigner.xaml">
+    <Page Include="Design\PauseDesigner.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="SayDesigner.xaml">
+    <Page Include="Design\SayDesigner.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Design\WorkflowItemsPresenterConnector.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -1,5 +1,6 @@
 ﻿using System.Activities;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Xml.Linq;
 
 namespace Twilio.Activities
@@ -16,14 +17,25 @@ namespace Twilio.Activities
             Variables = new Collection<Variable>();
         }
 
+        [Browsable(false)]
         public Collection<Variable> Variables { get; set; }
 
+        /// <summary>
+        /// Gets the current element based on the given context.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         protected XElement GetElement(NativeActivityContext context)
         {
             return context.GetExtension<ITwilioContext>()
                 .GetElement(context);
         }
 
+        /// <summary>
+        /// Sets the current element for the given context.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="element"></param>
         protected void SetElement(NativeActivityContext context, XElement element)
         {
             context.GetExtension<ITwilioContext>()
@@ -49,14 +61,25 @@ namespace Twilio.Activities
             Variables = new Collection<Variable>();
         }
 
+        [Browsable(false)]
         public Collection<Variable> Variables { get; set; }
 
+        /// <summary>
+        /// Gets the current element based on the given context.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         protected XElement GetElement(NativeActivityContext context)
         {
             return context.GetExtension<ITwilioContext>()
                 .GetElement(context);
         }
 
+        /// <summary>
+        /// Sets the current element for the given context.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="element"></param>
         protected void SetElement(NativeActivityContext context, XElement element)
         {
             context.GetExtension<ITwilioContext>()

@@ -3,6 +3,8 @@ using System.Activities;
 using System.ComponentModel;
 using System.Xml.Linq;
 
+using Twilio.Activities.Design;
+
 namespace Twilio.Activities
 {
 
@@ -20,8 +22,9 @@ namespace Twilio.Activities
         {
             var duration = Duration.Get(context);
 
-            GetElement(context).Add(new XElement("Pause",
-                new XAttribute("length", (int)duration.TotalSeconds)));
+            GetElement(context).Add(
+                new XElement("Pause",
+                    new XAttribute("length", (int)duration.TotalSeconds)));
         }
 
     }

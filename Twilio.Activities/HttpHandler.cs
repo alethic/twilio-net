@@ -33,7 +33,7 @@ namespace Twilio.Activities
         /// <summary>
         /// Namespace under which we'll put temporary attributes.
         /// </summary>
-        static readonly XNamespace ns = "http://tempuri.org/";
+        static readonly XNamespace ns = "http://tempuri.org/xml/Twilio.Activities";
 
         /// <summary>
         /// Appends the given name and value to the query string.
@@ -250,6 +250,12 @@ namespace Twilio.Activities
             if (UnhandledExceptionInfo != null)
                 UnhandledExceptionInfo.Throw();
 
+            // strip off temporary attributes
+            foreach (var element in TwilioResponse.DescendantsAndSelf())
+                foreach (var attribute in element.Attributes())
+                    if (attribute.Name.Namespace == ns)
+                        attribute.Remove();
+
             // write finished twilio output
             context.Response.ContentType = "text/xml";
             using (var wrt = XmlWriter.Create(Response.Output))
@@ -276,7 +282,7 @@ namespace Twilio.Activities
             // if the response is empty, redirect back to ourselves periodically
             if (!TwilioResponse.HasElements)
             {
-                TwilioResponse.Add(new XElement("Pause", 2));
+                TwilioResponse.Add(new XElement("Pause", new XAttribute("length", 2)));
                 TwilioResponse.Add(new XElement("Redirect", SelfUrl));
             }
         }
@@ -361,15 +367,16 @@ namespace Twilio.Activities
             if (id == null)
                 return TwilioResponse;
 
-            // resolve element at scope
+            // resolve element at scope, or simply return root
             return TwilioResponse.DescendantsAndSelf()
-                .FirstOrDefault(i => (Guid?)i.Attribute(ns + "id") == id);
+                .FirstOrDefault(i => (Guid?)i.Attribute(ns + "id") == id) ?? TwilioResponse;
         }
 
         void ITwilioContext.SetElement(NativeActivityContext context, XElement element)
         {
             // obtain existing or new id
-            var id = (Guid?)element.Attribute(ns + "id") ?? Guid.NewGuid();
+            var id = (Guid)((Guid?)element.Attribute(ns + "id") ?? Guid.NewGuid());
+            element.SetAttributeValue(ns + "id", id);
 
             // set as current scope
             context.Properties.Add("Twilio.Activities_ScopeElementId", id);

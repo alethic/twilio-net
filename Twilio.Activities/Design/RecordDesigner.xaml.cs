@@ -1,4 +1,4 @@
-﻿namespace Twilio.Activities
+﻿namespace Twilio.Activities.Design
 {
 
     public partial class RecordDesigner

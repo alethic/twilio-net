@@ -3,6 +3,8 @@ using System.Activities;
 using System.ComponentModel;
 using System.Xml.Linq;
 
+using Twilio.Activities.Design;
+
 namespace Twilio.Activities
 {
 

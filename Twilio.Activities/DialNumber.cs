@@ -3,6 +3,8 @@ using System.Activities;
 using System.ComponentModel;
 using System.Xml.Linq;
 
+using Twilio.Activities.Design;
+
 namespace Twilio.Activities
 {
 
@@ -52,7 +54,7 @@ namespace Twilio.Activities
             var element = new XElement("Number",
                 !string.IsNullOrWhiteSpace(sendDigits) ? new XAttribute("sendDigits", sendDigits) : null,
                 number);
-            twilio.GetElement(context).Add(element);
+            GetElement(context).Add(element);
 
             // bookmark to execute Called activity
             if (Called != null)
@@ -71,20 +73,12 @@ namespace Twilio.Activities
         /// <param name="value"></param>
         void OnCalled(NativeActivityContext context, Bookmark bookmark, object value)
         {
-            context.ScheduleActivity(Called, OnCalledCompleted, OnCalledFaulted);
+            context.ScheduleActivity(Called, OnCalledCompleted);
         }
 
         void OnCalledCompleted(NativeActivityContext context, ActivityInstance completedInstance)
         {
-            var twilio = context.GetExtension<ITwilioContext>();
-            twilio.GetElement(context).Add(new XElement("Pause",
-                new XAttribute("length", 0)));
-        }
-
-        void OnCalledFaulted(NativeActivityFaultContext faultContext, Exception propagatedException, ActivityInstance propagatedFrom)
-        {
-            var twilio = faultContext.GetExtension<ITwilioContext>();
-            twilio.GetElement(faultContext).Add(new XElement("Pause",
+            GetElement(context).Add(new XElement("Pause",
                 new XAttribute("length", 0)));
         }
 

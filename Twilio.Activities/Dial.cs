@@ -4,8 +4,9 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Runtime.ExceptionServices;
-using System.Web;
 using System.Xml.Linq;
+
+using Twilio.Activities.Design;
 
 namespace Twilio.Activities
 {
@@ -101,7 +102,7 @@ namespace Twilio.Activities
                 record != null ? new XAttribute("record", (bool)record ? "true" : "false") : null);
 
             // write Dial element
-            twilio.GetElement(context).Add(
+            GetElement(context).Add(
                 element,
                 new XElement("Redirect", twilio.BookmarkSelfUrl(bookmarkName)));
 
@@ -111,29 +112,8 @@ namespace Twilio.Activities
                 // schedule nouns with reference to Dial element
                 twilio.SetElement(context, element);
                 foreach (var noun in Nouns)
-                    context.ScheduleActivity(noun, OnNounCompleted, OnNounFaulted);
+                    context.ScheduleActivity(noun);
             }
-        }
-
-        /// <summary>
-        /// Invoked when one of the nouns is completed.
-        /// </summary>
-        /// <param name="context"></param>
-        /// <param name="completedInstance"></param>
-        void OnNounCompleted(NativeActivityContext context, ActivityInstance completedInstance)
-        {
-
-        }
-
-        /// <summary>
-        /// Invoked when one of the nouns faults.
-        /// </summary>
-        /// <param name="faultContext"></param>
-        /// <param name="propagatedException"></param>
-        /// <param name="propagatedFrom"></param>
-        void OnNounFaulted(NativeActivityFaultContext faultContext, Exception propagatedException, ActivityInstance propagatedFrom)
-        {
-            ExceptionDispatchInfo.Capture(propagatedException).Throw();
         }
 
         /// <summary>
