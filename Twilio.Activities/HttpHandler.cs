@@ -144,7 +144,7 @@ namespace Twilio.Activities
         /// <returns></returns>
         Uri LocalizeUri(Uri uri)
         {
-            return AppendQueryArgToUri(SessionIDManager.ApplySessionIDQueryArg(uri), InstanceIdQueryKey, WfApplication.Id.ToString());
+            return AppendQueryArgToUri(uri, InstanceIdQueryKey, WfApplication.Id.ToString());
         }
 
         /// <summary>
