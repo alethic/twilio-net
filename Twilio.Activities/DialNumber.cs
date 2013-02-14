@@ -55,7 +55,7 @@ namespace Twilio.Activities
                 context.CreateBookmark(calledBookmark, OnCalled);
 
                 twilio.Element.Add(new XElement("Number",
-                    new XAttribute("url", twilio.BookmarkSelfUri(calledBookmark)),
+                    new XAttribute("url", twilio.BookmarkSelfUrl(calledBookmark)),
                     !string.IsNullOrWhiteSpace(sendDigits) ? new XAttribute("sendDigits", sendDigits) : null,
                     number));
             }
@@ -79,13 +79,15 @@ namespace Twilio.Activities
         void OnCalledCompleted(NativeActivityContext context, ActivityInstance completedInstance)
         {
             var twilio = context.GetExtension<ITwilioContext>();
-            twilio.Element.Add(new XElement("Pause", 0));
+            twilio.Element.Add(new XElement("Pause",
+                new XAttribute("length", 0)));
         }
 
         void OnCalledFaulted(NativeActivityFaultContext faultContext, Exception propagatedException, ActivityInstance propagatedFrom)
         {
             var twilio = faultContext.GetExtension<ITwilioContext>();
-            twilio.Element.Add(new XElement("Pause", 0));
+            twilio.Element.Add(new XElement("Pause",
+                new XAttribute("length", 0)));
         }
 
     }

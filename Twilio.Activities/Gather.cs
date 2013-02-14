@@ -44,14 +44,14 @@ namespace Twilio.Activities
 
             // append gather element
             var element = new XElement("Gather",
-                new XAttribute("action", twilio.BookmarkSelfUri(bookmarkName)),
+                new XAttribute("action", twilio.BookmarkSelfUrl(bookmarkName)),
                 timeout != null ? new XAttribute("timeout", ((TimeSpan)timeout).TotalSeconds) : null,
                 finishOnKey != null ? new XAttribute("finishOnKey", finishOnKey) : null,
                 numDigits != null ? new XAttribute("numDigits", numDigits) : null);
 
             // write gather element
             twilio.Element.Add(element);
-            twilio.Element.Add(new XElement("Redirect", twilio.BookmarkSelfUri(bookmarkName)));
+            twilio.Element.Add(new XElement("Redirect", twilio.BookmarkSelfUrl(bookmarkName)));
 
             if (Body != null)
             {

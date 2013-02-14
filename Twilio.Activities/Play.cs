@@ -17,12 +17,13 @@ namespace Twilio.Activities
 
         protected override void Execute(NativeActivityContext context)
         {
+            var twilio = context.GetExtension<ITwilioContext>();
             var url = Url.Get(context);
             var loop = Loop.Get(context);
 
             GetElement(context).Add(new XElement("Play",
                 loop != null ? new XAttribute("loop", loop) : null,
-                url));
+                twilio.ResolveUrl(url).ToString()));
         }
 
     }

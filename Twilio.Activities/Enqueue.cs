@@ -49,8 +49,8 @@ namespace Twilio.Activities
             context.CreateBookmark(waitBookmarkName, OnWait);
             context.CreateBookmark(actionBookmarkName, OnAction);
             twilio.Element.Add(new XElement("Enqueue",
-                new XAttribute("waitUrl", twilio.BookmarkSelfUri(waitBookmarkName)),
-                new XAttribute("action", twilio.BookmarkSelfUri(actionBookmarkName)),
+                new XAttribute("waitUrl", twilio.BookmarkSelfUrl(waitBookmarkName)),
+                new XAttribute("action", twilio.BookmarkSelfUrl(actionBookmarkName)),
                 queue));
         }
 
@@ -103,7 +103,7 @@ namespace Twilio.Activities
             if (!twilio.Element.HasElements)
                 twilio.Element.Add(new XElement("Pause", 1));
             twilio.Element.Add(new XElement("Redirect",
-                twilio.BookmarkSelfUri(waitBookmarkName)));
+                twilio.BookmarkSelfUrl(waitBookmarkName)));
         }
 
         void OnAction(NativeActivityContext context, Bookmark bookmark, object o)

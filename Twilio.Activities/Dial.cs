@@ -92,7 +92,7 @@ namespace Twilio.Activities
 
             // dial element
             var element = new XElement("Dial",
-                new XAttribute("action", twilio.BookmarkSelfUri(bookmarkName)),
+                new XAttribute("action", twilio.BookmarkSelfUrl(bookmarkName)),
                 timeout != null ? new XAttribute("timeout", ((TimeSpan)timeout).TotalSeconds) : null,
                 hangupOnStar != null ? new XAttribute("hangupOnStar", (bool)hangupOnStar ? "true" : "false") : null,
                 timeLimit != null ? new XAttribute("timeLimit", ((TimeSpan)timeLimit).TotalSeconds) : null,
@@ -101,7 +101,7 @@ namespace Twilio.Activities
 
             // write dial element and configure context so children write into it
             twilio.Element.Add(element);
-            twilio.Element.Add(new XElement("Redirect", twilio.BookmarkSelfUri(bookmarkName)));
+            twilio.Element.Add(new XElement("Redirect", twilio.BookmarkSelfUrl(bookmarkName)));
             twilio.Element = element;
 
             // schedule nouns (content of Dial)

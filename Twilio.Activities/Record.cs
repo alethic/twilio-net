@@ -55,7 +55,7 @@ namespace Twilio.Activities
 
             // append record element
             var element = new XElement("Record",
-                new XAttribute("action", twilio.BookmarkSelfUri(bookmarkName)),
+                new XAttribute("action", twilio.BookmarkSelfUrl(bookmarkName)),
                 timeout != null ? new XAttribute("timeout", ((TimeSpan)timeout).TotalSeconds) : null,
                 finishOnKey != null ? new XAttribute("finishOnKey", finishOnKey) : null,
                 maxLength != null ? new XAttribute("maxLength", ((TimeSpan)maxLength).TotalSeconds) : null,
@@ -64,7 +64,7 @@ namespace Twilio.Activities
 
             // write dial element and catch redirect
             twilio.Element.Add(element);
-            twilio.Element.Add(new XElement("Redirect", twilio.BookmarkSelfUri(bookmarkName)));
+            twilio.Element.Add(new XElement("Redirect", twilio.BookmarkSelfUrl(bookmarkName)));
 
             // wait for post back
             context.CreateBookmark(bookmarkName, OnRecordFinished);
@@ -83,8 +83,8 @@ namespace Twilio.Activities
             var recordingDuration = r["RecordingDuration"];
             var digits = r["Digits"];
 
-            Result.Set(context, recordingUrl != null ? new Uri(recordingUrl) : null);
-            RecordingUrl.Set(context, recordingUrl != null ? new Uri(recordingUrl) : null);
+            Result.Set(context, recordingUrl != null ? new Uri(recordingUrl, UriKind.RelativeOrAbsolute) : null);
+            RecordingUrl.Set(context, recordingUrl != null ? new Uri(recordingUrl, UriKind.RelativeOrAbsolute) : null);
             Duration.Set(context, recordingDuration != null ? TimeSpan.FromSeconds(int.Parse(recordingDuration)) : TimeSpan.Zero);
             Digits.Set(context, digits);
         }

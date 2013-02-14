@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
-using System.Text;
 using System.Web;
 using System.Web.SessionState;
 
@@ -14,6 +13,11 @@ namespace Twilio.Activities
     /// </summary>
     public class SessionIDManager : ISessionIDManager
     {
+
+        /// <summary>
+        /// Query argument key name to persist the session ID.
+        /// </summary>
+        public static readonly string SessionIDQueryKey = "s_SessionId";
 
         /// <summary>
         /// Applies the SessionID to the given Uri.
@@ -33,12 +37,13 @@ namespace Twilio.Activities
                 return uri;
 
             // parse query string and update session id
-            var q = HttpUtility.ParseQueryString(uri.Query);
-            q["SessionId"] = ctx.Session.SessionID;
+            var q = uri.IsAbsoluteUri ? HttpUtility.ParseQueryString(uri.Query) : new NameValueCollection();
+            q[SessionIDQueryKey] = ctx.Session.SessionID;
 
             // rebuild uri with new query string
-            return new Uri(uri, "?" + string.Join("&", q.AllKeys
-                .Select(i => HttpUtility.UrlEncode(i) + "=" + HttpUtility.UrlEncode(q[i]))));
+            var b = new UriBuilder(uri);
+            b.Query = string.Join("&", q.AllKeys.Select(i => HttpUtility.UrlEncode(i) + "=" + HttpUtility.UrlEncode(q[i])));
+            return b.Uri;
         }
 
         public void Initialize()
@@ -65,7 +70,7 @@ namespace Twilio.Activities
 
         public string GetSessionID(HttpContext context)
         {
-            return context.Request.QueryString["SessionId"];
+            return context.Request.QueryString[SessionIDQueryKey];
         }
 
         public void RemoveSessionID(HttpContext context)
