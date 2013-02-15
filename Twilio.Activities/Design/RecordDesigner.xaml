@@ -5,8 +5,7 @@
     xmlns:sap="clr-namespace:System.Activities.Presentation;assembly=System.Activities.Presentation"
     xmlns:sapv="clr-namespace:System.Activities.Presentation.View;assembly=System.Activities.Presentation"
     xmlns:sapc="clr-namespace:System.Activities.Presentation.Converters;assembly=System.Activities.Presentation"
-    xmlns:sys="clr-namespace:System;assembly=mscorlib"
-    ExpandState="True">
+    xmlns:sys="clr-namespace:System;assembly=mscorlib">
     <sap:ActivityDesigner.Resources>
         <sapc:ArgumentToExpressionConverter
             x:Key="ArgumentToExpressionConverter" />
@@ -16,9 +15,24 @@
         <DataTemplate
             x:Key="Expanded">
             <StackPanel>
-                <sap:WorkflowItemPresenter
-                    Item="{Binding ModelItem.Body, Mode=TwoWay}"
-                    HintText="Please drop an activity here" />
+                <TextBlock>Timeout:</TextBlock>
+                <sapv:ExpressionTextBox
+                    MaxLines="10"
+                    Expression="{Binding ModelItem.Timeout, Mode=TwoWay, Converter={StaticResource ArgumentToExpressionConverter}}"
+                    ExpressionType="{x:Type sys:TimeSpan}"
+                    OwnerActivity="{Binding ModelItem}" />
+                <TextBlock>Max Length:</TextBlock>
+                <sapv:ExpressionTextBox
+                    MaxLines="10"
+                    Expression="{Binding ModelItem.MaxLength, Mode=TwoWay, Converter={StaticResource ArgumentToExpressionConverter}}"
+                    ExpressionType="{x:Type sys:TimeSpan}"
+                    OwnerActivity="{Binding ModelItem}" />
+                <TextBlock>Finish on Key:</TextBlock>
+                <sapv:ExpressionTextBox
+                    MaxLines="10"
+                    Expression="{Binding ModelItem.FinishOnKey, Mode=TwoWay, Converter={StaticResource ArgumentToExpressionConverter}}"
+                    ExpressionType="{x:Type sys:Char}"
+                    OwnerActivity="{Binding ModelItem}" />
             </StackPanel>
         </DataTemplate>
         <Style
@@ -49,7 +63,7 @@
                     </ImageDrawing.Rect>
                     <ImageDrawing.ImageSource>
                         <BitmapImage
-                            UriSource="../Icons/Gather.png" />
+                            UriSource="../Icons/Record.png" />
                     </ImageDrawing.ImageSource>
                 </ImageDrawing>
             </DrawingBrush.Drawing>

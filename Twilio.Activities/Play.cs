@@ -1,9 +1,13 @@
 ﻿using System.Activities;
+using System.ComponentModel;
 using System.Xml.Linq;
+
+using Twilio.Activities.Design;
 
 namespace Twilio.Activities
 {
 
+    [Designer(typeof(PlayDesigner))]
     public sealed class Play : TwilioActivity
     {
 

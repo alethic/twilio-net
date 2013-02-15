@@ -15,7 +15,7 @@
         <DataTemplate
             x:Key="Expanded">
             <StackPanel>
-                <TextBlock>Url to play:</TextBlock>
+                <TextBlock>Url:</TextBlock>
                 <sapv:ExpressionTextBox
                     MaxLines="10"
                     Expression="{Binding ModelItem.Url, Mode=TwoWay, Converter={StaticResource ArgumentToExpressionConverter}}"
