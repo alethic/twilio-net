@@ -2,8 +2,10 @@
 using System.Activities;
 using System.ComponentModel;
 using System.Xml.Linq;
+using System.Linq;
 
 using Twilio.Activities.Design;
+using System.Activities.Validation;
 
 namespace Twilio.Activities
 {
@@ -16,16 +18,9 @@ namespace Twilio.Activities
     {
 
         /// <summary>
-        /// Initializes a new instance.
-        /// </summary>
-        public DialNumber()
-        {
-
-        }
-
-        /// <summary>
         /// Number to dial.
         /// </summary>
+        [RequiredArgument]
         public InArgument<string> Number { get; set; }
 
         /// <summary>
