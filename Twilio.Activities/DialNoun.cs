@@ -28,9 +28,9 @@ namespace Twilio.Activities
             var parent = new DelegateInArgument<Activity>();
             var parentIsOuter = new Variable<bool>();
 
-            return new Constraint<DialNoun>
+            return new Constraint<DialNoun>()
             {
-                Body = new ActivityAction<DialNoun, ValidationContext>
+                Body = new ActivityAction<DialNoun, ValidationContext>()
                 {
                     Argument1 = activityBeingValidated,
                     Argument2 = validationContext,

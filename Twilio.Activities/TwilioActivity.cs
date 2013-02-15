@@ -1,4 +1,6 @@
 ﻿using System.Activities;
+using System.Activities.Statements;
+using System.Activities.Validation;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Xml.Linq;
@@ -6,6 +8,9 @@ using System.Xml.Linq;
 namespace Twilio.Activities
 {
 
+    /// <summary>
+    /// Base activity class from which all Twilio activities extend.
+    /// </summary>
     public abstract class TwilioActivity : NativeActivity
     {
 
@@ -50,6 +55,9 @@ namespace Twilio.Activities
 
     }
 
+    /// <summary>
+    /// Base activity class from which all Twilio activities extend.
+    /// </summary>
     public abstract class TwilioActivity<TResult> : NativeActivity<TResult>
     {
 

@@ -56,6 +56,11 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CallContext.cs" />
+    <Compile Include="CallScope.cs" />
+    <Compile Include="Design\CallScopeDesigner.xaml.cs">
+      <DependentUpon>CallScopeDesigner.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Design\WorkflowItemsPresenterParallelConnector.xaml.cs">
       <DependentUpon>WorkflowItemsPresenterParallelConnector.xaml</DependentUpon>
     </Compile>
@@ -120,6 +125,10 @@
     <Compile Include="Voice.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Design\CallScopeDesigner.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Design\WorkflowItemsPresenterParallelConnector.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

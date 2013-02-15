@@ -2,41 +2,41 @@
 using System.Activities.Statements;
 using System.Activities.Validation;
 using System.ComponentModel;
-using System.Xml.Linq;
 
 using Twilio.Activities.Design;
 
 namespace Twilio.Activities
 {
 
-    [Designer(typeof(DialSipUriDesigner))]
-    public class DialSipUri : TwilioActivity
+    /// <summary>
+    /// Represents the required outside scope of a Twilio call workflow. Provides basic call information to children.
+    /// </summary>
+    [Designer(typeof(CallScopeDesigner))]
+    public class CallScope : TwilioActivity
     {
 
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        public DialSipUri()
+        public CallScope()
         {
-            Constraints.Add(MustBeInsideDialSipActivityConstraint());
+            Constraints.Add(MustNotBeInsideOfCallScope());
         }
 
-        public InArgument<string> Uri { get; set; }
-
-        public InArgument<string> UserName { get; set; }
-
-        public InArgument<string> Password { get; set; }
-
-        Constraint<DialSipUri> MustBeInsideDialSipActivityConstraint()
+        /// <summary>
+        /// Validates whether the DialNoun activity is contained within a Dial activity.
+        /// </summary>
+        /// <returns></returns>
+        Constraint<CallScope> MustNotBeInsideOfCallScope()
         {
-            var activityBeingValidated = new DelegateInArgument<DialSipUri>();
+            var activityBeingValidated = new DelegateInArgument<CallScope>();
             var validationContext = new DelegateInArgument<ValidationContext>();
             var parent = new DelegateInArgument<Activity>();
-            var parentIsOuter = new Variable<bool>();
+            var parentIsCallScope = new Variable<bool>(env => true);
 
-            return new Constraint<DialSipUri>()
+            return new Constraint<CallScope>()
             {
-                Body = new ActivityAction<DialSipUri, ValidationContext>()
+                Body = new ActivityAction<CallScope, ValidationContext>()
                 {
                     Argument1 = activityBeingValidated,
                     Argument2 = validationContext,
@@ -45,7 +45,7 @@ namespace Twilio.Activities
                     {
                         Variables = 
                         {
-                            parentIsOuter,
+                            parentIsCallScope,
                         },
                         Activities =
                         {
@@ -58,23 +58,20 @@ namespace Twilio.Activities
                                 Body = new ActivityAction<Activity>()
                                 {
                                     Argument = parent,
-                                    Handler = new If()
+                                    Handler = new If(env => parent.Get(env).GetType() == typeof(CallScope))
                                     {
-                                        Condition = new InArgument<bool>(env => 
-                                            parent.Get(env).GetType() == typeof(DialSip)),
-
                                         Then = new Assign<bool>()
                                         { 
-                                            To = parentIsOuter,
-                                            Value = true,
+                                            To = parentIsCallScope,
+                                            Value = false,
                                         },
                                     },
                                 },
                             },
                             new AssertValidation()
                             {
-                                Assertion = parentIsOuter,
-                                Message = "DialSipUris must be nested inside DialSip",
+                                Assertion = parentIsCallScope,
+                                Message = "CallScope cannot be nested inside another CallScope",
                                 IsWarning = false,
                             },
                         },
@@ -83,21 +80,12 @@ namespace Twilio.Activities
             };
         }
 
+        public ActivityAction<CallContext> Body { get; set; }
+
         protected override void Execute(NativeActivityContext context)
         {
-            var uri = Uri.Get(context);
-            var userName = UserName.Get(context);
-            var password = Password.Get(context);
-
-            if (GetElement(context).Name != "Sip")
-                throw new InvalidWorkflowException("DialSipUri executing without Sip element. All DialSipUri of a DialSip must execute along with the DialSip.");
-
-            // add Sip element
-            GetElement(context).Add(
-                new XElement("Uri",
-                    userName != null ? new XAttribute("username", userName) : null,
-                    password != null ? new XAttribute("password", password) : null,
-                    uri));
+            if (Body != null)
+                context.ScheduleAction(Body, context.GetExtension<ITwilioContext>().CallContext);
         }
 
     }

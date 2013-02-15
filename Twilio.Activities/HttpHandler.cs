@@ -345,6 +345,11 @@ namespace Twilio.Activities
             }
         }
 
+        CallContext ITwilioContext.CallContext
+        {
+            get { return new CallContext(); }
+        }
+
         Uri ITwilioContext.SelfUrl
         {
             get { return SelfUrl; }

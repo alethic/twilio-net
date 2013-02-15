@@ -37,9 +37,9 @@ namespace Twilio.Activities
             var inner = new DelegateInArgument<Activity>();
             var nounIsInner = new Variable<bool>();
 
-            return new Constraint<Dial>
+            return new Constraint<Dial>()
             {
-                Body = new ActivityAction<Dial, ValidationContext>
+                Body = new ActivityAction<Dial, ValidationContext>()
                 {
                     Argument1 = activityBeingValidated,
                     Argument2 = validationContext,
