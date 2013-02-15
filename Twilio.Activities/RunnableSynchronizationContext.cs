@@ -28,6 +28,11 @@ namespace Twilio.Activities
         /// </summary>
         public void Run()
         {
+            // continue until we're complete
+            foreach (var item in actions.GetConsumingEnumerable())
+                item.Item1(item.Item2);
+
+            // finish any left over items added as a result of being complete
             foreach (var item in actions.GetConsumingEnumerable())
                 item.Item1(item.Item2);
         }

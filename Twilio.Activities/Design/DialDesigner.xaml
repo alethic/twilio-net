@@ -16,9 +16,8 @@
         <DataTemplate
             x:Key="Expanded">
             <sap:WorkflowItemsPresenter
-                Items="{Binding ModelItem.Nouns}"
-                HintText="Place dial nouns here"
-                AllowedItemType="{x:Type local:DialNoun}">
+                Items="{Binding ModelItem.Activities}"
+                HintText="Place dial nouns here">
                 <sap:WorkflowItemsPresenter.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel
@@ -28,7 +27,6 @@
                 <sap:WorkflowItemsPresenter.SpacerTemplate>
                     <DataTemplate>
                         <design:WorkflowItemsPresenterConnector
-                            AllowedItemType="{x:Type local:DialNoun}"
                             Focusable="True"
                             Context="{Binding Context}" />
                     </DataTemplate>

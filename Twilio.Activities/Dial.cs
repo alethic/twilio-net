@@ -20,7 +20,7 @@ namespace Twilio.Activities
         /// </summary>
         public Dial()
         {
-            Nouns = new Collection<DialNoun>();
+            Activities = new Collection<Activity>();
         }
 
         /// <summary>
@@ -69,10 +69,10 @@ namespace Twilio.Activities
         public OutArgument<Uri> RecordingUrl { get; set; }
 
         /// <summary>
-        /// Instructions on how to dial.
+        /// Activies executed for the body of Dial.
         /// </summary>
         [Browsable(false)]
-        public Collection<DialNoun> Nouns { get; set; }
+        public Collection<Activity> Activities { get; set; }
 
         protected override bool CanInduceIdle
         {
@@ -107,11 +107,11 @@ namespace Twilio.Activities
                 new XElement("Redirect", twilio.BookmarkSelfUrl(bookmarkName)));
 
             // execute nouns
-            if (Nouns.Count > 0)
+            if (Activities.Count > 0)
             {
                 // schedule nouns with reference to Dial element
                 twilio.SetElement(context, element);
-                foreach (var noun in Nouns)
+                foreach (var noun in Activities)
                     context.ScheduleActivity(noun);
             }
         }

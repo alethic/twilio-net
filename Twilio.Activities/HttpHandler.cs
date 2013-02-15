@@ -243,8 +243,9 @@ namespace Twilio.Activities
             // begin running the application
             WfApplication.BeginRun(i => WfApplication.EndRun(i), null);
 
-            // process any outstanding events until completion
+            // process any outstanding events until completion and ensure persisted
             SynchronizationContext.Run();
+            WfApplication.Persist();
 
             // throw exception
             if (UnhandledExceptionInfo != null)
