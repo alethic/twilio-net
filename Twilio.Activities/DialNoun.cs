@@ -17,6 +17,10 @@ namespace Twilio.Activities
             Constraints.Add(MustBeInsideDialActivityConstraint());
         }
 
+        /// <summary>
+        /// Validates whether the DialNoun activity is contained within a Dial activity.
+        /// </summary>
+        /// <returns></returns>
         Constraint<DialNoun> MustBeInsideDialActivityConstraint()
         {
             var activityBeingValidated = new DelegateInArgument<DialNoun>();
@@ -48,11 +52,8 @@ namespace Twilio.Activities
                                 Body = new ActivityAction<Activity>()
                                 {
                                     Argument = parent,
-                                    Handler = new If()
+                                    Handler = new If(env => parent.Get(env).GetType() == typeof(Dial))
                                     {
-                                        Condition = new InArgument<bool>(env => 
-                                            parent.Get(env).GetType() == typeof(Dial)),
-
                                         Then = new Assign<bool>()
                                         { 
                                             To = parentIsOuter,

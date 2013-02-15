@@ -35,7 +35,7 @@ namespace Twilio.Activities
             var activityBeingValidated = new DelegateInArgument<Dial>();
             var validationContext = new DelegateInArgument<ValidationContext>();
             var inner = new DelegateInArgument<Activity>();
-            var nounIsInner = new Variable<bool>(env => false);
+            var nounIsInner = new Variable<bool>();
 
             return new Constraint<Dial>
             {
@@ -61,11 +61,8 @@ namespace Twilio.Activities
                                 Body = new ActivityAction<Activity>()
                                 {
                                     Argument = inner,
-                                    Handler = new If()
+                                    Handler = new If(env => typeof(DialNoun).IsAssignableFrom(inner.Get(env).GetType()))
                                     {
-                                        Condition = new InArgument<bool>(env => 
-                                            typeof(DialNoun).IsAssignableFrom(inner.Get(env).GetType())),
-
                                         Then = new Assign<bool>()
                                         { 
                                             To = nounIsInner,
