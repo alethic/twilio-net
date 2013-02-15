@@ -17,7 +17,7 @@ namespace Twilio.Activities.Design
                 {
                     Argument = new DelegateInArgument<CallContext>()
                     {
-                        Name = "context",
+                        Name = "Call",
                     },
                 });
 

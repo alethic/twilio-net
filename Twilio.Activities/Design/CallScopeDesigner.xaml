@@ -17,6 +17,9 @@
         <DataTemplate
             x:Key="Expanded">
             <StackPanel>
+                <TextBox
+                    Margin="0,0,0,4"
+                    Text="{Binding ModelItem.Body.Argument.Name, Mode=TwoWay}" />
                 <sap:WorkflowItemPresenter
                     HintText="Drop the call body here"
                     Item="{Binding Path=ModelItem.Body.Handler, Mode=TwoWay}" />
