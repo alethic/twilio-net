@@ -15,7 +15,8 @@
         <DataTemplate
             x:Key="Expanded">
             <StackPanel>
-                <TextBlock>Url:</TextBlock>
+                <TextBlock
+                    Text="Url" />
                 <sapv:ExpressionTextBox
                     MaxLines="10"
                     Expression="{Binding ModelItem.Url, Mode=TwoWay, Converter={StaticResource ArgumentToExpressionConverter}}"
@@ -43,17 +44,9 @@
     <sap:ActivityDesigner.Icon>
         <DrawingBrush>
             <DrawingBrush.Drawing>
-                <ImageDrawing>
-                    <ImageDrawing.Rect>
-                        <Rect
-                            Location="0,0"
-                            Size="16,16" />
-                    </ImageDrawing.Rect>
-                    <ImageDrawing.ImageSource>
-                        <BitmapImage
-                            UriSource="../Icons/Play.png" />
-                    </ImageDrawing.ImageSource>
-                </ImageDrawing>
+                <ImageDrawing
+                    Rect="0,0,16,16"
+                    ImageSource="../Icons/Play.png" />
             </DrawingBrush.Drawing>
         </DrawingBrush>
     </sap:ActivityDesigner.Icon>

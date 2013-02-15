@@ -74,7 +74,8 @@ namespace Twilio.Activities
                             new AssertValidation()
                             {
                                 Assertion = parentIsOuter,
-                                Message = "DialSipUris must be nested inside DialSip"
+                                Message = "DialSipUris must be nested inside DialSip",
+                                IsWarning = false,
                             },
                         },
                     },

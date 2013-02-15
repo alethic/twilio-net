@@ -41,17 +41,9 @@
     <sap:ActivityDesigner.Icon>
         <DrawingBrush>
             <DrawingBrush.Drawing>
-                <ImageDrawing>
-                    <ImageDrawing.Rect>
-                        <Rect
-                            Location="0,0"
-                            Size="16,16" />
-                    </ImageDrawing.Rect>
-                    <ImageDrawing.ImageSource>
-                        <BitmapImage
-                            UriSource="../Icons/Gather.png" />
-                    </ImageDrawing.ImageSource>
-                </ImageDrawing>
+                <ImageDrawing
+                    Rect="0,0,16,16"
+                    ImageSource="../Icons/Gather.png" />
             </DrawingBrush.Drawing>
         </DrawingBrush>
     </sap:ActivityDesigner.Icon>

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Activities;
+using System.Activities.Expressions;
+using System.Activities.Statements;
+using System.Activities.Validation;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Runtime.ExceptionServices;
 using System.Xml.Linq;
-
 using Twilio.Activities.Design;
 
 namespace Twilio.Activities
@@ -21,6 +23,67 @@ namespace Twilio.Activities
         public Dial()
         {
             Activities = new Collection<Activity>();
+            Constraints.Add(MustContainAtLeastOneNoun());
+        }
+
+        /// <summary>
+        /// Validates whether the Dial activity contains at least one DialNoun activity.
+        /// </summary>
+        /// <returns></returns>
+        Constraint<Dial> MustContainAtLeastOneNoun()
+        {
+            var activityBeingValidated = new DelegateInArgument<Dial>();
+            var validationContext = new DelegateInArgument<ValidationContext>();
+            var inner = new DelegateInArgument<Activity>();
+            var nounIsInner = new Variable<bool>(env => false);
+
+            return new Constraint<Dial>
+            {
+                Body = new ActivityAction<Dial, ValidationContext>
+                {
+                    Argument1 = activityBeingValidated,
+                    Argument2 = validationContext,
+
+                    Handler = new Sequence()
+                    {
+                        Variables = 
+                        {
+                            nounIsInner,
+                        },
+                        Activities =
+                        {
+                            new ForEach<Activity>()
+                            {
+                                Values = new GetChildSubtree()
+                                { 
+                                    ValidationContext = validationContext,
+                                },
+                                Body = new ActivityAction<Activity>()
+                                {
+                                    Argument = inner,
+                                    Handler = new If()
+                                    {
+                                        Condition = new InArgument<bool>(env => 
+                                            typeof(DialNoun).IsAssignableFrom(inner.Get(env).GetType())),
+
+                                        Then = new Assign<bool>()
+                                        { 
+                                            To = nounIsInner,
+                                            Value = true,
+                                        },
+                                    },
+                                },
+                            },
+                            new AssertValidation()
+                            {
+                                Assertion = nounIsInner,
+                                Message = "Dial must contain at least one DialNoun",
+                                IsWarning = false,
+                            },
+                        },
+                    },
+                },
+            };
         }
 
         /// <summary>

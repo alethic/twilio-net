@@ -64,7 +64,8 @@ namespace Twilio.Activities
                             new AssertValidation()
                             {
                                 Assertion = parentIsOuter,
-                                Message = "DialNouns must be nested inside Dial"
+                                Message = "DialNouns must be nested inside Dial",
+                                IsWarning = false,
                             },
                         },
                     },

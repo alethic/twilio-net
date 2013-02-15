@@ -56,6 +56,9 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Design\WorkflowItemsPresenterParallelConnector.xaml.cs">
+      <DependentUpon>WorkflowItemsPresenterParallelConnector.xaml</DependentUpon>
+    </Compile>
     <Compile Include="DialSip.cs" />
     <Compile Include="Design\DialSipDesigner.xaml.cs">
       <DependentUpon>DialSipDesigner.xaml</DependentUpon>
@@ -111,12 +114,16 @@
     <Compile Include="HttpHandler.cs">
     </Compile>
     <Compile Include="HttpCookieInstanceStore.cs" />
-    <Compile Include="Design\WorkflowItemsPresenterConnector.xaml.cs">
-      <DependentUpon>WorkflowItemsPresenterConnector.xaml</DependentUpon>
+    <Compile Include="Design\WorkflowItemsPresenterSequenceConnector.xaml.cs">
+      <DependentUpon>WorkflowItemsPresenterSequenceConnector.xaml</DependentUpon>
     </Compile>
     <Compile Include="Voice.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Design\WorkflowItemsPresenterParallelConnector.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Design\DialSipDesigner.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -157,7 +164,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Design\WorkflowItemsPresenterConnector.xaml">
+    <Page Include="Design\WorkflowItemsPresenterSequenceConnector.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

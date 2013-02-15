@@ -9,31 +9,31 @@ using System.Windows.Media.Animation;
 namespace Twilio.Activities.Design
 {
 
-    public partial class WorkflowItemsPresenterConnector : UserControl, IComponentConnector
+    public partial class WorkflowItemsPresenterParallelConnector : UserControl, IComponentConnector
     {
 
         public static readonly DependencyProperty AllowedItemTypeProperty = DependencyProperty.Register("AllowedItemType",
-            typeof(Type), typeof(WorkflowItemsPresenterConnector), new UIPropertyMetadata(typeof(object)));
+            typeof(Type), typeof(WorkflowItemsPresenterParallelConnector), new UIPropertyMetadata(typeof(object)));
 
         public Type AllowedItemType
         {
-            get { return (Type)base.GetValue(AllowedItemTypeProperty); }
+            get { return (Type)GetValue(AllowedItemTypeProperty); }
             set { base.SetValue(AllowedItemTypeProperty, value); }
         }
 
         public static readonly DependencyProperty ContextProperty = DependencyProperty.Register("Context",
-            typeof(EditingContext), typeof(WorkflowItemsPresenterConnector));
+            typeof(EditingContext), typeof(WorkflowItemsPresenterParallelConnector));
 
         public EditingContext Context
         {
-            get { return (EditingContext)base.GetValue(ContextProperty); }
+            get { return (EditingContext)GetValue(ContextProperty); }
             set { base.SetValue(ContextProperty, value); }
         }
 
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        public WorkflowItemsPresenterConnector()
+        public WorkflowItemsPresenterParallelConnector()
         {
             InitializeComponent();
         }
@@ -42,8 +42,9 @@ namespace Twilio.Activities.Design
         {
             if (!args.Handled)
             {
-                if (!this.Context.Items.GetValue<ReadOnlyState>().IsReadOnly && DragDropHelper.AllowDrop(args.Data, this.Context, new Type[] { this.AllowedItemType }))
-                    BeginStoryboard((Storyboard)base.Resources[storyboardResourceName]);
+                if (!Context.Items.GetValue<ReadOnlyState>().IsReadOnly &&
+                    DragDropHelper.AllowDrop(args.Data, Context, new[] { AllowedItemType }))
+                    BeginStoryboard((Storyboard)Resources[storyboardResourceName]);
                 else
                 {
                     args.Effects = DragDropEffects.None;
