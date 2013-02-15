@@ -7,7 +7,7 @@ namespace Twilio.Activities
     /// <summary>
     /// Leaves a queue.
     /// </summary>
-    public class Leave : TwilioActivity
+    public sealed class Leave : TwilioActivity
     {
 
         protected override void Execute(NativeActivityContext context)

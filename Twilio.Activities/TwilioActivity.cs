@@ -74,7 +74,7 @@ namespace Twilio.Activities
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        public TwilioActivity()
+        internal TwilioActivity()
         {
             Variables = new Collection<Variable>();
             Constraints.Add(MustBeInsideCallScopeConstraint());
@@ -122,7 +122,7 @@ namespace Twilio.Activities
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        public TwilioActivity()
+        internal TwilioActivity()
         {
             Variables = new Collection<Variable>();
         }

@@ -10,7 +10,7 @@ namespace Twilio.Activities
 {
 
     [Designer(typeof(DialSipUriDesigner))]
-    public class DialSipUri : TwilioActivity
+    public sealed class DialSipUri : TwilioActivity
     {
 
         /// <summary>

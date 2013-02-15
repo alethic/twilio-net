@@ -46,9 +46,9 @@ namespace Twilio.Activities
                     return "man";
                 case Activities.Voice.Woman:
                     return "woman";
+                default:
+                    throw new InvalidOperationException("Unknown voice.");
             }
-
-            throw new Exception();
         }
 
     }

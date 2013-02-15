@@ -8,7 +8,7 @@ namespace Twilio.Activities
     /// Information related to a call's enqueue status. 
     /// </summary>
     [DataContract]
-    public class EnqueueStatus
+    public sealed class EnqueueStatus
     {
 
         /// <summary>

@@ -14,7 +14,7 @@ namespace Twilio.Activities
     /// Produces a dial body to dial a number.
     /// </summary>
     [Designer(typeof(DialNumberDesigner))]
-    public class DialNumber : DialNoun
+    public sealed class DialNumber : DialNoun
     {
 
         /// <summary>

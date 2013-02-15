@@ -5,7 +5,8 @@
     xmlns:sap="clr-namespace:System.Activities.Presentation;assembly=System.Activities.Presentation"
     xmlns:sapv="clr-namespace:System.Activities.Presentation.View;assembly=System.Activities.Presentation"
     xmlns:sapc="clr-namespace:System.Activities.Presentation.Converters;assembly=System.Activities.Presentation"
-    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:local="clr-namespace:Twilio.Activities">
     <sap:ActivityDesigner.Resources>
         <sapc:ArgumentToExpressionConverter
             x:Key="ArgumentToExpressionConverter" />
@@ -15,12 +16,13 @@
         <DataTemplate
             x:Key="Expanded">
             <StackPanel>
-                <TextBlock>Text to speak:</TextBlock>
+                <TextBlock
+                    Text="Text" />
                 <sapv:ExpressionTextBox
-                    MaxLines="10"
                     Expression="{Binding ModelItem.Text, Mode=TwoWay, Converter={StaticResource ArgumentToExpressionConverter}}"
                     ExpressionType="{x:Type sys:String}"
-                    OwnerActivity="{Binding ModelItem}" />
+                    OwnerActivity="{Binding ModelItem}"
+                    HintText="Text to be spoen" />
             </StackPanel>
         </DataTemplate>
         <Style

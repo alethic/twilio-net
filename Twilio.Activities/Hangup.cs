@@ -7,7 +7,7 @@ namespace Twilio.Activities
     /// <summary>
     /// Hangs up the current call.
     /// </summary>
-    public class Hangup : TwilioActivity
+    public sealed class Hangup : TwilioActivity
     {
 
         protected override void Execute(NativeActivityContext context)

@@ -12,7 +12,7 @@ namespace Twilio.Activities
     /// Represents the required outside scope of a Twilio call workflow. Provides basic call information to children.
     /// </summary>
     [Designer(typeof(CallScopeDesigner))]
-    public class CallScope : TwilioActivity
+    public sealed class CallScope : TwilioActivity
     {
 
         /// <summary>
@@ -21,6 +21,7 @@ namespace Twilio.Activities
         public CallScope()
             : base()
         {
+            DisplayName = "Call Scope";
             Constraints.Clear();
         }
 

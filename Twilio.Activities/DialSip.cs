@@ -13,7 +13,7 @@ namespace Twilio.Activities
     /// Produces a dial body to dial a SIP address.
     /// </summary>
     [Designer(typeof(DialSipDesigner))]
-    public class DialSip : DialNoun
+    public sealed class DialSip : DialNoun
     {
 
         /// <summary>
