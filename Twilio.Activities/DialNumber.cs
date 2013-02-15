@@ -32,7 +32,7 @@ namespace Twilio.Activities
         /// Activities to be executed for the called party before the call is connected.
         /// </summary>
         [Browsable(false)]
-        public Activity Called { get; set; }
+        public Activity Activity { get; set; }
 
         protected override bool CanInduceIdle
         {
@@ -52,7 +52,7 @@ namespace Twilio.Activities
             GetElement(context).Add(element);
 
             // bookmark to execute Called activity
-            if (Called != null)
+            if (Activity != null)
             {
                 var calledBookmark = Guid.NewGuid().ToString();
                 context.CreateBookmark(calledBookmark, OnCalled);
@@ -68,13 +68,14 @@ namespace Twilio.Activities
         /// <param name="value"></param>
         void OnCalled(NativeActivityContext context, Bookmark bookmark, object value)
         {
-            context.ScheduleActivity(Called, OnCalledCompleted);
+            context.ScheduleActivity(Activity, OnCalledCompleted);
         }
 
         void OnCalledCompleted(NativeActivityContext context, ActivityInstance completedInstance)
         {
-            GetElement(context).Add(new XElement("Pause",
-                new XAttribute("length", 0)));
+            if (!GetElement(context).HasElements)
+                GetElement(context).Add(new XElement("Pause",
+                    new XAttribute("length", 0)));
         }
 
     }

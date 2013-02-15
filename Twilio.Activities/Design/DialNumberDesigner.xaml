@@ -19,7 +19,7 @@
             ExpressionType="sys:String"
             OwnerActivity="{Binding ModelItem}" />
         <sap:WorkflowItemPresenter
-            Item="{Binding ModelItem.Called}"
+            Item="{Binding ModelItem.Activity}"
             HintText="Place activities to execute for called party here"/>
     </StackPanel>
 </sap:ActivityDesigner>
