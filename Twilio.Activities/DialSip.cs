@@ -41,7 +41,7 @@ namespace Twilio.Activities
             get { return true; }
         }
 
-        protected override void Execute(NativeActivityContext context)
+        protected override void ExecuteNoun(NativeActivityContext context)
         {
             var twilio = context.GetExtension<ITwilioContext>();
 

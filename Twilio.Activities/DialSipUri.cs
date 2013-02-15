@@ -89,6 +89,9 @@ namespace Twilio.Activities
             var userName = UserName.Get(context);
             var password = Password.Get(context);
 
+            if (GetElement(context).Name != "Sip")
+                throw new InvalidWorkflowException("DialSipUri executing without Sip element. All DialSipUri of a DialSip must execute along with the DialSip.");
+
             // add Sip element
             GetElement(context).Add(
                 new XElement("Uri",

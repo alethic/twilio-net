@@ -74,6 +74,20 @@ namespace Twilio.Activities
             };
         }
 
+        protected sealed override void Execute(NativeActivityContext context)
+        {
+            if (GetElement(context).Name != "Dial")
+                throw new InvalidWorkflowException("DialNoun executing without Dial element. All DialNouns of a Dial must execute along with the Dial.");
+
+            // dispatch to implementation
+            ExecuteNoun(context);
+        }
+
+        protected virtual void ExecuteNoun(NativeActivityContext context)
+        {
+
+        }
+
     }
 
 }
