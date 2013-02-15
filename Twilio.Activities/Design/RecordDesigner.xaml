@@ -16,26 +16,26 @@
             x:Key="Expanded">
             <StackPanel>
                 <TextBlock
-                    Text="Timeout" />
-                <sapv:ExpressionTextBox
-                    MaxLines="10"
-                    Expression="{Binding ModelItem.Timeout, Mode=TwoWay, Converter={StaticResource ArgumentToExpressionConverter}}"
-                    ExpressionType="{x:Type sys:TimeSpan}"
-                    OwnerActivity="{Binding ModelItem}" />
-                <TextBlock
                     Text="Max Length" />
                 <sapv:ExpressionTextBox
-                    MaxLines="10"
                     Expression="{Binding ModelItem.MaxLength, Mode=TwoWay, Converter={StaticResource ArgumentToExpressionConverter}}"
                     ExpressionType="{x:Type sys:TimeSpan}"
-                    OwnerActivity="{Binding ModelItem}" />
+                    OwnerActivity="{Binding ModelItem}"
+                    HintText="Maximum recording length" />
                 <TextBlock
                     Text="Finish on Key" />
                 <sapv:ExpressionTextBox
-                    MaxLines="10"
                     Expression="{Binding ModelItem.FinishOnKey, Mode=TwoWay, Converter={StaticResource ArgumentToExpressionConverter}}"
                     ExpressionType="{x:Type sys:Char}"
-                    OwnerActivity="{Binding ModelItem}" />
+                    OwnerActivity="{Binding ModelItem}"
+                    HintText="Stop recording on key" />
+                <TextBlock
+                    Text="Timeout" />
+                <sapv:ExpressionTextBox
+                    Expression="{Binding ModelItem.Timeout, Mode=TwoWay, Converter={StaticResource ArgumentToExpressionConverter}}"
+                    ExpressionType="{x:Type sys:TimeSpan}"
+                    OwnerActivity="{Binding ModelItem}"
+                    HintText="Time to wait for recording to start" />
             </StackPanel>
         </DataTemplate>
         <Style
@@ -47,7 +47,7 @@
             <Style.Triggers>
                 <DataTrigger
                     Binding="{Binding ShowExpanded}"
-                    Value="true">
+                    Value="false">
                     <Setter
                         Property="ContentTemplate"
                         Value="{DynamicResource Expanded}" />

@@ -19,65 +19,9 @@ namespace Twilio.Activities
         /// Initializes a new instance.
         /// </summary>
         public CallScope()
+            : base()
         {
-            Constraints.Add(MustNotBeInsideOfCallScope());
-        }
-
-        /// <summary>
-        /// Validates whether the DialNoun activity is contained within a Dial activity.
-        /// </summary>
-        /// <returns></returns>
-        Constraint<CallScope> MustNotBeInsideOfCallScope()
-        {
-            var activityBeingValidated = new DelegateInArgument<CallScope>();
-            var validationContext = new DelegateInArgument<ValidationContext>();
-            var parent = new DelegateInArgument<Activity>();
-            var parentIsCallScope = new Variable<bool>(env => true);
-
-            return new Constraint<CallScope>()
-            {
-                Body = new ActivityAction<CallScope, ValidationContext>()
-                {
-                    Argument1 = activityBeingValidated,
-                    Argument2 = validationContext,
-
-                    Handler = new Sequence()
-                    {
-                        Variables = 
-                        {
-                            parentIsCallScope,
-                        },
-                        Activities =
-                        {
-                            new ForEach<Activity>()
-                            {
-                                Values = new GetParentChain()
-                                { 
-                                    ValidationContext = validationContext,
-                                },
-                                Body = new ActivityAction<Activity>()
-                                {
-                                    Argument = parent,
-                                    Handler = new If(env => parent.Get(env).GetType() == typeof(CallScope))
-                                    {
-                                        Then = new Assign<bool>()
-                                        { 
-                                            To = parentIsCallScope,
-                                            Value = false,
-                                        },
-                                    },
-                                },
-                            },
-                            new AssertValidation()
-                            {
-                                Assertion = parentIsCallScope,
-                                Message = "CallScope cannot be nested inside another CallScope",
-                                IsWarning = false,
-                            },
-                        },
-                    },
-                },
-            };
+            Constraints.Clear();
         }
 
         /// <summary>

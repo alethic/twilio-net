@@ -15,11 +15,69 @@ namespace Twilio.Activities
     {
 
         /// <summary>
+        /// Validates whether the Twilio activity is contained within a CallScope activity.
+        /// </summary>
+        /// <returns></returns>
+        internal static Constraint<Activity> MustBeInsideCallScopeConstraint()
+        {
+            var activityBeingValidated = new DelegateInArgument<Activity>();
+            var validationContext = new DelegateInArgument<ValidationContext>();
+            var parent = new DelegateInArgument<Activity>();
+            var parentIsCallScope = new Variable<bool>();
+
+            return new Constraint<Activity>()
+            {
+                Body = new ActivityAction<Activity, ValidationContext>()
+                {
+                    Argument1 = activityBeingValidated,
+                    Argument2 = validationContext,
+
+                    Handler = new Sequence()
+                    {
+                        Variables = 
+                        {
+                            parentIsCallScope,
+                        },
+                        Activities =
+                        {
+                            new ForEach<Activity>()
+                            {
+                                Values = new GetParentChain()
+                                { 
+                                    ValidationContext = validationContext,
+                                },
+                                Body = new ActivityAction<Activity>()
+                                {
+                                    Argument = parent,
+                                    Handler = new If(env => parent.Get(env).GetType() == typeof(CallScope))
+                                    {
+                                        Then = new Assign<bool>()
+                                        { 
+                                            To = parentIsCallScope,
+                                            Value = true,
+                                        },
+                                    },
+                                },
+                            },
+                            new AssertValidation()
+                            {
+                                Assertion = parentIsCallScope,
+                                Message = "Twilio activities must be nested inside of a CallScope",
+                                IsWarning = false,
+                            },
+                        },
+                    },
+                },
+            };
+        }
+
+        /// <summary>
         /// Initializes a new instance.
         /// </summary>
         public TwilioActivity()
         {
             Variables = new Collection<Variable>();
+            Constraints.Add(MustBeInsideCallScopeConstraint());
         }
 
         [Browsable(false)]

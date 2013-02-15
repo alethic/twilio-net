@@ -13,11 +13,6 @@ namespace Twilio.Activities
     public sealed class Gather : TwilioActivity<string>
     {
 
-        public Gather()
-        {
-
-        }
-
         public InArgument<TimeSpan?> Timeout { get; set; }
 
         public InArgument<char?> FinishOnKey { get; set; }
