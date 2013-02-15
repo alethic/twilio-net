@@ -57,6 +57,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CallContext.cs" />
+    <Compile Include="CallDirection.cs" />
+    <Compile Include="CallEndpoint.cs" />
     <Compile Include="CallScope.cs" />
     <Compile Include="Design\CallScopeDesigner.xaml.cs">
       <DependentUpon>CallScopeDesigner.xaml</DependentUpon>

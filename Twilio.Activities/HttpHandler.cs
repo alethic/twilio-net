@@ -347,7 +347,64 @@ namespace Twilio.Activities
 
         CallContext ITwilioContext.CallContext
         {
-            get { return new CallContext(); }
+            get { return GetCallContext(); }
+        }
+
+        /// <summary>
+        /// Generates a new <see cref="CallContext"/> based on the current request.
+        /// </summary>
+        /// <returns></returns>
+        CallContext GetCallContext()
+        {
+            // obtain post data of current request
+            var d = GetPostData();
+
+            return new CallContext(
+                d["AccountSid"],
+                d["Sid"],
+                ParseDirection(d["Direction"]),
+                new CallEndpoint(
+                    d["Caller"],
+                    d["CallerCity"],
+                    d["CallerCountry"],
+                    d["CallerState"],
+                    d["CallerZip"]),
+                new CallEndpoint(
+                    d["Called"],
+                    d["CalledCity"],
+                    d["CalledCountry"],
+                    d["CalledState"],
+                    d["CalledZip"]),
+                new CallEndpoint(
+                    d["From"],
+                    d["FromCity"],
+                    d["FromCountry"],
+                    d["FromState"],
+                    d["FromZip"]),
+                new CallEndpoint(
+                    d["To"],
+                    d["ToCity"],
+                    d["ToCountry"],
+                    d["ToState"],
+                    d["ToZip"]));
+        }
+
+        /// <summary>
+        /// Parses the call direction string into a <see cref="CallDirection"/> enumeration.
+        /// </summary>
+        /// <param name="direction"></param>
+        /// <returns></returns>
+        CallDirection ParseDirection(string direction)
+        {
+            switch (direction)
+            {
+                case "inbound":
+                    return CallDirection.Inbound;
+                case "outbound":
+                    return CallDirection.Outbound;
+                default:
+                    throw new FormatException("Unknown direction.");
+            }
         }
 
         Uri ITwilioContext.SelfUrl
