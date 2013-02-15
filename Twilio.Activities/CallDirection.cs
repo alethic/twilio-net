@@ -8,6 +8,11 @@
     {
 
         /// <summary>
+        /// Direction of the call is unknown.
+        /// </summary>
+        Unknown,
+
+        /// <summary>
         /// Call originated into Twilio.
         /// </summary>
         Inbound,

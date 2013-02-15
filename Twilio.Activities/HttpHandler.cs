@@ -359,37 +359,34 @@ namespace Twilio.Activities
             // obtain post data of current request
             var d = GetPostData();
 
-            if (d["Sid"] != null)
-                return new CallContext(
-                    d["AccountSid"],
-                    d["Sid"],
-                    ParseDirection(d["Direction"]),
-                    d["Caller"] != null ? new CallEndpoint(
-                        d["Caller"],
-                        d["CallerCity"],
-                        d["CallerCountry"],
-                        d["CallerState"],
-                        d["CallerZip"]) : null,
-                     d["Called"] != null ? new CallEndpoint(
-                        d["Called"],
-                        d["CalledCity"],
-                        d["CalledCountry"],
-                        d["CalledState"],
-                        d["CalledZip"]) : null,
-                     d["From"] != null ? new CallEndpoint(
-                        d["From"],
-                        d["FromCity"],
-                        d["FromCountry"],
-                        d["FromState"],
-                        d["FromZip"]) : null,
-                     d["To"] != null ? new CallEndpoint(
-                        d["To"],
-                        d["ToCity"],
-                        d["ToCountry"],
-                        d["ToState"],
-                        d["ToZip"]) : null);
-
-            return null;
+            return new CallContext(
+                d["AccountSid"],
+                d["Sid"],
+                ParseDirection(d["Direction"]),
+                new CallEndpoint(
+                    d["Caller"],
+                    d["CallerCity"],
+                    d["CallerCountry"],
+                    d["CallerState"],
+                    d["CallerZip"]),
+                  new CallEndpoint(
+                    d["Called"],
+                    d["CalledCity"],
+                    d["CalledCountry"],
+                    d["CalledState"],
+                    d["CalledZip"]),
+                  new CallEndpoint(
+                    d["From"],
+                    d["FromCity"],
+                    d["FromCountry"],
+                    d["FromState"],
+                    d["FromZip"]),
+                  new CallEndpoint(
+                    d["To"],
+                    d["ToCity"],
+                    d["ToCountry"],
+                    d["ToState"],
+                    d["ToZip"]));
         }
 
         /// <summary>
@@ -401,6 +398,8 @@ namespace Twilio.Activities
         {
             switch (direction)
             {
+                case null:
+                    return CallDirection.Unknown;
                 case "inbound":
                     return CallDirection.Inbound;
                 case "outbound":
