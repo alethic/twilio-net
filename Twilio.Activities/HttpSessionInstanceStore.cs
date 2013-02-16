@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.DurableInstancing;
 using System.Web;
+using System.Web.SessionState;
 using System.Xml.Linq;
 
 namespace Twilio.Activities
@@ -19,19 +20,20 @@ namespace Twilio.Activities
         public HttpSessionInstanceStore(HttpContext httpContext)
             : base(httpContext)
         {
-
+            if (httpContext.Session == null)
+                throw new NullReferenceException("Session state is required for HttpSessionInstanceStore support. Mark the HttpHandler with IRequiresSessionState.");
         }
 
         protected override void SaveToContext(Guid instanceId, XDocument doc)
         {
             // store state in session
-            HttpContext.Session[string.Format("WF_{0}", instanceId)] = doc;
+            HttpContext.Session["wf_" + instanceId] = doc;
         }
 
         protected override XDocument LoadFromContext(Guid instanceId)
         {
             // resolve cookie data for workflow instance
-            var doc = (XDocument)HttpContext.Session[string.Format("WF_{0}", instanceId)];
+            var doc = (XDocument)HttpContext.Session["wf_" + instanceId];
             if (doc == null)
                 throw new InstancePersistenceException("Could not load workflow instance from session.");
 

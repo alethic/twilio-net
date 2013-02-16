@@ -14,6 +14,7 @@
         Orientation="Vertical">
         <sapv:ExpressionTextBox
             Margin="0,0,0,4"
+            MaxWidth="200"
             HintText="Number"
             Expression="{Binding ModelItem.Number, Mode=TwoWay, Converter={StaticResource ArgumentToExpressionConverter}, ConverterParameter=In}"
             ExpressionType="sys:String"

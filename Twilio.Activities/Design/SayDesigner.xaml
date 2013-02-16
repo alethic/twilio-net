@@ -12,17 +12,23 @@
             x:Key="ArgumentToExpressionConverter" />
         <DataTemplate
             x:Key="Collapsed">
+            <StackPanel>
+                <sapv:ExpressionTextBox
+                    MaxWidth="200"
+                    Expression="{Binding ModelItem.Text, Mode=TwoWay, Converter={StaticResource ArgumentToExpressionConverter}}"
+                    ExpressionType="{x:Type sys:String}"
+                    OwnerActivity="{Binding ModelItem}"
+                    HintText="Text to be spoken" />
+            </StackPanel>
         </DataTemplate>
         <DataTemplate
             x:Key="Expanded">
             <StackPanel>
-                <TextBlock
-                    Text="Text" />
                 <sapv:ExpressionTextBox
                     Expression="{Binding ModelItem.Text, Mode=TwoWay, Converter={StaticResource ArgumentToExpressionConverter}}"
                     ExpressionType="{x:Type sys:String}"
                     OwnerActivity="{Binding ModelItem}"
-                    HintText="Text to be spoen" />
+                    HintText="Text to be spoken" />
             </StackPanel>
         </DataTemplate>
         <Style
