@@ -1,9 +1,12 @@
 /*.suo
+/*.user
 /TestResults
+/Twilio.Activities/*.user
 /Twilio.Activities/bin
 /Twilio.Activities/obj
 /Twilio.Activities.Tests/bin
 /Twilio.Activities.Tests/obj
+/Twilio.Activities.Tests/*.user
 /Twilio.Activities.Examples/bin
 /Twilio.Activities.Examples/obj
 /Twilio.Activities.Examples.Site/*.user
