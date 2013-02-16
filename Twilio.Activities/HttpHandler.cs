@@ -149,7 +149,7 @@ namespace Twilio.Activities
         /// <returns></returns>
         Uri LocalizeUri(Uri uri)
         {
-            return AppendQueryArgToUri(uri, InstanceIdQueryKey, WfApplication.Id.ToString());
+            return AppendQueryArgToUri(uri, InstanceIdQueryKey, WorkflowApplication.Id.ToString());
         }
 
         /// <summary>
@@ -189,7 +189,7 @@ namespace Twilio.Activities
         /// <summary>
         /// Gets a reference to the loaded Workflow Application.
         /// </summary>
-        WorkflowApplication WfApplication { get; set; }
+        WorkflowApplication WorkflowApplication { get; set; }
 
         /// <summary>
         /// Override this method to initialize and return the activity to be executed.
@@ -217,31 +217,31 @@ namespace Twilio.Activities
             Activity = CreateActivity();
 
             // initializes workflow application and appropriate call backs
-            WfApplication = new WorkflowApplication(Activity);
-            WfApplication.Extensions.Add<ITwilioContext>(() => this);
-            WfApplication.SynchronizationContext = SynchronizationContext = new RunnableSynchronizationContext();
-            WfApplication.InstanceStore = CreateInstanceStore();
-            WfApplication.Aborted = OnAborted;
-            WfApplication.Completed = OnCompleted;
-            WfApplication.Idle = OnIdle;
-            WfApplication.OnUnhandledException = OnUnhandledException;
-            WfApplication.PersistableIdle = OnPersistableIdle;
-            WfApplication.Unloaded = OnUnloaded;
+            WorkflowApplication = new WorkflowApplication(Activity);
+            WorkflowApplication.Extensions.Add<ITwilioContext>(() => this);
+            WorkflowApplication.SynchronizationContext = SynchronizationContext = new RunnableSynchronizationContext();
+            WorkflowApplication.InstanceStore = CreateInstanceStore();
+            WorkflowApplication.Aborted = OnAborted;
+            WorkflowApplication.Completed = OnCompleted;
+            WorkflowApplication.Idle = OnIdle;
+            WorkflowApplication.OnUnhandledException = OnUnhandledException;
+            WorkflowApplication.PersistableIdle = OnPersistableIdle;
+            WorkflowApplication.Unloaded = OnUnloaded;
 
             // attempt to resolve current instance id and reload workflow state
             if (Request[InstanceIdQueryKey] != null)
-                WfApplication.Load(Guid.Parse(Request[InstanceIdQueryKey]));
+                WorkflowApplication.Load(Guid.Parse(Request[InstanceIdQueryKey]));
 
             // postback to resume a bookmark
             if (Request[BookmarkQueryKey] != null)
             {
                 var result = GetPostData();
                 if (result != null)
-                    WfApplication.BeginResumeBookmark(Request[BookmarkQueryKey], result, i => WfApplication.EndResumeBookmark(i), null);
+                    WorkflowApplication.BeginResumeBookmark(Request[BookmarkQueryKey], result, i => WorkflowApplication.EndResumeBookmark(i), null);
             }
 
             // begin running the application
-            WfApplication.BeginRun(i => WfApplication.EndRun(i), null);
+            WorkflowApplication.BeginRun(i => WorkflowApplication.EndRun(i), null);
 
             // process any outstanding events until completion and ensure persisted
             SynchronizationContext.Run();
@@ -257,7 +257,7 @@ namespace Twilio.Activities
                         attribute.Remove();
 
             // write finished twilio output
-            context.Response.ContentType = "text/xml";
+            Response.ContentType = "text/xml";
             using (var wrt = XmlWriter.Create(Response.Output))
                 TwilioResponse.WriteTo(wrt);
         }
