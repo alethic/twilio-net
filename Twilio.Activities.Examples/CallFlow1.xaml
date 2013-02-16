@@ -38,279 +38,382 @@
       <AssemblyReference>Twilio.Activities.Examples</AssemblyReference>
     </sco:Collection>
   </TextExpression.ReferencesForImplementation>
-  <Flowchart sap2010:WorkflowViewState.IdRef="Flowchart_1">
-    <Flowchart.Variables>
-      <Variable x:TypeArguments="x:String" Name="EnteredDigits" />
-    </Flowchart.Variables>
-    <Flowchart.StartNode>
-      <FlowStep x:Name="__ReferenceID2" sap2010:WorkflowViewState.IdRef="FlowStep_6">
-        <ta:Say Language="{x:Null}" Loop="{x:Null}" Voice="{x:Null}" DisplayName="welcome message" sap2010:WorkflowViewState.IdRef="Say_1" Text="Thanks for calling the first call flow example." />
-        <FlowStep.Next>
-          <FlowStep x:Name="__ReferenceID0" sap2010:WorkflowViewState.IdRef="FlowStep_5">
-            <ta:Gather NumDigits="{x:Null}" DisplayName="gather some digits" sap2010:WorkflowViewState.IdRef="Gather_1">
-              <ta:Gather.Body>
-                <ta:Say Language="{x:Null}" Loop="{x:Null}" Voice="{x:Null}" sap2010:WorkflowViewState.IdRef="Say_2" Text="Enter a 10 digit phone number." />
-              </ta:Gather.Body>
-              <ta:Gather.Digits>
-                <OutArgument x:TypeArguments="x:String">
-                  <mca:CSharpReference x:TypeArguments="x:String">EnteredDigits</mca:CSharpReference>
-                </OutArgument>
-              </ta:Gather.Digits>
-              <ta:Gather.FinishOnKey>
-                <InArgument x:TypeArguments="s:Nullable(x:Char)">
-                  <mca:CSharpValue x:TypeArguments="s:Nullable(x:Char)">'#'</mca:CSharpValue>
-                </InArgument>
-              </ta:Gather.FinishOnKey>
-              <ta:Gather.Timeout>
-                <InArgument x:TypeArguments="s:Nullable(x:TimeSpan)">
-                  <mca:CSharpValue x:TypeArguments="s:Nullable(x:TimeSpan)">TimeSpan.FromSeconds(5)</mca:CSharpValue>
-                </InArgument>
-              </ta:Gather.Timeout>
-            </ta:Gather>
-            <FlowStep.Next>
-              <FlowDecision x:Name="__ReferenceID3" sap2010:WorkflowViewState.IdRef="FlowDecision_2">
-                <FlowDecision.Condition>
-                  <mca:CSharpValue x:TypeArguments="x:Boolean">EnteredDigits.Length &lt;= 0</mca:CSharpValue>
-                </FlowDecision.Condition>
-                <FlowDecision.True>
-                  <FlowStep x:Name="__ReferenceID4" sap2010:WorkflowViewState.IdRef="FlowStep_1">
-                    <ta:Say Language="{x:Null}" Loop="{x:Null}" Voice="{x:Null}" DisplayName="invalid entry" sap2010:WorkflowViewState.IdRef="Say_3" Text="You entered no digits. Try again." />
-                    <FlowStep.Next>
-                      <x:Reference>__ReferenceID0</x:Reference>
-                    </FlowStep.Next>
-                  </FlowStep>
-                </FlowDecision.True>
-                <FlowDecision.False>
-                  <FlowStep x:Name="__ReferenceID5" sap2010:WorkflowViewState.IdRef="FlowStep_4">
-                    <ta:Say Language="{x:Null}" Loop="{x:Null}" Voice="{x:Null}" DisplayName="repeat entry" sap2010:WorkflowViewState.IdRef="Say_4">
-                      <ta:Say.Text>
-                        <InArgument x:TypeArguments="x:String">
-                          <mca:CSharpValue x:TypeArguments="x:String">"You entered " + EnteredDigits</mca:CSharpValue>
-                        </InArgument>
-                      </ta:Say.Text>
-                    </ta:Say>
-                    <FlowStep.Next>
-                      <FlowDecision x:Name="__ReferenceID6" DisplayName="check for phone number" sap2010:WorkflowViewState.IdRef="FlowDecision_1">
-                        <FlowDecision.Condition>
-                          <mca:CSharpValue x:TypeArguments="x:Boolean">EnteredDigits.Length == 10</mca:CSharpValue>
-                        </FlowDecision.Condition>
-                        <FlowDecision.True>
-                          <FlowStep x:Name="__ReferenceID9" sap2010:WorkflowViewState.IdRef="FlowStep_7">
-                            <ta:Say Language="{x:Null}" Loop="{x:Null}" Voice="{x:Null}" sap2010:WorkflowViewState.IdRef="Say_6" Text="Okay. I'm going to dial that number. Talk to you in a minute." />
-                            <FlowStep.Next>
-                              <FlowStep x:Name="__ReferenceID7" sap2010:WorkflowViewState.IdRef="FlowStep_2">
-                                <ta:Dial CallerId="{x:Null}" Duration="{x:Null}" HangupOnStar="{x:Null}" Record="{x:Null}" RecordingUrl="{x:Null}" Sid="{x:Null}" Status="{x:Null}" TimeLimit="{x:Null}" Timeout="{x:Null}" sap2010:WorkflowViewState.IdRef="Dial_1">
-                                  <ta:Dial.Noun>
-                                    <ActivityFunc x:TypeArguments="ta:DialNoun">
-                                      <ActivityFunc.Result>
-                                        <DelegateOutArgument x:TypeArguments="ta:DialNoun" x:Name="__ReferenceID1" />
-                                      </ActivityFunc.Result>
-                                      <ta:DialNumber sap2010:WorkflowViewState.IdRef="DialNumber_1">
-                                        <ta:DialNumber.Number>
-                                          <InArgument x:TypeArguments="x:String">
-                                            <mca:CSharpValue x:TypeArguments="x:String">"+1" + EnteredDigits</mca:CSharpValue>
-                                          </InArgument>
-                                        </ta:DialNumber.Number>
-                                        <ta:DialNumber.Result>
-                                          <OutArgument x:TypeArguments="ta:DialNoun">
-                                            <DelegateArgumentReference x:TypeArguments="ta:DialNoun">
-                                              <x:Reference>__ReferenceID1</x:Reference>
-                                            </DelegateArgumentReference>
-                                          </OutArgument>
-                                        </ta:DialNumber.Result>
-                                      </ta:DialNumber>
-                                    </ActivityFunc>
-                                  </ta:Dial.Noun>
-                                </ta:Dial>
-                                <FlowStep.Next>
-                                  <x:Reference>__ReferenceID2</x:Reference>
-                                </FlowStep.Next>
-                              </FlowStep>
-                            </FlowStep.Next>
-                          </FlowStep>
-                        </FlowDecision.True>
-                        <FlowDecision.False>
-                          <FlowStep x:Name="__ReferenceID8" sap2010:WorkflowViewState.IdRef="FlowStep_3">
-                            <ta:Say Language="{x:Null}" Loop="{x:Null}" Voice="{x:Null}" sap2010:WorkflowViewState.IdRef="Say_5" Text="Well, that wasn't a 10 digit phone number. Let's try again." />
-                            <FlowStep.Next>
-                              <x:Reference>__ReferenceID2</x:Reference>
-                            </FlowStep.Next>
-                          </FlowStep>
-                        </FlowDecision.False>
-                      </FlowDecision>
-                    </FlowStep.Next>
-                  </FlowStep>
-                </FlowDecision.False>
-              </FlowDecision>
-            </FlowStep.Next>
-          </FlowStep>
-        </FlowStep.Next>
-      </FlowStep>
-    </Flowchart.StartNode>
-    <x:Reference>__ReferenceID2</x:Reference>
-    <x:Reference>__ReferenceID0</x:Reference>
-    <x:Reference>__ReferenceID3</x:Reference>
-    <x:Reference>__ReferenceID4</x:Reference>
-    <x:Reference>__ReferenceID5</x:Reference>
-    <x:Reference>__ReferenceID6</x:Reference>
-    <x:Reference>__ReferenceID7</x:Reference>
-    <x:Reference>__ReferenceID8</x:Reference>
-    <x:Reference>__ReferenceID9</x:Reference>
-    <sads:DebugSymbol.Symbol>d19DOlxVc2Vyc1xqaGFsdG9tXEFwcERhdGFcTG9jYWxcRGV2ZWxvcG1lbnRcdHdpbGlvLW5ldFxUd2lsaW8uQWN0aXZpdGllcy5FeGFtcGxlc1xDYWxsRmxvdzEueGFtbBcpA6ABDwIBAS8JL8UBAgEdMg1FGQIBFEkTSW4CARJVFVseAgEPXxtfdAIBDYYBHYYBxwECAQtjHWPJAQIBCWYhfCsCAQRNFU3BAQIBAi+RAS/CAQIBHkITQnYCARk9Ez1eAgEXOBM4ZgIBFTQRNJ4BAgEbWBtYdwIBEIYBhwGGAcQBAgEMY4cBY8YBAgEKbCd5NwIBBU2bAU2+AQIBAzR7NJsBAgEcby1vfwIBB3QtdkkCAQY=</sads:DebugSymbol.Symbol>
-  </Flowchart>
+  <ta:CallScope DisplayName="Call Scope" sap2010:WorkflowViewState.IdRef="CallScope_1">
+    <ta:CallScope.Body>
+      <ActivityAction x:TypeArguments="ta:CallContext">
+        <ActivityAction.Argument>
+          <DelegateInArgument x:TypeArguments="ta:CallContext" Name="Call" />
+        </ActivityAction.Argument>
+        <Flowchart sap2010:WorkflowViewState.IdRef="Flowchart_2">
+          <Flowchart.Variables>
+            <Variable x:TypeArguments="x:String" Name="EnteredDigits" />
+          </Flowchart.Variables>
+          <Flowchart.StartNode>
+            <FlowStep x:Name="__ReferenceID9" sap2010:WorkflowViewState.IdRef="FlowStep_16">
+              <ta:Say Language="{x:Null}" Loop="{x:Null}" Voice="{x:Null}" sap2010:WorkflowViewState.IdRef="Say_7">
+                <ta:Say.Text>
+                  <InArgument x:TypeArguments="x:String">
+                    <mca:CSharpValue x:TypeArguments="x:String">"You are calling from " + Call.From.Target</mca:CSharpValue>
+                  </InArgument>
+                </ta:Say.Text>
+                <ta:Say.Variables>
+                  <sco:Collection x:TypeArguments="Variable" />
+                </ta:Say.Variables>
+              </ta:Say>
+              <FlowStep.Next>
+                <FlowStep x:Name="__ReferenceID1" sap2010:WorkflowViewState.IdRef="FlowStep_15">
+                  <ta:Say Language="{x:Null}" Loop="{x:Null}" Voice="{x:Null}" DisplayName="welcome message" sap2010:WorkflowViewState.IdRef="Say_8" Text="Thanks for calling the first call flow example.">
+                    <ta:Say.Variables>
+                      <sco:Collection x:TypeArguments="Variable" />
+                    </ta:Say.Variables>
+                  </ta:Say>
+                  <FlowStep.Next>
+                    <FlowStep x:Name="__ReferenceID0" sap2010:WorkflowViewState.IdRef="FlowStep_14">
+                      <ta:Gather NumDigits="{x:Null}" DisplayName="gather some digits" sap2010:WorkflowViewState.IdRef="Gather_2">
+                        <ta:Gather.Body>
+                          <ta:Say Language="{x:Null}" Loop="{x:Null}" Voice="{x:Null}" sap2010:WorkflowViewState.IdRef="Say_9" Text="Enter a 10 digit phone number.">
+                            <ta:Say.Variables>
+                              <sco:Collection x:TypeArguments="Variable" />
+                            </ta:Say.Variables>
+                          </ta:Say>
+                        </ta:Gather.Body>
+                        <ta:Gather.Digits>
+                          <OutArgument x:TypeArguments="x:String">
+                            <mca:CSharpReference x:TypeArguments="x:String">EnteredDigits</mca:CSharpReference>
+                          </OutArgument>
+                        </ta:Gather.Digits>
+                        <ta:Gather.FinishOnKey>
+                          <InArgument x:TypeArguments="s:Nullable(x:Char)">
+                            <mca:CSharpValue x:TypeArguments="s:Nullable(x:Char)">'#'</mca:CSharpValue>
+                          </InArgument>
+                        </ta:Gather.FinishOnKey>
+                        <ta:Gather.Timeout>
+                          <InArgument x:TypeArguments="s:Nullable(x:TimeSpan)">
+                            <mca:CSharpValue x:TypeArguments="s:Nullable(x:TimeSpan)">TimeSpan.FromSeconds(5)</mca:CSharpValue>
+                          </InArgument>
+                        </ta:Gather.Timeout>
+                        <ta:Gather.Variables>
+                          <sco:Collection x:TypeArguments="Variable" />
+                        </ta:Gather.Variables>
+                      </ta:Gather>
+                      <FlowStep.Next>
+                        <FlowDecision x:Name="__ReferenceID2" sap2010:WorkflowViewState.IdRef="FlowDecision_4">
+                          <FlowDecision.Condition>
+                            <mca:CSharpValue x:TypeArguments="x:Boolean">EnteredDigits.Length &lt;= 0</mca:CSharpValue>
+                          </FlowDecision.Condition>
+                          <FlowDecision.True>
+                            <FlowStep x:Name="__ReferenceID3" sap2010:WorkflowViewState.IdRef="FlowStep_9">
+                              <ta:Say Language="{x:Null}" Loop="{x:Null}" Voice="{x:Null}" DisplayName="invalid entry" sap2010:WorkflowViewState.IdRef="Say_10" Text="You entered no digits. Try again.">
+                                <ta:Say.Variables>
+                                  <sco:Collection x:TypeArguments="Variable" />
+                                </ta:Say.Variables>
+                              </ta:Say>
+                              <FlowStep.Next>
+                                <x:Reference>__ReferenceID0</x:Reference>
+                              </FlowStep.Next>
+                            </FlowStep>
+                          </FlowDecision.True>
+                          <FlowDecision.False>
+                            <FlowStep x:Name="__ReferenceID4" sap2010:WorkflowViewState.IdRef="FlowStep_13">
+                              <ta:Say Language="{x:Null}" Loop="{x:Null}" Voice="{x:Null}" DisplayName="repeat entry" sap2010:WorkflowViewState.IdRef="Say_11">
+                                <ta:Say.Text>
+                                  <InArgument x:TypeArguments="x:String">
+                                    <mca:CSharpValue x:TypeArguments="x:String">"You entered " + EnteredDigits</mca:CSharpValue>
+                                  </InArgument>
+                                </ta:Say.Text>
+                                <ta:Say.Variables>
+                                  <sco:Collection x:TypeArguments="Variable" />
+                                </ta:Say.Variables>
+                              </ta:Say>
+                              <FlowStep.Next>
+                                <FlowDecision x:Name="__ReferenceID5" DisplayName="check for phone number" sap2010:WorkflowViewState.IdRef="FlowDecision_3">
+                                  <FlowDecision.Condition>
+                                    <mca:CSharpValue x:TypeArguments="x:Boolean">EnteredDigits.Length == 10</mca:CSharpValue>
+                                  </FlowDecision.Condition>
+                                  <FlowDecision.True>
+                                    <FlowStep x:Name="__ReferenceID7" sap2010:WorkflowViewState.IdRef="FlowStep_11">
+                                      <ta:Say Language="{x:Null}" Loop="{x:Null}" Voice="{x:Null}" sap2010:WorkflowViewState.IdRef="Say_12" Text="Okay. I'm going to dial that number. Talk to you in a minute.">
+                                        <ta:Say.Variables>
+                                          <sco:Collection x:TypeArguments="Variable" />
+                                        </ta:Say.Variables>
+                                      </ta:Say>
+                                      <FlowStep.Next>
+                                        <FlowStep x:Name="__ReferenceID8" sap2010:WorkflowViewState.IdRef="FlowStep_10">
+                                          <ta:Dial CallerId="{x:Null}" Duration="{x:Null}" HangupOnStar="{x:Null}" Record="{x:Null}" RecordingUrl="{x:Null}" Sid="{x:Null}" Status="{x:Null}" TimeLimit="{x:Null}" Timeout="{x:Null}" sap2010:WorkflowViewState.IdRef="Dial_3">
+                                            <ta:Dial.Activities>
+                                              <ta:DialNumber SendDigits="{x:Null}" sap2010:WorkflowViewState.IdRef="DialNumber_3">
+                                                <ta:DialNumber.Number>
+                                                  <InArgument x:TypeArguments="x:String">
+                                                    <mca:CSharpValue x:TypeArguments="x:String">!EnteredDigits.StartsWith("+1") ? "+1" + EnteredDigits : EnteredDigits</mca:CSharpValue>
+                                                  </InArgument>
+                                                </ta:DialNumber.Number>
+                                                <ta:DialNumber.Pickup>
+                                                  <Sequence>
+                                                    <Sequence.Variables>
+                                                      <Variable x:TypeArguments="x:String" Name="PickupDigits" />
+                                                    </Sequence.Variables>
+                                                    <DoWhile>
+                                                      <DoWhile.Condition>
+                                                        <mca:CSharpValue x:TypeArguments="x:Boolean">PickupDigits != "1"</mca:CSharpValue>
+                                                      </DoWhile.Condition>
+                                                      <ta:Gather Digits="{x:Null}" FinishOnKey="{x:Null}" NumDigits="{x:Null}" Timeout="{x:Null}">
+                                                        <ta:Gather.Body>
+                                                          <ta:Say Language="{x:Null}" Loop="{x:Null}" Voice="{x:Null}" Text="You are being called by somebody from the Twilio workflow sample. Press 1 to accept.">
+                                                            <ta:Say.Variables>
+                                                              <sco:Collection x:TypeArguments="Variable" />
+                                                            </ta:Say.Variables>
+                                                            <sap2010:WorkflowViewState.IdRef>Say_14</sap2010:WorkflowViewState.IdRef>
+                                                          </ta:Say>
+                                                        </ta:Gather.Body>
+                                                        <ta:Gather.Result>
+                                                          <OutArgument x:TypeArguments="x:String">
+                                                            <mca:CSharpReference x:TypeArguments="x:String">PickupDigits</mca:CSharpReference>
+                                                          </OutArgument>
+                                                        </ta:Gather.Result>
+                                                        <ta:Gather.Variables>
+                                                          <sco:Collection x:TypeArguments="Variable" />
+                                                        </ta:Gather.Variables>
+                                                        <sap2010:WorkflowViewState.IdRef>Gather_3</sap2010:WorkflowViewState.IdRef>
+                                                      </ta:Gather>
+                                                      <sap2010:WorkflowViewState.IdRef>DoWhile_1</sap2010:WorkflowViewState.IdRef>
+                                                    </DoWhile>
+                                                    <sap2010:WorkflowViewState.IdRef>Sequence_1</sap2010:WorkflowViewState.IdRef>
+                                                  </Sequence>
+                                                </ta:DialNumber.Pickup>
+                                                <ta:DialNumber.Variables>
+                                                  <sco:Collection x:TypeArguments="Variable" />
+                                                </ta:DialNumber.Variables>
+                                              </ta:DialNumber>
+                                            </ta:Dial.Activities>
+                                            <ta:Dial.Variables>
+                                              <sco:Collection x:TypeArguments="Variable" />
+                                            </ta:Dial.Variables>
+                                          </ta:Dial>
+                                        </FlowStep>
+                                      </FlowStep.Next>
+                                    </FlowStep>
+                                  </FlowDecision.True>
+                                  <FlowDecision.False>
+                                    <FlowStep x:Name="__ReferenceID6" sap2010:WorkflowViewState.IdRef="FlowStep_12">
+                                      <ta:Say Language="{x:Null}" Loop="{x:Null}" Voice="{x:Null}" sap2010:WorkflowViewState.IdRef="Say_13" Text="Well, that wasn't a 10 digit phone number. Let's try again.">
+                                        <ta:Say.Variables>
+                                          <sco:Collection x:TypeArguments="Variable" />
+                                        </ta:Say.Variables>
+                                      </ta:Say>
+                                      <FlowStep.Next>
+                                        <x:Reference>__ReferenceID1</x:Reference>
+                                      </FlowStep.Next>
+                                    </FlowStep>
+                                  </FlowDecision.False>
+                                </FlowDecision>
+                              </FlowStep.Next>
+                            </FlowStep>
+                          </FlowDecision.False>
+                        </FlowDecision>
+                      </FlowStep.Next>
+                    </FlowStep>
+                  </FlowStep.Next>
+                </FlowStep>
+              </FlowStep.Next>
+            </FlowStep>
+          </Flowchart.StartNode>
+          <x:Reference>__ReferenceID1</x:Reference>
+          <x:Reference>__ReferenceID0</x:Reference>
+          <x:Reference>__ReferenceID2</x:Reference>
+          <x:Reference>__ReferenceID3</x:Reference>
+          <x:Reference>__ReferenceID4</x:Reference>
+          <x:Reference>__ReferenceID5</x:Reference>
+          <x:Reference>__ReferenceID6</x:Reference>
+          <x:Reference>__ReferenceID7</x:Reference>
+          <x:Reference>__ReferenceID8</x:Reference>
+          <x:Reference>__ReferenceID9</x:Reference>
+        </Flowchart>
+      </ActivityAction>
+    </ta:CallScope.Body>
+    <ta:CallScope.Variables>
+      <sco:Collection x:TypeArguments="Variable" />
+    </ta:CallScope.Variables>
+    <sads:DebugSymbol.Symbol>d1FDOlxVc2Vyc1xqaGFsdG9tXERldmVsb3BtZW50XHR3aWxpby1uZXRcVHdpbGlvLkFjdGl2aXRpZXMuRXhhbXBsZXNcQ2FsbEZsb3cxLnhhbWwgKQPtARICAQEvCeYBFQIBAjUPPhgCATNBE0UcAgExSBdiIwIBJWYdZngCASJ2H38oAgEegwElgwF+AgEbxgEnygEwAgEZhwEniwEwAgEXjgErvwE1AgEFah9uKAIBAzgVOH0CATRBmwFBzAECATJcHVyAAQIBLFcdV2gCASlSHVJwAgEmShtOJAIBL3kleYEBAgEfxgGSAcYBzwECARqHAZIBhwHRAQIBGJABL7oBPwIBBmqmAWrJAQIBBEqFAUqlAQIBMJMBNZMBuQECAQeXATO1AT4CAQqbATWzAT8CAQudATmdAYsBAgETnwE3sQFDAgEMqgE9qgGPAQIBDaEBO6YBRAIBEaEBfaEB0wECARI=</sads:DebugSymbol.Symbol>
+  </ta:CallScope>
   <sap2010:WorkflowViewState.ViewStateManager>
     <sap2010:ViewStateManager>
-      <sap2010:ViewStateData Id="Say_1" sap:VirtualizedContainerService.HintSize="200,36">
+      <sap2010:ViewStateData Id="Say_7" sap:VirtualizedContainerService.HintSize="214,62">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Say_2" sap:VirtualizedContainerService.HintSize="200,78" />
-      <sap2010:ViewStateData Id="Gather_1" sap:VirtualizedContainerService.HintSize="200,36">
+      <sap2010:ViewStateData Id="Say_8" sap:VirtualizedContainerService.HintSize="214,62">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Say_3" sap:VirtualizedContainerService.HintSize="200,36">
+      <sap2010:ViewStateData Id="Say_9" sap:VirtualizedContainerService.HintSize="200,78" />
+      <sap2010:ViewStateData Id="Gather_2" sap:VirtualizedContainerService.HintSize="200,36">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="FlowStep_1">
-        <sap:WorkflowViewStateService.ViewState>
-          <scg:Dictionary x:TypeArguments="x:String, x:Object">
-            <av:Point x:Key="ShapeLocation">210,302</av:Point>
-            <av:Size x:Key="ShapeSize">200,36</av:Size>
-            <av:PointCollection x:Key="ConnectorLocation">310,302 310,230 370,230</av:PointCollection>
-          </scg:Dictionary>
-        </sap:WorkflowViewStateService.ViewState>
-      </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Say_4" sap:VirtualizedContainerService.HintSize="200,36">
+      <sap2010:ViewStateData Id="Say_10" sap:VirtualizedContainerService.HintSize="205,62">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Say_6" sap:VirtualizedContainerService.HintSize="200,36">
+      <sap2010:ViewStateData Id="FlowStep_9">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <av:Point x:Key="ShapeLocation">127.5,409</av:Point>
+            <av:Size x:Key="ShapeSize">205,62</av:Size>
+            <av:PointCollection x:Key="ConnectorLocation">230,409 230,350 370,350</av:PointCollection>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Say_11" sap:VirtualizedContainerService.HintSize="200,62">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="DialNumber_1" sap:VirtualizedContainerService.HintSize="200,26" />
-      <sap2010:ViewStateData Id="Dial_1" sap:VirtualizedContainerService.HintSize="214,88">
+      <sap2010:ViewStateData Id="Say_12" sap:VirtualizedContainerService.HintSize="214,62">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="FlowStep_2">
-        <sap:WorkflowViewStateService.ViewState>
-          <scg:Dictionary x:TypeArguments="x:String, x:Object">
-            <av:Point x:Key="ShapeLocation">193,386</av:Point>
-            <av:Size x:Key="ShapeSize">214,88</av:Size>
-            <av:PointCollection x:Key="ConnectorLocation">193,430 163,430 163,170 370,170</av:PointCollection>
-          </scg:Dictionary>
-        </sap:WorkflowViewStateService.ViewState>
-      </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="FlowStep_7">
-        <sap:WorkflowViewStateService.ViewState>
-          <scg:Dictionary x:TypeArguments="x:String, x:Object">
-            <av:Point x:Key="ShapeLocation">440,412</av:Point>
-            <av:Size x:Key="ShapeSize">200,36</av:Size>
-            <av:PointCollection x:Key="ConnectorLocation">440,430 407,430</av:PointCollection>
-          </scg:Dictionary>
-        </sap:WorkflowViewStateService.ViewState>
-      </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Say_5" sap:VirtualizedContainerService.HintSize="200,36">
+      <sap2010:ViewStateData Id="Say_14" sap:VirtualizedContainerService.HintSize="490,62" />
+      <sap2010:ViewStateData Id="Gather_3" sap:VirtualizedContainerService.HintSize="504,98" />
+      <sap2010:ViewStateData Id="DoWhile_1" sap:VirtualizedContainerService.HintSize="530,264" />
+      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="552,388">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="FlowStep_3">
-        <sap:WorkflowViewStateService.ViewState>
-          <scg:Dictionary x:TypeArguments="x:String, x:Object">
-            <av:Point x:Key="ShapeLocation">630,502</av:Point>
-            <av:Size x:Key="ShapeSize">200,36</av:Size>
-            <av:PointCollection x:Key="ConnectorLocation">630,520 140.317850401081,520 140.317850401081,170 370,170</av:PointCollection>
-          </scg:Dictionary>
-        </sap:WorkflowViewStateService.ViewState>
-      </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="FlowDecision_1" sap:VirtualizedContainerService.HintSize="134,87">
+      <sap2010:ViewStateData Id="DialNumber_3" sap:VirtualizedContainerService.HintSize="566,454" />
+      <sap2010:ViewStateData Id="Dial_3" sap:VirtualizedContainerService.HintSize="580,570">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
-            <av:Point x:Key="ShapeLocation">665,386.5</av:Point>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="FlowStep_10">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <av:Point x:Key="ShapeLocation">33,531</av:Point>
+            <av:Size x:Key="ShapeSize">244,241</av:Size>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="FlowStep_11">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <av:Point x:Key="ShapeLocation">353,649</av:Point>
+            <av:Size x:Key="ShapeSize">214,62</av:Size>
+            <av:PointCollection x:Key="ConnectorLocation">353,680 323,680 323,651.5 277,651.5</av:PointCollection>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Say_13" sap:VirtualizedContainerService.HintSize="214,62">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="FlowStep_12">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <av:Point x:Key="ShapeLocation">733,319</av:Point>
+            <av:Size x:Key="ShapeSize">214,62</av:Size>
+            <av:PointCollection x:Key="ConnectorLocation">733,350 703,350 703,243 564,243</av:PointCollection>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="FlowDecision_3" sap:VirtualizedContainerService.HintSize="134,87">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+            <av:Point x:Key="ShapeLocation">623,566.5</av:Point>
             <av:Size x:Key="ShapeSize">134,87</av:Size>
             <x:String x:Key="TrueLabel">phone number</x:String>
             <x:String x:Key="FalseLabel">other</x:String>
-            <av:PointCollection x:Key="TrueConnector">665,430 640,430</av:PointCollection>
-            <av:PointCollection x:Key="FalseConnector">799,430 860,430 860,520 830,520</av:PointCollection>
+            <av:PointCollection x:Key="TrueConnector">623,610 460,610 460,649</av:PointCollection>
+            <av:PointCollection x:Key="FalseConnector">757,610 977,610 977,350 947,350</av:PointCollection>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="FlowStep_4">
+      <sap2010:ViewStateData Id="FlowStep_13">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
-            <av:Point x:Key="ShapeLocation">600,302</av:Point>
-            <av:Size x:Key="ShapeSize">200,36</av:Size>
-            <av:PointCollection x:Key="ConnectorLocation">700,338 700,368 732,368 732,386.5</av:PointCollection>
+            <av:Point x:Key="ShapeLocation">600,429</av:Point>
+            <av:Size x:Key="ShapeSize">200,62</av:Size>
+            <av:PointCollection x:Key="ConnectorLocation">700,491 700,521 690,521 690,566.5</av:PointCollection>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="FlowDecision_2" sap:VirtualizedContainerService.HintSize="70,87">
+      <sap2010:ViewStateData Id="FlowDecision_4" sap:VirtualizedContainerService.HintSize="70,87">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
-            <av:Point x:Key="ShapeLocation">435,276.5</av:Point>
+            <av:Point x:Key="ShapeLocation">435,396.5</av:Point>
             <av:Size x:Key="ShapeSize">70,87</av:Size>
-            <av:PointCollection x:Key="TrueConnector">435,320 410,320</av:PointCollection>
-            <av:PointCollection x:Key="FalseConnector">505,320 600,320</av:PointCollection>
+            <av:PointCollection x:Key="TrueConnector">435,440 332.5,440</av:PointCollection>
+            <av:PointCollection x:Key="FalseConnector">505,440 535,440 535,460 600,460</av:PointCollection>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="FlowStep_5">
+      <sap2010:ViewStateData Id="FlowStep_14">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
-            <av:Point x:Key="ShapeLocation">370,212</av:Point>
+            <av:Point x:Key="ShapeLocation">370,332</av:Point>
             <av:Size x:Key="ShapeSize">200,36</av:Size>
-            <av:PointCollection x:Key="ConnectorLocation">470,248 470,276.5</av:PointCollection>
+            <av:PointCollection x:Key="ConnectorLocation">470,368 470,396.5</av:PointCollection>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="FlowStep_6">
+      <sap2010:ViewStateData Id="FlowStep_15">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
-            <av:Point x:Key="ShapeLocation">370,152</av:Point>
-            <av:Size x:Key="ShapeSize">200,36</av:Size>
-            <av:PointCollection x:Key="ConnectorLocation">470,188 470,212</av:PointCollection>
+            <av:Point x:Key="ShapeLocation">350,212</av:Point>
+            <av:Size x:Key="ShapeSize">214,62</av:Size>
+            <av:PointCollection x:Key="ConnectorLocation">457,274 457,304 470,304 470,332</av:PointCollection>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Flowchart_1" sap:VirtualizedContainerService.HintSize="1067,677">
+      <sap2010:ViewStateData Id="FlowStep_16">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <av:Point x:Key="ShapeLocation">360,112</av:Point>
+            <av:Size x:Key="ShapeSize">214,62</av:Size>
+            <av:PointCollection x:Key="ConnectorLocation">467,174 467,204 457,204 457,212</av:PointCollection>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Flowchart_2" sap:VirtualizedContainerService.HintSize="1095,820">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">False</x:Boolean>
-            <av:Point x:Key="ShapeLocation">440,2.5</av:Point>
+            <av:Point x:Key="ShapeLocation">450,0</av:Point>
             <av:Size x:Key="ShapeSize">60,75</av:Size>
-            <av:PointCollection x:Key="ConnectorLocation">470,77.5 470,152</av:PointCollection>
-            <x:Double x:Key="Width">1053.3984941268761</x:Double>
-            <x:Double x:Key="Height">640.55609649811493</x:Double>
+            <av:PointCollection x:Key="ConnectorLocation">480,75 480,105 467,105 467,112</av:PointCollection>
+            <x:Double x:Key="Width">1081</x:Double>
+            <x:Double x:Key="Height">784</x:Double>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Twilio.Activities.Examples.CallFlow1_1" sap:VirtualizedContainerService.HintSize="654,716" />
+      <sap2010:ViewStateData Id="CallScope_1" sap:VirtualizedContainerService.HintSize="214,110" />
+      <sap2010:ViewStateData Id="Twilio.Activities.Examples.CallFlow1_1" sap:VirtualizedContainerService.HintSize="254,188" />
     </sap2010:ViewStateManager>
   </sap2010:WorkflowViewState.ViewStateManager>
 </Activity>
