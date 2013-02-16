@@ -15,7 +15,7 @@ namespace Twilio.Activities.Tests
         {
             var c = CreateContext(new Dial()
             {
-                Nouns =
+                Activities =
                 {
                     new DialNumber()
                     {
@@ -23,9 +23,6 @@ namespace Twilio.Activities.Tests
                     },
                 },
             });
-
-            // cannot work without bookmarks
-        //    Assert.Fail();
 
             c.Invoker.Invoke();
 
@@ -35,41 +32,42 @@ namespace Twilio.Activities.Tests
         [TestMethod]
         public void DialSipTest()
         {
-            var c = CreateContext(new Dial()
+            var c = new DelegateInArgument<CallContext>();
+
+            var a = new CallScope()
             {
-                Nouns =
+                Body = new ActivityAction<CallContext>()
                 {
-                    Handler = new DialSip()
+                    Argument = c,
+                    Handler = new Dial()
                     {
-                        Uris = new List<ActivityFunc<DialSipUriNoun>>()
+                        Activities =
                         {
-                            new ActivityFunc<DialSipUriNoun>()
+                            new DialSip()
                             {
-                                Handler = new DialSipUri()
+                                Uris =
                                 {
-                                    Uri = "test1@test.com",
-                                    UserName = "test1",
-                                },
-                            },
-                            new ActivityFunc<DialSipUriNoun>()
-                            {
-                                Handler = new DialSipUri()
-                                {
-                                    Uri = "test2@test.com",
-                                    UserName = "test2",
+                                    new DialSipUri()
+                                    {
+                                        Uri = "test1@test.com",
+                                        UserName = "test1",
+                                    },
+                                    new DialSipUri()
+                                    {
+                                        Uri = "test2@test.com",
+                                        UserName = "test2",
+                                    },
                                 },
                             },
                         },
                     },
                 },
-            });
+            };
 
-            // cannot work without bookmarks
-            //    Assert.Fail();
+            var ctx = CreateContext(a);
+            ctx.Invoke();
 
-            c.Invoker.Invoke();
-
-            Assert.AreEqual("<Response><Dial>+15555555555</Dial></Response>", c.Response.ToString(SaveOptions.DisableFormatting));
+            Assert.AreEqual("<Response><Dial>+15555555555</Dial></Response>", ctx.Response.ToString(SaveOptions.DisableFormatting));
         }
 
         [TestMethod]

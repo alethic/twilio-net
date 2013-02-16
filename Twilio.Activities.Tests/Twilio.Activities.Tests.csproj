@@ -73,12 +73,6 @@
       <Name>Twilio.Activities</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <XamlAppDef Include="SampleActivity1.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </XamlAppDef>
-  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>
