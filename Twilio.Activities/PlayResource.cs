@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Activities;
 using System.ComponentModel;
+using System.Globalization;
 
 using Twilio.Activities.Design;
 
@@ -38,6 +39,11 @@ namespace Twilio.Activities
         /// </summary>
         public InArgument<string> ResourceName { get; set; }
 
+        /// <summary>
+        /// Culture to use to resolve resource.
+        /// </summary>
+        public InArgument<CultureInfo> Culture { get; set; }
+
         protected override void CacheMetadata(NativeActivityMetadata metadata)
         {
             base.CacheMetadata(metadata);
@@ -50,13 +56,14 @@ namespace Twilio.Activities
             var twilio = context.GetExtension<ITwilioContext>();
             var resourceSource = ResourceSource;
             var resourceName = ResourceName.Get(context);
+            var culture = Culture.Get(context);
 
             if (resourceSource == null)
                 throw new ArgumentNullException("ResourceSource");
             if (resourceName == null)
                 throw new ArgumentNullException("ResourceName");
 
-            var url = twilio.ResolveResourceUrl(resourceSource, resourceName);
+            var url = twilio.ResolveResourceUrl(resourceSource, resourceName, culture);
             if (url == null)
                 throw new NullReferenceException("Could not resolve resource.");
 

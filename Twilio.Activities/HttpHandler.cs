@@ -201,10 +201,10 @@ namespace Twilio.Activities
         /// <param name="resourceSource"></param>
         /// <param name="resourceName"></param>
         /// <returns></returns>
-        public Uri ResolveResourceUrl(Type resourceSource, string resourceName)
+        public Uri ResolveResourceUrl(Type resourceSource, string resourceName, CultureInfo culture)
         {
             return RelativeUrl.MakeRelativeUri(AppendQueryArgToUri(RequestUrl, ResourceQueryKey,
-                "T:" + resourceSource.Assembly.GetName().Name + "/" + resourceSource.FullName + "/" + resourceName));
+                "T:" + resourceSource.Assembly.GetName().Name + "/" + resourceSource.FullName + "/" + resourceName + "/" + (culture ?? CultureInfo.InvariantCulture).Name));
         }
 
         /// <summary>
@@ -237,7 +237,7 @@ namespace Twilio.Activities
             // request was for a resource
             if (Request[ResourceQueryKey] != null)
             {
-                ServeResource(Request[ResourceQueryKey]);
+                ProcessResourceRequest(Request[ResourceQueryKey]);
                 return;
             }
 
@@ -435,18 +435,19 @@ namespace Twilio.Activities
         }
 
         /// <summary>
-        /// 
+        /// Handles a request for a resource.
         /// </summary>
         /// <param name="resourceInfo"></param>
-        void ServeResource(string resourceInfo)
+        void ProcessResourceRequest(string resourceInfo)
         {
             ResourceManager resourceManager = null;
             string resourceName = null;
+            CultureInfo resourceCulture = null;
 
             if (resourceInfo.StartsWith("T:"))
             {
                 var s = resourceInfo.Remove(0, 2).Split('/');
-                if (s.Length != 3)
+                if (s.Length != 4)
                     throw new FormatException("Resource specification is invalid.");
 
                 var a = Assembly.Load(s[0]);
@@ -458,11 +459,17 @@ namespace Twilio.Activities
                     throw new NullReferenceException("Could not load specified type.");
 
                 var r = s[2];
-                if (r == null)
-                    throw new NullReferenceException("Unspecified resource name.");
+                if (string.IsNullOrWhiteSpace(r))
+                    throw new FormatException("Unspecified resource name.");
 
+                var c = s[3];
+                if (string.IsNullOrWhiteSpace(c))
+                    throw new FormatException("Unspecified culture.");
+
+                // initialize resource settings
                 resourceManager = new ResourceManager(t);
                 resourceName = r;
+                resourceCulture = CultureInfo.GetCultureInfo(c);
             }
 
             if (resourceManager == null)
@@ -470,7 +477,7 @@ namespace Twilio.Activities
             if (resourceName == null)
                 throw new NullReferenceException("Could not determine resource.");
 
-            var o = resourceManager.GetStream(resourceName);
+            var o = resourceManager.GetStream(resourceName, resourceCulture);
             if (o == null)
                 throw new NullReferenceException("Unknown resource name.");
 
@@ -508,7 +515,12 @@ namespace Twilio.Activities
 
         Uri ITwilioContext.ResolveResourceUrl(Type resourceSource, string resourceName)
         {
-            return ResolveResourceUrl(resourceSource, resourceName);
+            return ResolveResourceUrl(resourceSource, resourceName, null);
+        }
+
+        Uri ITwilioContext.ResolveResourceUrl(Type resourceSource, string resourceName, CultureInfo culture)
+        {
+            return ResolveResourceUrl(resourceSource, resourceName, culture);
         }
 
         XElement ITwilioContext.GetElement(NativeActivityContext context)

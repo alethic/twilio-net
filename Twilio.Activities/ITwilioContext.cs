@@ -45,6 +45,15 @@ namespace Twilio.Activities
         Uri ResolveResourceUrl(Type resourceSource, string resource);
 
         /// <summary>
+        /// Gets the <see cref="Uri"/> to be used to refer to the .Net resource.
+        /// </summary>
+        /// <param name="resourceSource"></param>
+        /// <param name="resource"></param>
+        /// <param name="culture"></param>
+        /// <returns></returns>
+        Uri ResolveResourceUrl(Type resourceSource, string resource, CultureInfo culture);
+
+        /// <summary>
         /// Gets the current element based on the given context.
         /// </summary>
         /// <param name="context"></param>
