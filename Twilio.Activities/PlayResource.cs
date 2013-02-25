@@ -16,7 +16,7 @@ namespace Twilio.Activities
     {
 
         Variable<string> playUrl = new Variable<string>();
-        Variable<bool?> loop = new Variable<bool?>();
+        Variable<int?> loop = new Variable<int?>();
         Activity play;
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace Twilio.Activities
         public Type ResourceSource { get; set; }
 
         /// <summary>
-        /// Name of resource to play.
+        /// Number of times to loop.
         /// </summary>
         public InArgument<string> ResourceName { get; set; }
 

@@ -21,7 +21,7 @@ namespace Twilio.Activities
         public InArgument<string> Url { get; set; }
 
         /// <summary>
-        /// Should the audio loop?
+        /// Number of times to loop.
         /// </summary>
         public InArgument<int?> Loop { get; set; }
 
