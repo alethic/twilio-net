@@ -63,6 +63,7 @@ namespace Twilio.Activities
             if (resourceName == null)
                 throw new ArgumentNullException("ResourceName");
 
+            // resolve resource url
             var url = twilio.ResolveResourceUrl(resourceSource, resourceName, culture);
             if (url == null)
                 throw new NullReferenceException("Could not resolve resource.");
