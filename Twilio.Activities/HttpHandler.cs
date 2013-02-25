@@ -464,7 +464,7 @@ namespace Twilio.Activities
                     throw new FormatException("Unspecified resource name.");
 
                 var c = s[3];
-                if (string.IsNullOrWhiteSpace(c))
+                if (c == null)
                     throw new FormatException("Unspecified culture.");
 
                 // initialize resource settings
