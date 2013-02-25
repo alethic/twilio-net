@@ -202,7 +202,7 @@ namespace Twilio.Activities
         /// <returns></returns>
         public Uri ResolveResourceUrl(Type resourceSource, string resourceName)
         {
-            return RelativeUrl.MakeRelativeUri(AppendQueryArgToUri(SelfUrl, ResourceQueryKey,
+            return RelativeUrl.MakeRelativeUri(AppendQueryArgToUri(RequestUrl, ResourceQueryKey,
                 "T:" + resourceSource.Assembly.GetName().Name + "/" + resourceSource.FullName + "/" + resourceName));
         }
 

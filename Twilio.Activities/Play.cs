@@ -30,7 +30,7 @@ namespace Twilio.Activities
 
             GetElement(context).Add(new XElement("Play",
                 loop != null ? new XAttribute("loop", loop) : null,
-                twilio.ResolveUrl(url).ToString()));
+                url));
         }
 
     }
