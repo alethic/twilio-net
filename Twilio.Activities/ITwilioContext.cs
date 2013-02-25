@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Activities;
+using System.Globalization;
 using System.Xml.Linq;
 
 namespace Twilio.Activities
@@ -14,7 +15,7 @@ namespace Twilio.Activities
         /// <summary>
         /// Gets information related to the ongoing call.
         /// </summary>
-        CallContext CallContext { get; }
+        CallContext CreateCallContext { get; }
 
         /// <summary>
         /// Gets the <see cref="Uri"/> to be used to submit back to the current Twilio handler.

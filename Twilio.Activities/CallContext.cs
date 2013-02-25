@@ -1,4 +1,6 @@
-﻿using System.Runtime.Serialization;
+﻿using System.Globalization;
+using System.Runtime.Serialization;
+
 namespace Twilio.Activities
 {
 
@@ -19,7 +21,8 @@ namespace Twilio.Activities
         /// <param name="called"></param>
         /// <param name="from"></param>
         /// <param name="to"></param>
-        internal CallContext(string accountSid, string sid, CallDirection direction, CallEndpoint caller, CallEndpoint called, CallEndpoint from, CallEndpoint to)
+        /// <param name="culture"></param>
+        internal CallContext(string accountSid, string sid, CallDirection direction, CallEndpoint caller, CallEndpoint called, CallEndpoint from, CallEndpoint to, CultureInfo culture)
         {
             AccountSid = accountSid;
             Sid = sid;
@@ -28,6 +31,7 @@ namespace Twilio.Activities
             Called = called;
             From = from;
             To = to;
+            Culture = culture;
         }
 
         /// <summary>
@@ -71,6 +75,12 @@ namespace Twilio.Activities
         /// </summary>
         [DataMember]
         public CallEndpoint To { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the current culture.
+        /// </summary>
+        [DataMember]
+        public CultureInfo Culture { get; set; }
 
     }
 

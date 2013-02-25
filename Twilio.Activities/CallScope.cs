@@ -33,7 +33,7 @@ namespace Twilio.Activities
         protected override void Execute(NativeActivityContext context)
         {
             if (Body != null)
-                context.ScheduleAction(Body, context.GetExtension<ITwilioContext>().CallContext);
+                context.ScheduleAction(Body, context.GetExtension<ITwilioContext>().CreateCallContext);
         }
 
     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Activities;
 using System.Collections.Specialized;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -368,16 +369,16 @@ namespace Twilio.Activities
             }
         }
 
-        CallContext ITwilioContext.CallContext
+        CallContext ITwilioContext.CreateCallContext
         {
-            get { return GetCallContext(); }
+            get { return CreateCallContext(); }
         }
 
         /// <summary>
         /// Generates a new <see cref="CallContext"/> based on the current request.
         /// </summary>
         /// <returns></returns>
-        CallContext GetCallContext()
+        CallContext CreateCallContext()
         {
             // obtain post data of current request
             var d = GetPostData();
@@ -392,24 +393,25 @@ namespace Twilio.Activities
                     d["CallerCountry"],
                     d["CallerState"],
                     d["CallerZip"]),
-                  new CallEndpoint(
+                new CallEndpoint(
                     d["Called"],
                     d["CalledCity"],
                     d["CalledCountry"],
                     d["CalledState"],
                     d["CalledZip"]),
-                  new CallEndpoint(
+                new CallEndpoint(
                     d["From"],
                     d["FromCity"],
                     d["FromCountry"],
                     d["FromState"],
                     d["FromZip"]),
-                  new CallEndpoint(
+                new CallEndpoint(
                     d["To"],
                     d["ToCity"],
                     d["ToCountry"],
                     d["ToState"],
-                    d["ToZip"]));
+                    d["ToZip"]),
+                CultureInfo.InvariantCulture);
         }
 
         /// <summary>
