@@ -20,6 +20,9 @@ namespace Twilio.Activities
         [RequiredArgument]
         public InArgument<string> Url { get; set; }
 
+        /// <summary>
+        /// Should the audio loop?
+        /// </summary>
         public InArgument<int?> Loop { get; set; }
 
         protected override void Execute(NativeActivityContext context)

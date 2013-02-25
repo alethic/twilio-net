@@ -16,6 +16,7 @@ namespace Twilio.Activities
     {
 
         Variable<string> playUrl = new Variable<string>();
+        Variable<bool?> loop = new Variable<bool?>();
         Activity play;
 
         /// <summary>
@@ -26,6 +27,7 @@ namespace Twilio.Activities
             play = new Play()
             {
                 Url = playUrl,
+                Loop = loop,
             };
         }
 
@@ -44,10 +46,16 @@ namespace Twilio.Activities
         /// </summary>
         public InArgument<CultureInfo> Culture { get; set; }
 
+        /// <summary>
+        /// Should the audio loop?
+        /// </summary>
+        public InArgument<int?> Loop { get; set; }
+
         protected override void CacheMetadata(NativeActivityMetadata metadata)
         {
             base.CacheMetadata(metadata);
             metadata.AddImplementationVariable(playUrl);
+            metadata.AddImplementationVariable(loop);
             metadata.AddImplementationChild(play);
         }
 
@@ -68,8 +76,9 @@ namespace Twilio.Activities
             if (url == null)
                 throw new NullReferenceException("Could not resolve resource.");
 
-            // set url on variable referenced by child
+            // set variables referenced by child
             playUrl.Set(context, url.ToString());
+            loop.Set(context, Loop.Get(context));
 
             // execute play
             context.ScheduleActivity(play);
