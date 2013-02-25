@@ -56,6 +56,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AudioFormat.cs" />
     <Compile Include="CallContext.cs" />
     <Compile Include="CallDirection.cs" />
     <Compile Include="CallEndpoint.cs" />
@@ -88,6 +89,7 @@
     <Compile Include="Leave.cs" />
     <Compile Include="EnqueueResult.cs" />
     <Compile Include="EnqueueStatus.cs" />
+    <Compile Include="PlayResource.cs" />
     <Compile Include="Record.cs" />
     <Compile Include="Design\RecordDesigner.xaml.cs">
       <DependentUpon>RecordDesigner.xaml</DependentUpon>

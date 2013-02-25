@@ -54,7 +54,7 @@ namespace Twilio.Activities
                 // url attribute will execute the Called activity
                 var calledBookmark = Guid.NewGuid().ToString();
                 context.CreateBookmark(calledBookmark, OnCalled);
-                element.Add(new XAttribute("url", twilio.BookmarkSelfUrl(calledBookmark)));
+                element.Add(new XAttribute("url", twilio.ResolveBookmarkUrl(calledBookmark)));
             }
 
             // schedule URI activities

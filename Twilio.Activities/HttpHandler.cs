@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Activities;
 using System.Collections.Specialized;
+using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Resources;
 using System.Runtime.DurableInstancing;
 using System.Runtime.ExceptionServices;
 using System.Threading;
@@ -29,6 +32,11 @@ namespace Twilio.Activities
         /// Query argument key name to specify the bookmark to resume.
         /// </summary>
         static readonly string BookmarkQueryKey = "wf_Bookmark";
+
+        /// <summary>
+        /// Query argument key name to retrieve a resource.
+        /// </summary>
+        static readonly string ResourceQueryKey = "wf_Resource";
 
         /// <summary>
         /// Namespace under which we'll put temporary attributes.
@@ -181,9 +189,21 @@ namespace Twilio.Activities
         /// </summary>
         /// <param name="bookmarkName"></param>
         /// <returns></returns>
-        public Uri BookmarkSelfUrl(string bookmarkName)
+        public Uri ResolveBookmarkUrl(string bookmarkName)
         {
             return RelativeUrl.MakeRelativeUri(AppendQueryArgToUri(SelfUrl, BookmarkQueryKey, bookmarkName));
+        }
+
+        /// <summary>
+        /// Gets the <see cref="Uri"/> to retrieve the given resource name.
+        /// </summary>
+        /// <param name="resourceSource"></param>
+        /// <param name="resourceName"></param>
+        /// <returns></returns>
+        public Uri ResolveResourceUrl(Type resourceSource, string resourceName)
+        {
+            return RelativeUrl.MakeRelativeUri(AppendQueryArgToUri(SelfUrl, ResourceQueryKey,
+                "T:" + resourceSource.Assembly.GetName().Name + "/" + resourceSource.FullName + "/" + resourceName));
         }
 
         /// <summary>
@@ -213,6 +233,13 @@ namespace Twilio.Activities
             // bind ourselves to the context
             Context = context;
 
+            // request was for a resource
+            if (Request[ResourceQueryKey] != null)
+            {
+                ServeResource(Request[ResourceQueryKey]);
+                return;
+            }
+
             // obtain our activity instance
             Activity = CreateActivity();
 
@@ -234,11 +261,7 @@ namespace Twilio.Activities
 
             // postback to resume a bookmark
             if (Request[BookmarkQueryKey] != null)
-            {
-                var result = GetPostData();
-                if (result != null)
-                    WorkflowApplication.BeginResumeBookmark(Request[BookmarkQueryKey], result, i => WorkflowApplication.EndResumeBookmark(i), null);
-            }
+                WorkflowApplication.BeginResumeBookmark(Request[BookmarkQueryKey], GetPostData(), i => WorkflowApplication.EndResumeBookmark(i), null);
 
             // begin running the application
             WorkflowApplication.BeginRun(i => WorkflowApplication.EndRun(i), null);
@@ -409,6 +432,63 @@ namespace Twilio.Activities
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="resourceInfo"></param>
+        void ServeResource(string resourceInfo)
+        {
+            ResourceManager resourceManager = null;
+            string resourceName = null;
+
+            if (resourceInfo.StartsWith("T:"))
+            {
+                var s = resourceInfo.Remove(0, 2).Split('/');
+                if (s.Length != 3)
+                    throw new FormatException("Resource specification is invalid.");
+
+                var a = Assembly.Load(s[0]);
+                if (a == null)
+                    throw new NullReferenceException("Could not load specified assembly.");
+
+                var t = a.GetType(s[1]);
+                if (t == null)
+                    throw new NullReferenceException("Could not load specified type.");
+
+                var r = s[2];
+                if (r == null)
+                    throw new NullReferenceException("Unspecified resource name.");
+
+                resourceManager = new ResourceManager(t);
+                resourceName = r;
+            }
+
+            if (resourceManager == null)
+                throw new NullReferenceException("Could not build ResourceManager.");
+            if (resourceName == null)
+                throw new NullReferenceException("Could not determine resource.");
+
+            var o = resourceManager.GetStream(resourceName);
+            if (o == null)
+                throw new NullReferenceException("Unknown resource name.");
+
+            // write to memory stream
+            var f = new MemoryStream();
+            o.CopyTo(f);
+            f.Position = 0;
+
+            // probe data to determine format
+            var d = f.ToArray();
+            if (BitConverter.ToInt32(d, 0) == 1179011410 &&
+                BitConverter.ToInt32(d, 8) == 1163280727)
+                Response.ContentType = "audio/wav";
+
+            // write all output
+            Response.Clear();
+            Response.BinaryWrite(d);
+            Response.End();
+        }
+
         Uri ITwilioContext.SelfUrl
         {
             get { return SelfUrl; }
@@ -419,9 +499,14 @@ namespace Twilio.Activities
             return ResolveUrl(url);
         }
 
-        Uri ITwilioContext.BookmarkSelfUrl(string bookmarkName)
+        Uri ITwilioContext.ResolveBookmarkUrl(string bookmarkName)
         {
-            return BookmarkSelfUrl(bookmarkName);
+            return ResolveBookmarkUrl(bookmarkName);
+        }
+
+        Uri ITwilioContext.ResolveResourceUrl(Type resourceSource, string resourceName)
+        {
+            return ResolveResourceUrl(resourceSource, resourceName);
         }
 
         XElement ITwilioContext.GetElement(NativeActivityContext context)

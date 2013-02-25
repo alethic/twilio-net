@@ -7,6 +7,9 @@ using Twilio.Activities.Design;
 namespace Twilio.Activities
 {
 
+    /// <summary>
+    /// Plays the resource given by Url. Paths will be relative to the handler serving the Twilio workflow.
+    /// </summary>
     [Designer(typeof(PlayDesigner))]
     public sealed class Play : TwilioActivity
     {

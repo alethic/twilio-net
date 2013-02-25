@@ -58,7 +58,7 @@ namespace Twilio.Activities
 
             // append record element
             var element = new XElement("Record",
-                new XAttribute("action", twilio.BookmarkSelfUrl(bookmarkName)),
+                new XAttribute("action", twilio.ResolveBookmarkUrl(bookmarkName)),
                 timeout != null ? new XAttribute("timeout", ((TimeSpan)timeout).TotalSeconds) : null,
                 finishOnKey != null ? new XAttribute("finishOnKey", finishOnKey) : null,
                 maxLength != null ? new XAttribute("maxLength", ((TimeSpan)maxLength).TotalSeconds) : null,
@@ -68,7 +68,7 @@ namespace Twilio.Activities
             // write dial element and catch redirect
             GetElement(context).Add(
                 element,
-                new XElement("Redirect", twilio.BookmarkSelfUrl(bookmarkName)));
+                new XElement("Redirect", twilio.ResolveBookmarkUrl(bookmarkName)));
         }
 
         /// <summary>

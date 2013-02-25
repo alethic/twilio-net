@@ -41,7 +41,7 @@ namespace Twilio.Activities
 
             // append gather element
             var element = new XElement("Gather",
-                new XAttribute("action", twilio.BookmarkSelfUrl(bookmarkName)),
+                new XAttribute("action", twilio.ResolveBookmarkUrl(bookmarkName)),
                 timeout != null ? new XAttribute("timeout", ((TimeSpan)timeout).TotalSeconds) : null,
                 finishOnKey != null ? new XAttribute("finishOnKey", finishOnKey) : null,
                 numDigits != null ? new XAttribute("numDigits", numDigits) : null);
@@ -49,7 +49,7 @@ namespace Twilio.Activities
             // write gather element
             GetElement(context).Add(
                 element,
-                new XElement("Redirect", twilio.BookmarkSelfUrl(bookmarkName)));
+                new XElement("Redirect", twilio.ResolveBookmarkUrl(bookmarkName)));
 
             if (Body != null)
             {

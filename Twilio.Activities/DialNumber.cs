@@ -56,7 +56,7 @@ namespace Twilio.Activities
             {
                 var calledBookmark = Guid.NewGuid().ToString();
                 context.CreateBookmark(calledBookmark, OnCalled);
-                element.Add(new XAttribute("url", twilio.BookmarkSelfUrl(calledBookmark)));
+                element.Add(new XAttribute("url", twilio.ResolveBookmarkUrl(calledBookmark)));
             }
         }
 

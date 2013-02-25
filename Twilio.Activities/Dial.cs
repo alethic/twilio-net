@@ -154,7 +154,7 @@ namespace Twilio.Activities
 
             // dial element
             var element = new XElement("Dial",
-                new XAttribute("action", twilio.BookmarkSelfUrl(bookmarkName)),
+                new XAttribute("action", twilio.ResolveBookmarkUrl(bookmarkName)),
                 timeout != null ? new XAttribute("timeout", ((TimeSpan)timeout).TotalSeconds) : null,
                 hangupOnStar != null ? new XAttribute("hangupOnStar", (bool)hangupOnStar ? "true" : "false") : null,
                 timeLimit != null ? new XAttribute("timeLimit", ((TimeSpan)timeLimit).TotalSeconds) : null,
@@ -164,7 +164,7 @@ namespace Twilio.Activities
             // write Dial element
             GetElement(context).Add(
                 element,
-                new XElement("Redirect", twilio.BookmarkSelfUrl(bookmarkName)));
+                new XElement("Redirect", twilio.ResolveBookmarkUrl(bookmarkName)));
 
             // execute nouns
             if (Activities.Count > 0)

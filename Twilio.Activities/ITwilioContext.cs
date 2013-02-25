@@ -8,7 +8,7 @@ namespace Twilio.Activities
     /// <summary>
     /// Provides services activities can use to interact with Twilio.
     /// </summary>
-    interface ITwilioContext
+    public interface ITwilioContext
     {
 
         /// <summary>
@@ -33,7 +33,15 @@ namespace Twilio.Activities
         /// </summary>
         /// <param name="bookmarkName"></param>
         /// <returns></returns>
-        Uri BookmarkSelfUrl(string bookmarkName);
+        Uri ResolveBookmarkUrl(string bookmarkName);
+
+        /// <summary>
+        /// Gets the <see cref="Uri"/> to be used to refer to the .Net resource.
+        /// </summary>
+        /// <param name="resourceSource"></param>
+        /// <param name="resource"></param>
+        /// <returns></returns>
+        Uri ResolveResourceUrl(Type resourceSource, string resource);
 
         /// <summary>
         /// Gets the current element based on the given context.
