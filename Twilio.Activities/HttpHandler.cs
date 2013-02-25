@@ -237,6 +237,7 @@ namespace Twilio.Activities
             // request was for a resource
             if (Request[ResourceQueryKey] != null)
             {
+                // handle it and return, no need to deal with workflow
                 ProcessResourceRequest(Request[ResourceQueryKey]);
                 return;
             }
