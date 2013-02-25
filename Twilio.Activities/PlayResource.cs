@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Activities;
+using System.ComponentModel;
+
+using Twilio.Activities.Design;
 
 namespace Twilio.Activities
 {
@@ -7,6 +10,7 @@ namespace Twilio.Activities
     /// <summary>
     /// Plays the audio given by the .Net resource.
     /// </summary>
+    [Designer(typeof(PlayResourceDesigner))]
     public sealed class PlayResource : NativeActivity
     {
 
