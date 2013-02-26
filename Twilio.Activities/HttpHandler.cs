@@ -221,6 +221,27 @@ namespace Twilio.Activities
         protected abstract Activity CreateActivity();
 
         /// <summary>
+        /// Provides named input argument values to new activities. Default implementation extracts and converts
+        /// values from the request prefixed with "arg_".
+        /// </summary>
+        /// <returns></returns>
+        protected virtual IDictionary<string, object> GetArguments()
+        {
+            // extract arguments
+            var post = GetPostData();
+            var data = post
+                .AllKeys
+                .Where(i => i.StartsWith("arg_"))
+                .ToDictionary(i => i.Remove(0, 4), i => post[i]);
+
+            // convert data to appropriate argument types
+            var args = GetActivityArgumentTypes()
+                .ToDictionary(i => i.Key, i => data.ContainsKey(i.Key) ? ChangeType(data[i.Key], i.Value) : null);
+
+            return args;
+        }
+
+        /// <summary>
         /// Override this method to create the instance store used to serialize workflow instances.
         /// </summary>
         /// <returns></returns>
@@ -248,28 +269,8 @@ namespace Twilio.Activities
             // obtain our activity instance
             Activity = CreateActivity();
 
-            // generate a new instance, with arguments, if required
-            if (Request[InstanceIdQueryKey] == null)
-            {
-                // extract arguments
-                var post = GetPostData();
-                var data = post
-                    .AllKeys
-                    .Where(i => i.StartsWith("arg_"))
-                    .ToDictionary(i => i.Remove(0, 4), i => post[i]);
-
-                // convert data to appropriate argument types
-                var args = GetActivityArguments()
-                    .ToDictionary(i => i.Key, i => data.ContainsKey(i.Key) ? ChangeType(data[i.Key], i.Value) : null);
-
-                // generate new application with arguments
-                WorkflowApplication = new WorkflowApplication(Activity, args);
-            }
-            else
-                // generate new application without arguments
-                WorkflowApplication = new WorkflowApplication(Activity);
-
             // configure application
+            WorkflowApplication = new WorkflowApplication(Activity, Request[InstanceIdQueryKey] == null ? GetArguments() : null);
             WorkflowApplication.Extensions.Add<ITwilioContext>(() => this);
             WorkflowApplication.SynchronizationContext = SynchronizationContext = new RunnableSynchronizationContext();
             WorkflowApplication.InstanceStore = CreateInstanceStore();
@@ -311,10 +312,10 @@ namespace Twilio.Activities
         }
 
         /// <summary>
-        /// Gets the arguments available as input to the activity.
+        /// Gets the available arguments for the activity.
         /// </summary>
         /// <returns></returns>
-        Dictionary<string, Type> GetActivityArguments()
+        Dictionary<string, Type> GetActivityArgumentTypes()
         {
             return TypeDescriptor.GetProperties(Activity)
                 .Cast<PropertyDescriptor>()
