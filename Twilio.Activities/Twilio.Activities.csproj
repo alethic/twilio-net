@@ -60,6 +60,10 @@
     <Compile Include="CallDirection.cs" />
     <Compile Include="CallEndpoint.cs" />
     <Compile Include="CallScope.cs" />
+    <Compile Include="Design\DialQueueDesigner.xaml.cs">
+      <DependentUpon>DialQueueDesigner.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DialQueue.cs" />
     <Compile Include="Design\CallScopeDesigner.xaml.cs">
       <DependentUpon>CallScopeDesigner.xaml</DependentUpon>
     </Compile>
@@ -132,6 +136,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Design\CallScopeDesigner.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Design\DialQueueDesigner.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

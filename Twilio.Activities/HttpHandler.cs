@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Activities;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -245,8 +248,28 @@ namespace Twilio.Activities
             // obtain our activity instance
             Activity = CreateActivity();
 
-            // initializes workflow application and appropriate call backs
-            WorkflowApplication = new WorkflowApplication(Activity);
+            // generate a new instance, with arguments, if required
+            if (Request[InstanceIdQueryKey] == null)
+            {
+                // extract arguments
+                var post = GetPostData();
+                var data = post
+                    .AllKeys
+                    .Where(i => i.StartsWith("arg_"))
+                    .ToDictionary(i => i.Remove(0, 4), i => post[i]);
+
+                // convert data to appropriate argument types
+                var args = GetActivityArguments()
+                    .ToDictionary(i => i.Key, i => data.ContainsKey(i.Key) ? ChangeType(data[i.Key], i.Value) : null);
+
+                // generate new application with arguments
+                WorkflowApplication = new WorkflowApplication(Activity, args);
+            }
+            else
+                // generate new application without arguments
+                WorkflowApplication = new WorkflowApplication(Activity);
+
+            // configure application
             WorkflowApplication.Extensions.Add<ITwilioContext>(() => this);
             WorkflowApplication.SynchronizationContext = SynchronizationContext = new RunnableSynchronizationContext();
             WorkflowApplication.InstanceStore = CreateInstanceStore();
@@ -285,6 +308,36 @@ namespace Twilio.Activities
             Response.ContentType = "text/xml";
             using (var wrt = XmlWriter.Create(Response.Output))
                 TwilioResponse.WriteTo(wrt);
+        }
+
+        /// <summary>
+        /// Gets the arguments available as input to the activity.
+        /// </summary>
+        /// <returns></returns>
+        Dictionary<string, Type> GetActivityArguments()
+        {
+            return TypeDescriptor.GetProperties(Activity)
+                .Cast<PropertyDescriptor>()
+                .Where(i => i.PropertyType.IsGenericType)
+                .Where(i =>
+                    i.PropertyType.GetGenericTypeDefinition() == typeof(InArgument<>) ||
+                    i.PropertyType.GetGenericTypeDefinition() == typeof(InOutArgument<>))
+                .ToDictionary(i => i.Name, i => i.PropertyType.GetGenericArguments()[0]);
+        }
+
+        /// <summary>
+        /// Converts the string value to the given argument type.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        object ChangeType(string value, Type type)
+        {
+            var tc = TypeDescriptor.GetConverter(type);
+            if (tc == null)
+                throw new NullReferenceException("Could not convert argument to appropriate type. No type descriptor.");
+
+            return tc.ConvertFromString(value);
         }
 
         void OnAborted(WorkflowApplicationAbortedEventArgs args)
