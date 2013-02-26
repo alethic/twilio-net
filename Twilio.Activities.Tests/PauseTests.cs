@@ -18,7 +18,7 @@ namespace Twilio.Activities.Tests
                 Duration = TimeSpan.FromMinutes(1),
             });
 
-            c.Invoker.Invoke();
+            c.Invoke();
 
             Assert.AreEqual("<Response><Pause length=\"60\" /></Response>", c.Response.ToString(SaveOptions.DisableFormatting));
         }

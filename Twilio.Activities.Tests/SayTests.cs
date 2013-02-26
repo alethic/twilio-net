@@ -17,7 +17,7 @@ namespace Twilio.Activities.Tests
                 Text = "Hello",
             });
 
-            c.Invoker.Invoke();
+            c.Invoke();
 
             Assert.AreEqual("<Response><Say>Hello</Say></Response>", c.Response.ToString(SaveOptions.DisableFormatting));
         }

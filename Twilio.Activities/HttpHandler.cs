@@ -370,9 +370,9 @@ namespace Twilio.Activities
             }
         }
 
-        CallContext ITwilioContext.CreateCallContext
+        CallContext ITwilioContext.CreateCallContext()
         {
-            get { return CreateCallContext(); }
+            return CreateCallContext();
         }
 
         /// <summary>

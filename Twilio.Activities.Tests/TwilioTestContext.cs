@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Activities;
+using System.Globalization;
 using System.Linq;
 using System.Xml.Linq;
 
@@ -51,9 +52,19 @@ namespace Twilio.Activities.Tests
                 return new Uri(SelfUrl, url);
         }
 
-        public Uri BookmarkSelfUrl(string bookmarkName)
+        public Uri ResolveBookmarkUrl(string bookmarkName)
         {
             return new Uri(SelfUrl, "?B=R");
+        }
+
+        public Uri ResolveResourceUrl(Type resourceSource, string name)
+        {
+            return new Uri(SelfUrl, "?R=R");
+        }
+
+        public Uri ResolveResourceUrl(Type resourceSource, string name, CultureInfo culture)
+        {
+            return new Uri(SelfUrl, "?R=R");
         }
 
         public XElement Response
@@ -67,19 +78,17 @@ namespace Twilio.Activities.Tests
             set { element = value; }
         }
 
-        public CallContext CallContext
+        public CallContext CreateCallContext()
         {
-            get
-            {
-                return new CallContext(
-                    "TEST",
-                    "TEST",
-                    CallDirection.Unknown,
-                    new CallEndpoint("TEST", "TEST", "TEST", "TEST", "TEST"),
-                    new CallEndpoint("TEST", "TEST", "TEST", "TEST", "TEST"),
-                    new CallEndpoint("TEST", "TEST", "TEST", "TEST", "TEST"),
-                    new CallEndpoint("TEST", "TEST", "TEST", "TEST", "TEST"));
-            }
+            return new CallContext(
+                "TEST",
+                "TEST",
+                CallDirection.Unknown,
+                new CallEndpoint("TEST", "TEST", "TEST", "TEST", "TEST"),
+                new CallEndpoint("TEST", "TEST", "TEST", "TEST", "TEST"),
+                new CallEndpoint("TEST", "TEST", "TEST", "TEST", "TEST"),
+                new CallEndpoint("TEST", "TEST", "TEST", "TEST", "TEST"),
+                CultureInfo.InvariantCulture);
         }
 
         public XElement GetElement(NativeActivityContext context)

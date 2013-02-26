@@ -13,14 +13,14 @@ namespace Twilio.Activities
     {
 
         /// <summary>
-        /// Gets information related to the ongoing call.
-        /// </summary>
-        CallContext CreateCallContext { get; }
-
-        /// <summary>
         /// Gets the <see cref="Uri"/> to be used to submit back to the current Twilio handler.
         /// </summary>
         Uri SelfUrl { get; }
+
+        /// <summary>
+        /// Gets information related to the ongoing call.
+        /// </summary>
+        CallContext CreateCallContext();
 
         /// <summary>
         /// Resolve the given relative url.

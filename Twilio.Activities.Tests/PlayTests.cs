@@ -17,7 +17,7 @@ namespace Twilio.Activities.Tests
                 Url = "Foo.wav",
             });
 
-            c.Invoker.Invoke();
+            c.Invoke();
 
             Assert.AreEqual("<Response><Play>Foo.wav</Play></Response>", c.Response.ToString(SaveOptions.DisableFormatting));
         }
