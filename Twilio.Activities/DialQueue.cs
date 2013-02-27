@@ -44,11 +44,8 @@ namespace Twilio.Activities
 
             // bookmark to execute Caller activity
             if (Pickup != null)
-            {
-                var callerBookmark = Guid.NewGuid().ToString();
-                context.CreateBookmark(callerBookmark, OnCaller);
-                element.Add(new XAttribute("url", twilio.ResolveBookmarkUrl(callerBookmark)));
-            }
+                element.Add(new XAttribute("url",
+                    twilio.ResolveBookmarkUrl(context.CreateTwilioBookmark(OnPickup))));
         }
 
         /// <summary>
@@ -57,12 +54,12 @@ namespace Twilio.Activities
         /// <param name="context"></param>
         /// <param name="bookmark"></param>
         /// <param name="value"></param>
-        void OnCaller(NativeActivityContext context, Bookmark bookmark, object value)
+        void OnPickup(NativeActivityContext context, Bookmark bookmark, object value)
         {
-            context.ScheduleActivity(Pickup, OnCallerCompleted);
+            context.ScheduleActivity(Pickup, OnPickupCompleted);
         }
 
-        void OnCallerCompleted(NativeActivityContext context, ActivityInstance completedInstance)
+        void OnPickupCompleted(NativeActivityContext context, ActivityInstance completedInstance)
         {
             if (completedInstance.State != ActivityInstanceState.Executing)
                 return;

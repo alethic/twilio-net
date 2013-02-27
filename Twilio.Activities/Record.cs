@@ -52,13 +52,15 @@ namespace Twilio.Activities
             var transcribe = Transcribe.Get(context);
             var playBeep = PlayBeep.Get(context);
 
+            var actionUrl = twilio.ResolveBookmarkUrl(context.CreateTwilioBookmark(OnAction));
+
             // name to resume
             var bookmarkName = Guid.NewGuid().ToString();
-            context.CreateBookmark(bookmarkName, OnRecordFinished);
+            context.CreateBookmark(bookmarkName, OnAction);
 
             // append record element
             var element = new XElement("Record",
-                new XAttribute("action", twilio.ResolveBookmarkUrl(bookmarkName)),
+                new XAttribute("action", actionUrl),
                 timeout != null ? new XAttribute("timeout", ((TimeSpan)timeout).TotalSeconds) : null,
                 finishOnKey != null ? new XAttribute("finishOnKey", finishOnKey) : null,
                 maxLength != null ? new XAttribute("maxLength", ((TimeSpan)maxLength).TotalSeconds) : null,
@@ -68,7 +70,7 @@ namespace Twilio.Activities
             // write dial element and catch redirect
             GetElement(context).Add(
                 element,
-                new XElement("Redirect", twilio.ResolveBookmarkUrl(bookmarkName)));
+                new XElement("Redirect", actionUrl));
         }
 
         /// <summary>
@@ -77,7 +79,7 @@ namespace Twilio.Activities
         /// <param name="context"></param>
         /// <param name="bookmark"></param>
         /// <param name="o"></param>
-        void OnRecordFinished(NativeActivityContext context, Bookmark bookmark, object o)
+        void OnAction(NativeActivityContext context, Bookmark bookmark, object o)
         {
             var r = (NameValueCollection)o;
             var recordingUrl = r["RecordingUrl"];

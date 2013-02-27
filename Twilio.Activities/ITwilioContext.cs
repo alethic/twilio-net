@@ -33,16 +33,8 @@ namespace Twilio.Activities
         /// Gets the <see cref="Uri"/> to be used to submit back to the current Twilio handler, with the given bookmark.
         /// </summary>
         /// <param name="bookmark"></param>
-        /// <param name="debug"></param>
         /// <returns></returns>
-        Uri ResolveBookmarkUrl(Bookmark bookmark, string debug);
-
-        /// <summary>
-        /// Gets the <see cref="Uri"/> to be used to submit back to the current Twilio handler, with the given bookmark.
-        /// </summary>
-        /// <param name="bookmarkName"></param>
-        /// <returns></returns>
-        Uri ResolveBookmarkUrl(string bookmarkName);
+        Uri ResolveBookmarkUrl(Bookmark bookmark);
 
         /// <summary>
         /// Gets the <see cref="Uri"/> to be used to refer to the .Net resource.

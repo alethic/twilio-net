@@ -42,11 +42,6 @@ namespace Twilio.Activities
         static readonly string ResourceQueryKey = "wf_Resource";
 
         /// <summary>
-        /// Query argument key name to specify a small bit of debug info.
-        /// </summary>
-        static readonly string DebugQueryKey = "wf_Debug";
-
-        /// <summary>
         /// Namespace under which we'll put temporary attributes.
         /// </summary>
         static readonly XNamespace tmpNs = "http://tempuri.org/xml/Twilio.Activities";
@@ -210,37 +205,11 @@ namespace Twilio.Activities
         /// <summary>
         /// Gets the <see cref="Uri"/> to post back and resume the workflow with the given bookmark.
         /// </summary>
-        /// <param name="bookmarkName"></param>
-        /// <returns></returns>
-        public Uri ResolveBookmarkUrl(string bookmarkName)
-        {
-            return RelativeUrl.MakeRelativeUri(AppendQueryArgToUri(SelfUrl, BookmarkQueryKey, bookmarkName));
-        }
-
-        /// <summary>
-        /// Gets the <see cref="Uri"/> to post back and resume the workflow with the given bookmark.
-        /// </summary>
         /// <param name="bookmark"></param>
         /// <returns></returns>
         public Uri ResolveBookmarkUrl(Bookmark bookmark)
         {
             return RelativeUrl.MakeRelativeUri(AppendQueryArgToUri(SelfUrl, BookmarkQueryKey, bookmark.Name));
-        }
-
-        /// <summary>
-        /// Gets the <see cref="Uri"/> to post back and resume the workflow with the given bookmark.
-        /// </summary>
-        /// <param name="bookmark"></param>
-        /// <returns></returns>
-        public Uri ResolveBookmarkUrl(Bookmark bookmark, string debug)
-        {
-            return RelativeUrl.MakeRelativeUri(
-                AppendQueryArgsToUri(SelfUrl,
-                    new Dictionary<string, string>()
-                    {
-                        { BookmarkQueryKey, bookmark.Name },
-                        { DebugQueryKey, debug },
-                    }));
         }
 
         /// <summary>
@@ -640,14 +609,9 @@ namespace Twilio.Activities
             return ResolveUrl(url);
         }
 
-        Uri ITwilioContext.ResolveBookmarkUrl(Bookmark bookmark, string debug)
+        Uri ITwilioContext.ResolveBookmarkUrl(Bookmark bookmark)
         {
-            return ResolveBookmarkUrl(bookmark, debug);
-        }
-
-        Uri ITwilioContext.ResolveBookmarkUrl(string bookmarkName)
-        {
-            return ResolveBookmarkUrl(bookmarkName);
+            return ResolveBookmarkUrl(bookmark);
         }
 
         Uri ITwilioContext.ResolveResourceUrl(Type resourceSource, string resourceName)

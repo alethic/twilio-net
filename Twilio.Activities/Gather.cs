@@ -35,13 +35,11 @@ namespace Twilio.Activities
             var finishOnKey = FinishOnKey.Get(context);
             var numDigits = NumDigits.Get(context);
 
-            // name to resume when gather is finished
-            var bookmarkName = Guid.NewGuid().ToString();
-            context.CreateBookmark(bookmarkName, OnGatherCompleted);
+            var actionUrl = twilio.ResolveBookmarkUrl(context.CreateTwilioBookmark(OnAction));
 
             // append gather element
             var element = new XElement("Gather",
-                new XAttribute("action", twilio.ResolveBookmarkUrl(bookmarkName)),
+                new XAttribute("action", actionUrl),
                 timeout != null ? new XAttribute("timeout", ((TimeSpan)timeout).TotalSeconds) : null,
                 finishOnKey != null ? new XAttribute("finishOnKey", finishOnKey) : null,
                 numDigits != null ? new XAttribute("numDigits", numDigits) : null);
@@ -49,18 +47,13 @@ namespace Twilio.Activities
             // write gather element
             GetElement(context).Add(
                 element,
-                new XElement("Redirect", twilio.ResolveBookmarkUrl(bookmarkName)));
+                new XElement("Redirect", actionUrl));
 
             if (Body != null)
             {
                 SetElement(context, element);
-                context.ScheduleActivity(Body, OnBodyCompletion);
+                context.ScheduleActivity(Body);
             }
-        }
-
-        void OnBodyCompletion(NativeActivityContext context, ActivityInstance instance)
-        {
-
         }
 
         /// <summary>
@@ -69,7 +62,7 @@ namespace Twilio.Activities
         /// <param name="context"></param>
         /// <param name="bookmark"></param>
         /// <param name="o"></param>
-        void OnGatherCompleted(NativeActivityContext context, Bookmark bookmark, object o)
+        void OnAction(NativeActivityContext context, Bookmark bookmark, object o)
         {
             var r = (NameValueCollection)o;
             var digits = r["Digits"] ?? "";

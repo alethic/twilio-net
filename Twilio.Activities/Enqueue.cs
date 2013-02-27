@@ -13,6 +13,8 @@ namespace Twilio.Activities
     public sealed class Enqueue : TwilioActivity<EnqueueResult>
     {
 
+        Variable<string> actionBookmarkName = new Variable<string>();
+
         /// <summary>
         /// Name of the queue to be enqueued into.
         /// </summary>
@@ -38,31 +40,34 @@ namespace Twilio.Activities
             get { return true; }
         }
 
+        protected override void CacheMetadata(NativeActivityMetadata metadata)
+        {
+            base.CacheMetadata(metadata);
+            metadata.AddImplementationVariable(actionBookmarkName);
+        }
+
         protected override void Execute(NativeActivityContext context)
         {
             var twilio = context.GetExtension<ITwilioContext>();
             var queue = Queue.Get(context);
 
+            // we persist this so we can schedule multiple invocations of action
+            actionBookmarkName.Set(context, context.CreateTwilioBookmarkName(OnAction));
+
             // bookmark for wait and action
-            var actionUrl = twilio.ResolveBookmarkUrl(
-                context.CreateBookmark(Guid.NewGuid().ToString(), OnAction),
-                "Enqueue.OnAction");
+            var actionUrl = twilio.ResolveBookmarkUrl(context.CreateBookmark(actionBookmarkName.Get(context), OnAction));
 
             var element = new XElement("Enqueue",
                 new XAttribute("action", actionUrl),
                 queue);
             GetElement(context).Add(
                 element,
-                new XElement("Redirect", actionUrl ));
+                new XElement("Redirect", actionUrl));
 
             // bookmark to execute Wait activity
             if (Wait != null)
-            {
-                var waitUrl = twilio.ResolveBookmarkUrl(
-                    context.CreateBookmark(Guid.NewGuid().ToString(), OnWait),
-                    "Enqueue.OnWait");
-                element.Add(new XAttribute("waitUrl", waitUrl));
-            }
+                element.Add(new XAttribute("waitUrl",
+                    twilio.ResolveBookmarkUrl(context.CreateTwilioBookmark(OnWait))));
         }
 
         /// <summary>
@@ -108,33 +113,44 @@ namespace Twilio.Activities
 
             var twilio = context.GetExtension<ITwilioContext>();
 
-            // bookmark that represents entry back into wait
-            var waitBookmarkName = Guid.NewGuid().ToString();
-            context.CreateBookmark(waitBookmarkName, OnWait);
-
             GetElement(context).Add(
                 new XElement("Redirect",
-                    twilio.ResolveBookmarkUrl(waitBookmarkName)));
+                    twilio.ResolveBookmarkUrl(context.CreateTwilioBookmark(OnWait))));
         }
 
         void OnAction(NativeActivityContext context, Bookmark bookmark, object o)
         {
+            var twilio = context.GetExtension<ITwilioContext>();
             var r = (NameValueCollection)o;
             var result = r["QueueResult"];
             var sid = r["QueueSid"];
             var time = r["QueueTime"];
 
-            // set result values
-            if (result != null)
-                Result.Set(context, ParseResult(result));
-            if (sid != null)
-                Sid.Set(context, sid);
-            if (time != null)
-                Time.Set(context, TimeSpan.FromSeconds(int.Parse(time)));
-
             // cancel all outstanding activities
             context.RemoveAllBookmarks();
             context.CancelChildren();
+
+            // due to some Twilio bug, actionUrl is invoked twice, rebuild bookmark if request does not specify result
+            if (result == null)
+            {
+                // reestablish action bookmark
+                context.CreateBookmark(actionBookmarkName.Get(context), OnAction);
+
+                // no-op
+                GetElement(context).Add(
+                    new XElement("Pause",
+                        new XAttribute("length", 0)));
+            }
+            else
+            {
+                // set result values
+                if (result != null)
+                    Result.Set(context, ParseResult(result));
+                if (sid != null)
+                    Sid.Set(context, sid);
+                if (time != null)
+                    Time.Set(context, TimeSpan.FromSeconds(int.Parse(time)));
+            }
         }
 
         EnqueueResult ParseResult(string result)
@@ -154,7 +170,7 @@ namespace Twilio.Activities
                 case "system-error":
                     return EnqueueResult.SystemError;
                 default:
-                    return EnqueueResult.SystemError;
+                    throw new FormatException(string.Format("Unrecognized queue result {0}.", result));
             }
         }
 
