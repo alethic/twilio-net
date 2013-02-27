@@ -77,8 +77,16 @@ namespace Twilio.Activities
             context.ScheduleActivity(Called, OnCalledCompleted);
         }
 
+        /// <summary>
+        /// Invoked when the body for the called party URI is completed.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="completedInstance"></param>
         void OnCalledCompleted(NativeActivityContext context, ActivityInstance completedInstance)
         {
+            if (completedInstance.State != ActivityInstanceState.Executing)
+                return;
+
             GetElement(context).Add(
                 new XElement("Pause",
                     new XAttribute("length", 0)));

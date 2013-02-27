@@ -12,13 +12,18 @@
             x:Key="ArgumentToExpressionConverter" />
         <DataTemplate
             x:Key="Collapsed">
+            <TextBlock
+                Text="Double click to view" />
         </DataTemplate>
         <DataTemplate
             x:Key="Expanded">
             <StackPanel>
+                <TextBox
+                    Margin="0,0,0,4"
+                    Text="{Binding ModelItem.Wait.Argument.Name, Mode=TwoWay}" />
                 <sap:WorkflowItemPresenter
-                    Item="{Binding ModelItem.Body, Mode=TwoWay}"
-                    HintText="Please drop an activity here" />
+                    HintText="Drop the wait activity here"
+                    Item="{Binding Path=ModelItem.Wait.Handler, Mode=TwoWay}" />
             </StackPanel>
         </DataTemplate>
         <Style

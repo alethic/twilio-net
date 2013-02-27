@@ -64,6 +64,9 @@ namespace Twilio.Activities
 
         void OnCallerCompleted(NativeActivityContext context, ActivityInstance completedInstance)
         {
+            if (completedInstance.State != ActivityInstanceState.Executing)
+                return;
+
             if (!GetElement(context).HasElements)
                 GetElement(context).Add(new XElement("Pause",
                     new XAttribute("length", 0)));

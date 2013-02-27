@@ -198,6 +198,7 @@ namespace Twilio.Activities
             RecordingUrl.Set(context, recordingUrl != null ? new Uri(recordingUrl) : null);
 
             // cancel all children
+            context.RemoveAllBookmarks();
             context.CancelChildren();
         }
 

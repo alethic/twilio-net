@@ -22,6 +22,11 @@
         /// </summary>
         Outbound,
 
+        /// <summary>
+        /// Call originated from an API request.
+        /// </summary>
+        OutboundApi,
+
     }
 
 }

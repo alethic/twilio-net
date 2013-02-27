@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Activities;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Globalization;
@@ -43,9 +42,14 @@ namespace Twilio.Activities
         static readonly string ResourceQueryKey = "wf_Resource";
 
         /// <summary>
+        /// Query argument key name to specify a small bit of debug info.
+        /// </summary>
+        static readonly string DebugQueryKey = "wf_Debug";
+
+        /// <summary>
         /// Namespace under which we'll put temporary attributes.
         /// </summary>
-        static readonly XNamespace ns = "http://tempuri.org/xml/Twilio.Activities";
+        static readonly XNamespace tmpNs = "http://tempuri.org/xml/Twilio.Activities";
 
         /// <summary>
         /// Appends the given name and value to the query string.
@@ -56,14 +60,29 @@ namespace Twilio.Activities
         /// <returns></returns>
         static Uri AppendQueryArgToUri(Uri uri, string name, string value)
         {
+            return AppendQueryArgsToUri(uri, new Dictionary<string, string>()
+            {
+                { name, value },
+            });
+        }
+
+        /// <summary>
+        /// Appends the given query arguments to the query string.
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        static Uri AppendQueryArgsToUri(Uri uri, IDictionary<string, string> args)
+        {
             if (uri == null)
                 throw new ArgumentNullException("uri");
-            if (name == null)
-                throw new ArgumentNullException("name");
+            if (args == null)
+                throw new ArgumentNullException("args");
 
             // parse query string and update session id
             var q = uri.Query != null ? HttpUtility.ParseQueryString(uri.Query) : new NameValueCollection();
-            q[name] = value;
+            foreach (var i in args)
+                q[i.Key] = i.Value;
 
             // rebuild uri with new query string
             var b = new UriBuilder(uri);
@@ -199,6 +218,32 @@ namespace Twilio.Activities
         }
 
         /// <summary>
+        /// Gets the <see cref="Uri"/> to post back and resume the workflow with the given bookmark.
+        /// </summary>
+        /// <param name="bookmark"></param>
+        /// <returns></returns>
+        public Uri ResolveBookmarkUrl(Bookmark bookmark)
+        {
+            return RelativeUrl.MakeRelativeUri(AppendQueryArgToUri(SelfUrl, BookmarkQueryKey, bookmark.Name));
+        }
+
+        /// <summary>
+        /// Gets the <see cref="Uri"/> to post back and resume the workflow with the given bookmark.
+        /// </summary>
+        /// <param name="bookmark"></param>
+        /// <returns></returns>
+        public Uri ResolveBookmarkUrl(Bookmark bookmark, string debug)
+        {
+            return RelativeUrl.MakeRelativeUri(
+                AppendQueryArgsToUri(SelfUrl,
+                    new Dictionary<string, string>()
+                    {
+                        { BookmarkQueryKey, bookmark.Name },
+                        { DebugQueryKey, debug },
+                    }));
+        }
+
+        /// <summary>
         /// Gets the <see cref="Uri"/> to retrieve the given resource name.
         /// </summary>
         /// <param name="resourceSource"></param>
@@ -242,6 +287,14 @@ namespace Twilio.Activities
         }
 
         /// <summary>
+        /// Gets the timeout after which the workflow should be terminated.
+        /// </summary>
+        protected virtual TimeSpan Timeout
+        {
+            get { return TimeSpan.FromSeconds(5); }
+        }
+
+        /// <summary>
         /// Override this method to create the instance store used to serialize workflow instances.
         /// </summary>
         /// <returns></returns>
@@ -255,60 +308,82 @@ namespace Twilio.Activities
         /// </summary>
         public void ProcessRequest(HttpContext context)
         {
-            // bind ourselves to the context
-            Context = context;
-
-            // request was for a resource
-            if (Request[ResourceQueryKey] != null)
+            try
             {
-                // handle it and return, no need to deal with workflow
-                ProcessResourceRequest(Request[ResourceQueryKey]);
-                return;
+                // bind ourselves to the context
+                Context = context;
+
+                // request was for a resource
+                if (Request[ResourceQueryKey] != null)
+                {
+                    // handle it and return, no need to deal with workflow
+                    ProcessResourceRequest(Request[ResourceQueryKey]);
+                    return;
+                }
+
+                // obtain our activity instance
+                Activity = CreateActivity();
+
+                // configure application
+                WorkflowApplication = Request[InstanceIdQueryKey] == null ? new WorkflowApplication(Activity, GetArguments()) : new WorkflowApplication(Activity);
+                WorkflowApplication.Extensions.Add<ITwilioContext>(() => this);
+                WorkflowApplication.SynchronizationContext = SynchronizationContext = new RunnableSynchronizationContext();
+                WorkflowApplication.InstanceStore = CreateInstanceStore();
+                WorkflowApplication.Aborted = OnAborted;
+                WorkflowApplication.Completed = OnCompleted;
+                WorkflowApplication.Idle = OnIdle;
+                WorkflowApplication.OnUnhandledException = OnUnhandledException;
+                WorkflowApplication.PersistableIdle = OnPersistableIdle;
+                WorkflowApplication.Unloaded = OnUnloaded;
+
+                // attempt to resolve current instance id and reload workflow state
+                if (Request[InstanceIdQueryKey] != null)
+                    WorkflowApplication.Load(Guid.Parse(Request[InstanceIdQueryKey]));
+
+                // postback to resume a bookmark
+                if (Request[BookmarkQueryKey] != null)
+                    WorkflowApplication.BeginResumeBookmark(Request[BookmarkQueryKey], GetPostData(), i => WorkflowApplication.EndResumeBookmark(i), null);
+
+                // begin running the application
+                WorkflowApplication.BeginRun(Timeout, i => WorkflowApplication.EndRun(i), null);
+
+                // process any outstanding events until completion and ensure persisted
+                SynchronizationContext.Run();
+
+                // throw exception
+                if (UnhandledExceptionInfo != null)
+                    UnhandledExceptionInfo.Throw();
+
+                // strip off temporary attributes
+                foreach (var element in TwilioResponse.DescendantsAndSelf())
+                    foreach (var attribute in element.Attributes())
+                        if (attribute.Name.Namespace == tmpNs)
+                            attribute.Remove();
+
+                // write finished twilio output
+                Response.ContentType = "text/xml";
+                using (var wrt = XmlWriter.Create(Response.Output))
+                    TwilioResponse.WriteTo(wrt);
+
+                // if we've reached the end, no need to force unload
+                WorkflowApplication = null;
             }
-
-            // obtain our activity instance
-            Activity = CreateActivity();
-
-            // configure application
-            WorkflowApplication = new WorkflowApplication(Activity, Request[InstanceIdQueryKey] == null ? GetArguments() : null);
-            WorkflowApplication.Extensions.Add<ITwilioContext>(() => this);
-            WorkflowApplication.SynchronizationContext = SynchronizationContext = new RunnableSynchronizationContext();
-            WorkflowApplication.InstanceStore = CreateInstanceStore();
-            WorkflowApplication.Aborted = OnAborted;
-            WorkflowApplication.Completed = OnCompleted;
-            WorkflowApplication.Idle = OnIdle;
-            WorkflowApplication.OnUnhandledException = OnUnhandledException;
-            WorkflowApplication.PersistableIdle = OnPersistableIdle;
-            WorkflowApplication.Unloaded = OnUnloaded;
-
-            // attempt to resolve current instance id and reload workflow state
-            if (Request[InstanceIdQueryKey] != null)
-                WorkflowApplication.Load(Guid.Parse(Request[InstanceIdQueryKey]));
-
-            // postback to resume a bookmark
-            if (Request[BookmarkQueryKey] != null)
-                WorkflowApplication.BeginResumeBookmark(Request[BookmarkQueryKey], GetPostData(), i => WorkflowApplication.EndResumeBookmark(i), null);
-
-            // begin running the application
-            WorkflowApplication.BeginRun(i => WorkflowApplication.EndRun(i), null);
-
-            // process any outstanding events until completion and ensure persisted
-            SynchronizationContext.Run();
-
-            // throw exception
-            if (UnhandledExceptionInfo != null)
-                UnhandledExceptionInfo.Throw();
-
-            // strip off temporary attributes
-            foreach (var element in TwilioResponse.DescendantsAndSelf())
-                foreach (var attribute in element.Attributes())
-                    if (attribute.Name.Namespace == ns)
-                        attribute.Remove();
-
-            // write finished twilio output
-            Response.ContentType = "text/xml";
-            using (var wrt = XmlWriter.Create(Response.Output))
-                TwilioResponse.WriteTo(wrt);
+            finally
+            {
+                // clean up application if possible
+                if (WorkflowApplication != null)
+                {
+                    try
+                    {
+                        WorkflowApplication.Unload();
+                        WorkflowApplication = null;
+                    }
+                    catch
+                    {
+                        // ignore
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -484,8 +559,10 @@ namespace Twilio.Activities
                     return CallDirection.Inbound;
                 case "outbound":
                     return CallDirection.Outbound;
+                case "outbound-api":
+                    return CallDirection.OutboundApi;
                 default:
-                    throw new FormatException("Unknown direction.");
+                    throw new FormatException(string.Format("Unknown direction {0}.", direction));
             }
         }
 
@@ -563,6 +640,11 @@ namespace Twilio.Activities
             return ResolveUrl(url);
         }
 
+        Uri ITwilioContext.ResolveBookmarkUrl(Bookmark bookmark, string debug)
+        {
+            return ResolveBookmarkUrl(bookmark, debug);
+        }
+
         Uri ITwilioContext.ResolveBookmarkUrl(string bookmarkName)
         {
             return ResolveBookmarkUrl(bookmarkName);
@@ -587,14 +669,14 @@ namespace Twilio.Activities
 
             // resolve element at scope, or simply return root
             return TwilioResponse.DescendantsAndSelf()
-                .FirstOrDefault(i => (Guid?)i.Attribute(ns + "id") == id) ?? TwilioResponse;
+                .FirstOrDefault(i => (Guid?)i.Attribute(tmpNs + "id") == id) ?? TwilioResponse;
         }
 
         void ITwilioContext.SetElement(NativeActivityContext context, XElement element)
         {
             // obtain existing or new id
-            var id = (Guid)((Guid?)element.Attribute(ns + "id") ?? Guid.NewGuid());
-            element.SetAttributeValue(ns + "id", id);
+            var id = (Guid)((Guid?)element.Attribute(tmpNs + "id") ?? Guid.NewGuid());
+            element.SetAttributeValue(tmpNs + "id", id);
 
             // set as current scope
             context.Properties.Add("Twilio.Activities_ScopeElementId", id);

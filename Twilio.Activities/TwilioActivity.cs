@@ -125,6 +125,7 @@ namespace Twilio.Activities
         internal TwilioActivity()
         {
             Variables = new Collection<Variable>();
+            Constraints.Add(TwilioActivity.MustBeInsideCallScopeConstraint());
         }
 
         [Browsable(false)]
