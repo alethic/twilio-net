@@ -149,11 +149,11 @@ namespace Twilio.Activities
             var record = Record.Get(context);
 
             // dial completion
-            var actionUrl = twilio.ResolveBookmarkUrl(context.CreateTwilioBookmark(OnAction));
+            var finishUrl = twilio.ResolveBookmarkUrl(context.CreateTwilioBookmark(OnFinish));
 
             // dial element
             var element = new XElement("Dial",
-                new XAttribute("action", actionUrl),
+                new XAttribute("action", finishUrl),
                 timeout != null ? new XAttribute("timeout", ((TimeSpan)timeout).TotalSeconds) : null,
                 hangupOnStar != null ? new XAttribute("hangupOnStar", (bool)hangupOnStar ? "true" : "false") : null,
                 timeLimit != null ? new XAttribute("timeLimit", ((TimeSpan)timeLimit).TotalSeconds) : null,
@@ -163,7 +163,7 @@ namespace Twilio.Activities
             // write Dial element
             GetElement(context).Add(
                 element,
-                new XElement("Redirect", actionUrl));
+                new XElement("Redirect", finishUrl));
 
             // execute nouns
             if (Activities.Count > 0)
@@ -181,7 +181,7 @@ namespace Twilio.Activities
         /// <param name="context"></param>
         /// <param name="bookmark"></param>
         /// <param name="o"></param>
-        void OnAction(NativeActivityContext context, Bookmark bookmark, object o)
+        void OnFinish(NativeActivityContext context, Bookmark bookmark, object o)
         {
             var r = (NameValueCollection)o;
             var status = r["DialCallStatus"];

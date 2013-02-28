@@ -35,11 +35,11 @@ namespace Twilio.Activities
             var finishOnKey = FinishOnKey.Get(context);
             var numDigits = NumDigits.Get(context);
 
-            var actionUrl = twilio.ResolveBookmarkUrl(context.CreateTwilioBookmark(OnAction));
+            var finishUrl = twilio.ResolveBookmarkUrl(context.CreateTwilioBookmark(OnFinish));
 
             // append gather element
             var element = new XElement("Gather",
-                new XAttribute("action", actionUrl),
+                new XAttribute("action", finishUrl),
                 timeout != null ? new XAttribute("timeout", ((TimeSpan)timeout).TotalSeconds) : null,
                 finishOnKey != null ? new XAttribute("finishOnKey", finishOnKey) : null,
                 numDigits != null ? new XAttribute("numDigits", numDigits) : null);
@@ -47,7 +47,7 @@ namespace Twilio.Activities
             // write gather element
             GetElement(context).Add(
                 element,
-                new XElement("Redirect", actionUrl));
+                new XElement("Redirect", finishUrl));
 
             if (Body != null)
             {
@@ -62,7 +62,7 @@ namespace Twilio.Activities
         /// <param name="context"></param>
         /// <param name="bookmark"></param>
         /// <param name="o"></param>
-        void OnAction(NativeActivityContext context, Bookmark bookmark, object o)
+        void OnFinish(NativeActivityContext context, Bookmark bookmark, object o)
         {
             var r = (NameValueCollection)o;
             var digits = r["Digits"] ?? "";
@@ -70,6 +70,8 @@ namespace Twilio.Activities
             Result.Set(context, digits);
             Digits.Set(context, digits);
 
+            // cancel all children
+            context.RemoveAllBookmarks();
             context.CancelChildren();
         }
 
