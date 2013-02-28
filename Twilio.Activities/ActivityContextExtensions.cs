@@ -20,10 +20,10 @@ namespace Twilio.Activities
                 throw new ArgumentException("Callback must be instance method of Activity.");
 
             return string.Format("{0}_{1}_{2}_{3}",
-                Math.Abs(Guid.NewGuid().GetHashCode()),
                 activity.Id,
                 activity.DisplayName,
-                callback.Method.Name);
+                callback.Method.Name,
+                Math.Abs(Guid.NewGuid().GetHashCode()));
         }
 
         /// <summary>
@@ -35,9 +35,9 @@ namespace Twilio.Activities
         public static string CreateTwilioBookmarkName(this NativeActivityContext context, Activity activity)
         {
             return string.Format("{0}_{1}_{2}",
-                Math.Abs(Guid.NewGuid().GetHashCode()),
                 activity.Id,
-                activity.DisplayName);
+                activity.DisplayName,
+                Math.Abs(Guid.NewGuid().GetHashCode()));
         }
 
         /// <summary>
