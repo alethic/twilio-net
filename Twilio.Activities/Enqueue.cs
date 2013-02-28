@@ -126,10 +126,6 @@ namespace Twilio.Activities
             var sid = r["QueueSid"];
             var time = r["QueueTime"];
 
-            // cancel all outstanding activities
-            context.RemoveAllBookmarks();
-            context.CancelChildren();
-
             // due to some Twilio bug, actionUrl is invoked twice, rebuild bookmark if request does not specify result
             if (result == null)
             {
@@ -150,6 +146,10 @@ namespace Twilio.Activities
                     Sid.Set(context, sid);
                 if (time != null)
                     Time.Set(context, TimeSpan.FromSeconds(int.Parse(time)));
+
+                // cancel all outstanding activities
+                context.RemoveAllBookmarks();
+                context.CancelChildren();
             }
         }
 

@@ -125,11 +125,6 @@ namespace Twilio.Activities
         public Activity Activity { get; private set; }
 
         /// <summary>
-        /// Context into which events occuring during the execution of the workflow go.
-        /// </summary>
-        RunnableSynchronizationContext SynchronizationContext { get; set; }
-
-        /// <summary>
         /// Gets the root <see cref="XElement"/> of the generated TwiML.
         /// </summary>
         public XElement TwilioResponse { get; private set; }
@@ -250,7 +245,7 @@ namespace Twilio.Activities
 
             // convert data to appropriate argument types
             var args = GetActivityArgumentTypes()
-                .ToDictionary(i => i.Key, i => data.ContainsKey(i.Key) ? ChangeType(data[i.Key], i.Value) : null);
+                .ToDictionary(i => i.Key, i => data.ContainsKey(i.Key) ? TypeFromString(data[i.Key], i.Value) : null);
 
             return args;
         }
@@ -296,7 +291,7 @@ namespace Twilio.Activities
                 // configure application
                 WorkflowApplication = Request[InstanceIdQueryKey] == null ? new WorkflowApplication(Activity, GetArguments()) : new WorkflowApplication(Activity);
                 WorkflowApplication.Extensions.Add<ITwilioContext>(() => this);
-                WorkflowApplication.SynchronizationContext = SynchronizationContext = new RunnableSynchronizationContext();
+                WorkflowApplication.SynchronizationContext = new SynchronizedSynchronizationContext();
                 WorkflowApplication.InstanceStore = CreateInstanceStore();
                 WorkflowApplication.Aborted = OnAborted;
                 WorkflowApplication.Completed = OnCompleted;
@@ -307,17 +302,14 @@ namespace Twilio.Activities
 
                 // attempt to resolve current instance id and reload workflow state
                 if (Request[InstanceIdQueryKey] != null)
-                    WorkflowApplication.Load(Guid.Parse(Request[InstanceIdQueryKey]));
+                    WorkflowApplication.Load(Guid.Parse(Request[InstanceIdQueryKey]), Timeout);
 
                 // postback to resume a bookmark
                 if (Request[BookmarkQueryKey] != null)
-                    WorkflowApplication.BeginResumeBookmark(Request[BookmarkQueryKey], GetPostData(), i => WorkflowApplication.EndResumeBookmark(i), null);
-
-                // begin running the application
-                WorkflowApplication.BeginRun(Timeout, i => WorkflowApplication.EndRun(i), null);
-
-                // process any outstanding events until completion and ensure persisted
-                SynchronizationContext.Run();
+                    WorkflowApplication.ResumeBookmark(Request[BookmarkQueryKey], GetPostData(), Timeout);
+                else
+                    // begin running the workflow from the start
+                    WorkflowApplication.Run(Timeout);
 
                 // throw exception
                 if (UnhandledExceptionInfo != null)
@@ -344,7 +336,7 @@ namespace Twilio.Activities
                 {
                     try
                     {
-                        WorkflowApplication.Unload();
+                        WorkflowApplication.Unload(Timeout);
                         WorkflowApplication = null;
                     }
                     catch
@@ -376,8 +368,11 @@ namespace Twilio.Activities
         /// <param name="value"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        object ChangeType(string value, Type type)
+        object TypeFromString(string value, Type type)
         {
+            if (type == null)
+                throw new ArgumentNullException("type");
+
             var tc = TypeDescriptor.GetConverter(type);
             if (tc == null)
                 throw new NullReferenceException("Could not convert argument to appropriate type. No type descriptor.");
@@ -389,9 +384,6 @@ namespace Twilio.Activities
         {
             if (args.Reason != null)
                 UnhandledExceptionInfo = ExceptionDispatchInfo.Capture(args.Reason);
-
-            // end event loop
-            SynchronizationContext.Complete();
         }
 
         void OnCompleted(WorkflowApplicationCompletedEventArgs args)
@@ -427,8 +419,7 @@ namespace Twilio.Activities
 
         void OnUnloaded(WorkflowApplicationEventArgs args)
         {
-            // end event loop
-            SynchronizationContext.Complete();
+
         }
 
         /// <summary>
