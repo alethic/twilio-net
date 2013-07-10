@@ -27,6 +27,8 @@
         /// </summary>
         OutboundApi,
 
+        OutboundDial,
+
     }
 
 }

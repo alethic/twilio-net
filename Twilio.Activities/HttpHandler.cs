@@ -521,6 +521,8 @@ namespace Twilio.Activities
                     return CallDirection.Outbound;
                 case "outbound-api":
                     return CallDirection.OutboundApi;
+                case "outbound-dial":
+                    return CallDirection.OutboundDial;
                 default:
                     throw new FormatException(string.Format("Unknown direction {0}.", direction));
             }

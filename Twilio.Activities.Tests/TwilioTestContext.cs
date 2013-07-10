@@ -15,7 +15,7 @@ namespace Twilio.Activities.Tests
         /// </summary>
         static readonly XNamespace ns = "http://tempuri.org/xml/Twilio.Activities";
 
-        RunnableSynchronizationContext sync;
+        SynchronizedSynchronizationContext sync;
         WorkflowApplication app;
         Uri selfUrl = new Uri("http://www.tempuri.org/wf.ashx");
         XElement response;
@@ -23,7 +23,7 @@ namespace Twilio.Activities.Tests
 
         public TwilioTestContext(Activity activity)
         {
-            sync = new RunnableSynchronizationContext();
+            sync = new SynchronizedSynchronizationContext();
 
             // new invoker which uses ourself as the context
             app = new WorkflowApplication(activity);
@@ -50,6 +50,11 @@ namespace Twilio.Activities.Tests
                 return uri;
             else
                 return new Uri(SelfUrl, url);
+        }
+
+        public Uri ResolveBookmarkUrl(Bookmark bookmark)
+        {
+            return new Uri(SelfUrl, "?B=R");
         }
 
         public Uri ResolveBookmarkUrl(string bookmarkName)
