@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Runtime.DurableInstancing;
 using System.Web;
-using System.Web.SessionState;
 using System.Xml.Linq;
 
 namespace Twilio.Activities
