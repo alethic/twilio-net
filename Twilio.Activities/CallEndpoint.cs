@@ -14,13 +14,15 @@ namespace Twilio.Activities
         /// Initializes a new instance.
         /// </summary>
         /// <param name="target"></param>
+        /// <param name="name"></param>
         /// <param name="city"></param>
         /// <param name="country"></param>
         /// <param name="state"></param>
         /// <param name="zip"></param>
-        internal CallEndpoint(string target, string city, string country, string state, string zip)
+        internal CallEndpoint(string target, string name, string city, string country, string state, string zip)
         {
             Target = target;
+            Name = name;
             City = city;
             Country = country;
             State = state;
@@ -32,6 +34,12 @@ namespace Twilio.Activities
         /// </summary>
         [DataMember]
         public string Target { get; private set; }
+
+        /// <summary>
+        /// Name of endpoint.
+        /// </summary>
+        [DataMember]
+        public string Name { get; private set; }
 
         /// <summary>
         /// City of endpoint.

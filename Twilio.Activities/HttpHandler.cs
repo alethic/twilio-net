@@ -475,28 +475,32 @@ namespace Twilio.Activities
 
             return new CallContext(
                 d["AccountSid"],
-                d["Sid"],
+                d["CallSid"],
                 ParseDirection(d["Direction"]),
                 new CallEndpoint(
                     d["Caller"],
+                    d["CallerName"],
                     d["CallerCity"],
                     d["CallerCountry"],
                     d["CallerState"],
                     d["CallerZip"]),
                 new CallEndpoint(
                     d["Called"],
+                    d["CalledName"],
                     d["CalledCity"],
                     d["CalledCountry"],
                     d["CalledState"],
                     d["CalledZip"]),
                 new CallEndpoint(
                     d["From"],
+                    d["ToName"],
                     d["FromCity"],
                     d["FromCountry"],
                     d["FromState"],
                     d["FromZip"]),
                 new CallEndpoint(
                     d["To"],
+                    d["ToName"],
                     d["ToCity"],
                     d["ToCountry"],
                     d["ToState"],

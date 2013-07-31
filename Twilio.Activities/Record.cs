@@ -24,9 +24,14 @@ namespace Twilio.Activities
         public InArgument<bool?> PlayBeep { get; set; }
 
         /// <summary>
+        /// The SID of the recording.
+        /// </summary>
+        public OutArgument<string> Sid { get; set; }
+
+        /// <summary>
         /// The URL of the recorded audio.
         /// </summary>
-        public OutArgument<Uri> RecordingUrl { get; set; }
+        public OutArgument<Uri> Url { get; set; }
 
         /// <summary>
         /// The duration of the recorded audio.
@@ -54,10 +59,6 @@ namespace Twilio.Activities
 
             var actionUrl = twilio.ResolveBookmarkUrl(context.CreateTwilioBookmark(OnAction));
 
-            // name to resume
-            var bookmarkName = Guid.NewGuid().ToString();
-            context.CreateBookmark(bookmarkName, OnAction);
-
             // append record element
             var element = new XElement("Record",
                 new XAttribute("action", actionUrl),
@@ -82,14 +83,20 @@ namespace Twilio.Activities
         void OnAction(NativeActivityContext context, Bookmark bookmark, object o)
         {
             var r = (NameValueCollection)o;
-            var recordingUrl = r["RecordingUrl"];
-            var recordingDuration = r["RecordingDuration"];
+            var sid = r["RecordingSid"];
+            var url = r["RecordingUrl"];
+            var duration = r["RecordingDuration"];
             var digits = r["Digits"];
 
-            Result.Set(context, recordingUrl != null ? new Uri(recordingUrl, UriKind.RelativeOrAbsolute) : null);
-            RecordingUrl.Set(context, recordingUrl != null ? new Uri(recordingUrl, UriKind.RelativeOrAbsolute) : null);
-            Duration.Set(context, recordingDuration != null ? TimeSpan.FromSeconds(int.Parse(recordingDuration)) : TimeSpan.Zero);
+            Sid.Set(context, sid);
+            Url.Set(context, url != null ? new Uri(url, UriKind.RelativeOrAbsolute) : null);
+            Duration.Set(context, duration != null ? TimeSpan.FromSeconds(int.Parse(duration)) : TimeSpan.Zero);
             Digits.Set(context, digits);
+            Result.Set(context, Url.Get(context));
+
+            // cancel all children
+            context.RemoveAllBookmarks();
+            context.CancelChildren();
         }
 
     }
