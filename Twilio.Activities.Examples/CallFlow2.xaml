@@ -1,0 +1,128 @@
+﻿<Activity mc:Ignorable="sap sap2010 sads" x:Class="Twilio.Activities.Examples.CallFlow2" sap2010:ExpressionActivityEditor.ExpressionActivityEditor="C#" sap2010:WorkflowViewState.IdRef="Twilio.Activities.Examples.CallFlow1_1"
+ xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ xmlns:mca="clr-namespace:Microsoft.CSharp.Activities;assembly=System.Activities"
+ xmlns:s="clr-namespace:System;assembly=mscorlib"
+ xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
+ xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
+ xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
+ xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
+ xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
+ xmlns:ta="clr-namespace:Twilio.Activities;assembly=Twilio.Activities"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System</x:String>
+      <x:String>System.Collections.Generic</x:String>
+      <x:String>System.Data</x:String>
+      <x:String>System.Linq</x:String>
+      <x:String>System.Text</x:String>
+    </sco:Collection>
+  </TextExpression.NamespacesForImplementation>
+  <TextExpression.ReferencesForImplementation>
+    <sco:Collection x:TypeArguments="AssemblyReference">
+      <AssemblyReference>Microsoft.CSharp</AssemblyReference>
+      <AssemblyReference>System</AssemblyReference>
+      <AssemblyReference>System.Activities</AssemblyReference>
+      <AssemblyReference>System.Core</AssemblyReference>
+      <AssemblyReference>System.Data</AssemblyReference>
+      <AssemblyReference>System.Runtime.Serialization</AssemblyReference>
+      <AssemblyReference>System.ServiceModel</AssemblyReference>
+      <AssemblyReference>System.ServiceModel.Activities</AssemblyReference>
+      <AssemblyReference>System.Xaml</AssemblyReference>
+      <AssemblyReference>System.Xml</AssemblyReference>
+      <AssemblyReference>System.Xml.Linq</AssemblyReference>
+      <AssemblyReference>Twilio.Activities</AssemblyReference>
+      <AssemblyReference>mscorlib</AssemblyReference>
+      <AssemblyReference>Twilio.Activities.Examples</AssemblyReference>
+    </sco:Collection>
+  </TextExpression.ReferencesForImplementation>
+  <ta:CallScope DisplayName="Call Scope" sap2010:WorkflowViewState.IdRef="CallScope_1">
+    <ta:CallScope.Body>
+      <ActivityAction x:TypeArguments="ta:CallContext">
+        <ActivityAction.Argument>
+          <DelegateInArgument x:TypeArguments="ta:CallContext" Name="Call" />
+        </ActivityAction.Argument>
+        <Sequence sap2010:WorkflowViewState.IdRef="Sequence_1">
+          <Sequence.Variables>
+            <Variable x:TypeArguments="x:String" Name="DigitsAndStuff" />
+          </Sequence.Variables>
+          <ta:Say Language="{x:Null}" Loop="{x:Null}" Voice="{x:Null}" sap2010:WorkflowViewState.IdRef="Say_16" Text="hi">
+            <ta:Say.Variables>
+              <sco:Collection x:TypeArguments="Variable" />
+            </ta:Say.Variables>
+          </ta:Say>
+          <While sap2010:WorkflowViewState.IdRef="While_1">
+            <While.Condition>
+              <mca:CSharpValue x:TypeArguments="x:Boolean">DigitsAndStuff != "1"</mca:CSharpValue>
+            </While.Condition>
+            <ta:Gather FinishOnKey="{x:Null}" sap2010:WorkflowViewState.IdRef="Gather_1">
+              <ta:Gather.Body>
+                <ta:Say Language="{x:Null}" Loop="{x:Null}" Voice="{x:Null}" sap2010:WorkflowViewState.IdRef="Say_18" Text="Press 1">
+                  <ta:Say.Variables>
+                    <sco:Collection x:TypeArguments="Variable" />
+                  </ta:Say.Variables>
+                </ta:Say>
+              </ta:Gather.Body>
+              <ta:Gather.Digits>
+                <OutArgument x:TypeArguments="x:String">
+                  <mca:CSharpReference x:TypeArguments="x:String">DigitsAndStuff</mca:CSharpReference>
+                </OutArgument>
+              </ta:Gather.Digits>
+              <ta:Gather.NumDigits>
+                <InArgument x:TypeArguments="s:Nullable(x:Int32)">
+                  <mca:CSharpValue x:TypeArguments="s:Nullable(x:Int32)">1</mca:CSharpValue>
+                </InArgument>
+              </ta:Gather.NumDigits>
+              <ta:Gather.Timeout>
+                <InArgument x:TypeArguments="s:Nullable(x:TimeSpan)">
+                  <mca:CSharpValue x:TypeArguments="s:Nullable(x:TimeSpan)">TimeSpan.FromSeconds(5)</mca:CSharpValue>
+                </InArgument>
+              </ta:Gather.Timeout>
+              <ta:Gather.Variables>
+                <sco:Collection x:TypeArguments="Variable" />
+              </ta:Gather.Variables>
+            </ta:Gather>
+          </While>
+          <If sap2010:WorkflowViewState.IdRef="If_1">
+            <If.Condition>
+              <InArgument x:TypeArguments="x:Boolean">
+                <mca:CSharpValue x:TypeArguments="x:Boolean">"Nothing" == "False"</mca:CSharpValue>
+              </InArgument>
+            </If.Condition>
+            <If.Then>
+              <ta:Hangup sap2010:WorkflowViewState.IdRef="Hangup_1">
+                <ta:Hangup.Variables>
+                  <sco:Collection x:TypeArguments="Variable" />
+                </ta:Hangup.Variables>
+              </ta:Hangup>
+            </If.Then>
+          </If>
+        </Sequence>
+      </ActivityAction>
+    </ta:CallScope.Body>
+    <ta:CallScope.Variables>
+      <sco:Collection x:TypeArguments="Variable" />
+    </ta:CallScope.Variables>
+    <sads:DebugSymbol.Symbol>d1FDOlxVc2Vyc1xqaGFsdG9tXERldmVsb3BtZW50XHR3aWxpby1uZXRcVHdpbGlvLkFjdGl2aXRpZXMuRXhhbXBsZXNcQ2FsbEZsb3cyLnhhbWwPKANsEgIBAS4JZRQCAQIyCzYUAgEYNwtWEwIBCFcLZBACAQMydjJ6AgEZOw1VGQIBDDkPOWMCAQlaEVpkAgEEXg9iGwIBB08TT3YCARNFE0VnAgEQShNKXQIBDT0RQRoCARY9fD2FAQIBFw==</sads:DebugSymbol.Symbol>
+  </ta:CallScope>
+  <sap2010:WorkflowViewState.ViewStateManager>
+    <sap2010:ViewStateManager>
+      <sap2010:ViewStateData Id="Say_16" sap:VirtualizedContainerService.HintSize="464,62" />
+      <sap2010:ViewStateData Id="Say_18" sap:VirtualizedContainerService.HintSize="200,62" />
+      <sap2010:ViewStateData Id="Gather_1" sap:VirtualizedContainerService.HintSize="214,98" />
+      <sap2010:ViewStateData Id="While_1" sap:VirtualizedContainerService.HintSize="464,260" />
+      <sap2010:ViewStateData Id="Hangup_1" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="If_1" sap:VirtualizedContainerService.HintSize="464,212" />
+      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="486,738">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="CallScope_1" sap:VirtualizedContainerService.HintSize="500,796" />
+      <sap2010:ViewStateData Id="Twilio.Activities.Examples.CallFlow1_1" sap:VirtualizedContainerService.HintSize="540,876" />
+    </sap2010:ViewStateManager>
+  </sap2010:WorkflowViewState.ViewStateManager>
+</Activity>
