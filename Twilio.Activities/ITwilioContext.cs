@@ -20,7 +20,7 @@ namespace Twilio.Activities
         /// <summary>
         /// Gets information related to the ongoing call.
         /// </summary>
-        CallContext CreateCallContext();
+        CallContext GetCallContext();
 
         /// <summary>
         /// Resolve the given relative url.

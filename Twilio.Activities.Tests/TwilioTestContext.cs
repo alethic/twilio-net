@@ -20,14 +20,32 @@ namespace Twilio.Activities.Tests
         Uri selfUrl = new Uri("http://www.tempuri.org/wf.ashx");
         XElement response;
         XElement element;
+        ActivityInstanceState state;
 
+        /// <summary>
+        /// Initializes a new instance.
+        /// </summary>
+        /// <param name="activity"></param>
         public TwilioTestContext(Activity activity)
         {
+            // wrap in CallScope
+            var arg1 = new DelegateInArgument<CallContext>();
+            var scope = new CallScope()
+            {
+                Body = new ActivityAction<CallContext>()
+                {
+                    Argument = arg1,
+                    Handler = activity,
+                },
+            };
+
+            // workflow needs a sync context to run on
             sync = new SynchronizedSynchronizationContext();
 
             // new invoker which uses ourself as the context
-            app = new WorkflowApplication(activity);
+            app = new WorkflowApplication(scope);
             app.Extensions.Add<ITwilioContext>(() => this);
+            app.Completed = a => state = a.CompletionState;
 
             response = new XElement("Response");
             element = response;
@@ -35,7 +53,8 @@ namespace Twilio.Activities.Tests
 
         public void Invoke()
         {
-            app.Run();
+            while (state == ActivityInstanceState.Executing)
+                app.Run();
         }
 
         public Uri SelfUrl
@@ -83,7 +102,7 @@ namespace Twilio.Activities.Tests
             set { element = value; }
         }
 
-        public CallContext CreateCallContext()
+        public CallContext GetCallContext()
         {
             return new CallContext(
                 "TEST",

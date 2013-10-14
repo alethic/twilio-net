@@ -1,6 +1,4 @@
 ﻿using System.Activities;
-using System.Activities.Statements;
-using System.Activities.Validation;
 using System.ComponentModel;
 
 using Twilio.Activities.Design;
@@ -33,7 +31,7 @@ namespace Twilio.Activities
         protected override void Execute(NativeActivityContext context)
         {
             if (Body != null)
-                context.ScheduleAction(Body, context.GetExtension<ITwilioContext>().CreateCallContext());
+                context.ScheduleAction(Body, context.GetExtension<ITwilioContext>().GetCallContext());
         }
 
     }

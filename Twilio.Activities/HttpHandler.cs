@@ -10,7 +10,6 @@ using System.Reflection;
 using System.Resources;
 using System.Runtime.DurableInstancing;
 using System.Runtime.ExceptionServices;
-using System.Threading;
 using System.Web;
 using System.Xml;
 using System.Xml.Linq;
@@ -459,7 +458,7 @@ namespace Twilio.Activities
             }
         }
 
-        CallContext ITwilioContext.CreateCallContext()
+        CallContext ITwilioContext.GetCallContext()
         {
             return CreateCallContext();
         }
