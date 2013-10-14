@@ -89,10 +89,10 @@ namespace Twilio.Activities.Tests
                 "TEST",
                 "TEST",
                 CallDirection.Unknown,
-                new CallEndpoint("TEST", "TEST", "TEST", "TEST", "TEST"),
-                new CallEndpoint("TEST", "TEST", "TEST", "TEST", "TEST"),
-                new CallEndpoint("TEST", "TEST", "TEST", "TEST", "TEST"),
-                new CallEndpoint("TEST", "TEST", "TEST", "TEST", "TEST"),
+                new CallEndpoint("TEST", "TEST", "TEST", "TEST", "TEST", "TEST"),
+                new CallEndpoint("TEST", "TEST", "TEST", "TEST", "TEST", "TEST"),
+                new CallEndpoint("TEST", "TEST", "TEST", "TEST", "TEST", "TEST"),
+                new CallEndpoint("TEST", "TEST", "TEST", "TEST", "TEST", "TEST"),
                 CultureInfo.InvariantCulture);
         }
 
